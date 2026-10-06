@@ -165,6 +165,36 @@ def test_mdm_loss_only_supervises_maskable_tokens():
     assert not masked[:, :16].any() and (loss_tok[:, :16] == 0).all()
 
 
+def test_rl_surrogate_gradients_flow():
+    """The RL script uses -mdm_loss(reduction='none') as a per-token log-prob surrogate; check it is differentiable
+    and that a positive-advantage completion gets pushed up and a negative one down."""
+    model = tiny_model("mdm")
+    model.train()
+    torch.manual_seed(5)
+    ids = torch.randint(0, 256, (2, 24))
+    maskable = torch.zeros_like(ids, dtype=torch.bool)
+    maskable[:, 8:] = True  # "completion" tokens
+    advantages = torch.tensor([1.0, -1.0])
+    p_mask = torch.tensor([0.5, 0.5])
+    loss_tok, masked = mdm_loss(model, ids, maskable, MASK_ID, p_mask=p_mask, reduction="none")
+    logp = -loss_tok
+    pg_obj = (logp * advantages[:, None]).sum() / maskable.sum()
+    (-pg_obj).backward()
+    grads = [p.grad for p in model.parameters() if p.grad is not None]
+    assert grads and any(g.abs().sum() > 0 for g in grads)
+    # one gradient step in the direction of the objective should raise the ELBO estimate of the +1 row (same masks)
+    with torch.no_grad():
+        for p in model.parameters():
+            if p.grad is not None:
+                p -= 1e-2 * p.grad
+    noisy = torch.where(masked, torch.full_like(ids, MASK_ID), ids)
+    targets = torch.where(masked, ids, torch.full_like(ids, -1))
+    with torch.no_grad():
+        after = model(noisy, targets, loss_reduction="none").view_as(ids) / p_mask[:, None]
+    assert after[0].sum() < loss_tok[0].sum().item()
+    assert after[1].sum() > loss_tok[1].sum().item()
+
+
 # -----------------------------------------------------------------------------
 # Likelihood evaluation
 
