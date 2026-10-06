@@ -17,6 +17,7 @@ BATCH="${BATCH:--1}"            # -1 = nanochat auto batch size; set explicitly 
 EXTRA="${EXTRA:-}"
 SAVE_EVERY="${SAVE_EVERY:-1000}"
 source .venv/bin/activate
+mkdir -p "$NANOCHAT_BASE_DIR/logs"
 
 echo "=== pretrain $TAG: model_type=$MODEL_TYPE depth=$DEPTH ratio=$RATIO nproc=$NPROC batch=$BATCH extra='$EXTRA'"
 torchrun --standalone --nproc_per_node=$NPROC -m scripts.base_train -- \

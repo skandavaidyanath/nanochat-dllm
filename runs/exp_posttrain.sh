@@ -11,6 +11,7 @@ RL="${RL:-0}"
 SFT_EXTRA="${SFT_EXTRA:-}"
 RL_EXTRA="${RL_EXTRA:-}"
 source .venv/bin/activate
+mkdir -p "$NANOCHAT_BASE_DIR/logs"
 
 echo "=== sft $TAG"
 torchrun --standalone --nproc_per_node=$NPROC -m scripts.chat_sft -- \
