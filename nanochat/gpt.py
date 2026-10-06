@@ -463,7 +463,12 @@ class GPT(nn.Module):
             group["initial_lr"] = group["lr"]
         return optimizer
 
-    def forward(self, idx, targets=None, kv_cache=None, loss_reduction='mean'):
+    def forward(self, idx, targets=None, kv_cache=None, loss_reduction='mean', select=None):
+        """
+        select: optional (rows, cols) pair of 1D LongTensors. If given, logits are computed only at those
+        (batch, position) pairs and returned as (n, vocab_size). Used by MDM evaluation/sampling, where only a
+        few positions per sequence are needed and the full (B, T, V) logits tensor would dominate memory.
+        """
         B, T = idx.size()
 
         # Grab the rotary embeddings for the current sequence length (they are of shape (1, seq_len, 1, head_dim/2))
@@ -513,6 +518,10 @@ class GPT(nn.Module):
         if x_backout is not None:
             x = x - self.backout_lambda.to(x.dtype) * x_backout
         x = norm(x)
+
+        if select is not None:
+            assert targets is None, "select is for inference only"
+            x = x[select[0], select[1]] # (n, C)
 
         # Forward the lm_head (compute logits)
         softcap = 15 # smoothly cap the logits to the range [-softcap, softcap]

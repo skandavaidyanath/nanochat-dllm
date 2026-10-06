@@ -103,6 +103,19 @@ def test_sdpa_bidirectional_window_matches_reference():
     assert torch.allclose(out_full, ref_full, atol=1e-5)
 
 
+def test_select_logits_match_full_forward():
+    for model_type in ("ar", "mdm"):
+        model = tiny_model(model_type)
+        ids = torch.randint(0, VOCAB - 1, (3, 20))
+        rows = torch.tensor([0, 0, 1, 2, 2])
+        cols = torch.tensor([0, 5, 19, 7, 3])
+        with torch.no_grad():
+            full = model(ids)
+            sparse = model(ids, select=(rows, cols))
+        assert sparse.shape == (5, VOCAB)
+        assert torch.allclose(full[rows, cols], sparse, atol=1e-5)
+
+
 # -----------------------------------------------------------------------------
 # Masking and loss
 
@@ -239,13 +252,15 @@ class ScriptedModel:
     def get_device(self):
         return DEVICE
 
-    def __call__(self, ids):
+    def __call__(self, ids, select=None):
         B, T = ids.shape
         logits = torch.zeros(B, T, self.vocab)
         for t in range(self.prompt_len, T):
             k = t - self.prompt_len
             tok = self.script[k] if k < len(self.script) else 0
             logits[:, t, tok] = 10.0
+        if select is not None:
+            return logits[select[0], select[1]]
         return logits
 
 

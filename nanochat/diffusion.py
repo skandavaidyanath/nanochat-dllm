@@ -159,7 +159,7 @@ def mdm_batches_from_ar_loader(loader):
 # Conditional scoring of continuations (used by CORE and categorical chat evals)
 
 @torch.no_grad()
-def score_continuations(model, input_ids, start_idxs, end_idxs, mask_id, method="l2r", batch_size=32):
+def score_continuations(model, input_ids, start_idxs, end_idxs, mask_id, method="l2r", max_tokens_per_chunk=16384):
     """
     For each row b, score tokens input_ids[b, s:e] given the clean prefix input_ids[b, :s].
     Positions >= e (padding) are always masked. Returns (losses, predictions) in the layout of
@@ -168,6 +168,8 @@ def score_continuations(model, input_ids, start_idxs, end_idxs, mask_id, method=
       method="l2r": x_j is scored with x_<j clean and x_>=j masked (exact NLL of the L2R-decoded model).
                     Costs one forward per scored token (batched).
       method="mf":  all of x_[s:e) masked at once, one forward per row (mean-field approximation).
+    Only the logits at scored positions are computed (GPT.forward(select=...)), and forwards are chunked to
+    at most max_tokens_per_chunk tokens so memory stays bounded for long few-shot prompts.
     """
     assert method in ("l2r", "mf")
     device = input_ids.device
@@ -175,29 +177,33 @@ def score_continuations(model, input_ids, start_idxs, end_idxs, mask_id, method=
     losses = torch.full((B, T), float("nan"), dtype=torch.float32, device=device)
     predictions = torch.full((B, T), -1, dtype=torch.long, device=device)
     pos_idx = torch.arange(T, device=device)
-    # build the list of (row, position-to-score, masked-from) variants
-    variants = []  # (b, j, mask_from)
+    # each variant is one noisy input row scored at one or more positions: (b, mask_from, [positions])
+    variants = []
     for b, (s, e) in enumerate(zip(start_idxs, end_idxs)):
         if method == "l2r":
-            variants.extend((b, j, j) for j in range(s, e))
+            variants.extend((b, j, [j]) for j in range(s, e))
         else:
-            variants.extend((b, j, s) for j in range(s, e))
-    for i0 in range(0, len(variants), batch_size):
-        chunk = variants[i0:i0 + batch_size]
+            variants.append((b, s, list(range(s, e))))
+    chunk_rows = max(1, max_tokens_per_chunk // T)
+    for i0 in range(0, len(variants), chunk_rows):
+        chunk = variants[i0:i0 + chunk_rows]
         rows = torch.stack([input_ids[b] for b, _, _ in chunk])  # (n, T)
-        mask_from = torch.tensor([m for _, _, m in chunk], device=device)
+        mask_from = torch.tensor([m for _, m, _ in chunk], device=device)
         ends = torch.tensor([end_idxs[b] for b, _, _ in chunk], device=device)
         masked = (pos_idx[None, :] >= mask_from[:, None]) | (pos_idx[None, :] >= ends[:, None])
         noisy = torch.where(masked, torch.full_like(rows, mask_id), rows)
-        logits = model(noisy)  # (n, T, V)
-        js = torch.tensor([j for _, j, _ in chunk], device=device)
-        logits_j = logits[torch.arange(len(chunk), device=device), js]  # (n, V)
-        targets_j = rows[torch.arange(len(chunk), device=device), js]
-        ce = F.cross_entropy(logits_j, targets_j, reduction="none")
-        pred = logits_j.argmax(dim=-1)
-        for n, (b, j, _) in enumerate(chunk):
-            losses[b, j - 1] = ce[n]
-            predictions[b, j - 1] = pred[n]
+        sel_rows = torch.tensor([n for n, (_, _, js) in enumerate(chunk) for _ in js], device=device)
+        sel_cols = torch.tensor([j for _, _, js in chunk for j in js], device=device)
+        logits_sel = model(noisy, select=(sel_rows, sel_cols))  # (num_scored, V)
+        targets_sel = rows[sel_rows, sel_cols]
+        ce = F.cross_entropy(logits_sel, targets_sel, reduction="none")
+        pred = logits_sel.argmax(dim=-1)
+        k = 0
+        for b, _, js in chunk:
+            for j in js:
+                losses[b, j - 1] = ce[k]
+                predictions[b, j - 1] = pred[k]
+                k += 1
     return losses, predictions
 
 
@@ -280,9 +286,8 @@ class DiffusionEngine:
                 still_masked = window & (seq == self.mask_id)
                 if not still_masked.any():
                     break
-                logits = self.model(seq)  # (B, L, V)
                 sel = still_masked.nonzero(as_tuple=True)  # only the still-masked window positions matter
-                logits_sel = logits[sel]  # (n, V)
+                logits_sel = self.model(seq, select=sel)  # (n, V): logits only at those positions
                 x0_sel = sample_next_token(logits_sel, rng, temperature, top_k).view(-1)
                 if self.remasking == "low_confidence":
                     scaled = logits_sel / temperature if temperature > 0 else logits_sel
