@@ -15,6 +15,7 @@ if [ -z "${SKIP_SETUP:-}" ]; then
     python -m scripts.tok_train --max-chars=2000000000
     python -m scripts.tok_eval
 fi
+source .venv/bin/activate
 python -m nanochat.dataset -n 170   # 4x d12 budget = 5.3B tokens ~ 160 shards at ~34M usable tokens/shard
 COMMON="DEPTH=12 NPROC=$NPROC BATCH=524288 SAVE_EVERY=500"
 have_base() { ls "$NANOCHAT_BASE_DIR/base_checkpoints/$1"/model_*.pt >/dev/null 2>&1; }
