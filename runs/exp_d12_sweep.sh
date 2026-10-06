@@ -1,7 +1,9 @@
 #!/bin/bash
-# Phase 1 at d12: AR vs MDM at matched tokens, MDM at 2x and 4x tokens, LR sweep for both, SFT on the best of each.
-# Everything uses a fixed 524,288-token batch so loss-vs-tokens curves are directly comparable.
-# Usage: NPROC=8 bash runs/exp_d12_sweep.sh   (set SKIP_SETUP=1 if data/tokenizer already exist)
+# Phase 1 at d12: AR vs MDM at matched tokens, SFT on both, MDM at 2x and 4x tokens, Muon-LR sweep for both.
+# Ordered so the most important results land first; every stage is skipped if its checkpoint already exists,
+# so the script can be re-run after an interruption. Fixed 524,288-token batch so loss-vs-tokens curves are
+# directly comparable. Needs ~160 shards for the 4x run (nanochat's loader would otherwise cycle the data).
+# Usage: NPROC=1 bash runs/exp_d12_sweep.sh   (set SKIP_SETUP=1 if venv/data/tokenizer already exist)
 set -euo pipefail
 export NANOCHAT_BASE_DIR="${NANOCHAT_BASE_DIR:-$HOME/.cache/nanochat}"
 NPROC="${NPROC:-8}"
@@ -10,26 +12,37 @@ if [ -z "${SKIP_SETUP:-}" ]; then
     [ -d ".venv" ] || uv venv
     uv sync --extra gpu
     source .venv/bin/activate
-    python -m nanochat.dataset -n 60   # d12 x4 tokens ~ 5.2B tokens ~ 55 shards
     python -m scripts.tok_train --max-chars=2000000000
     python -m scripts.tok_eval
 fi
+python -m nanochat.dataset -n 170   # 4x d12 budget = 5.3B tokens ~ 160 shards at ~34M usable tokens/shard
 COMMON="DEPTH=12 NPROC=$NPROC BATCH=524288 SAVE_EVERY=500"
+have_base() { ls "$NANOCHAT_BASE_DIR/base_checkpoints/$1"/model_*.pt >/dev/null 2>&1; }
+have_sft()  { ls "$NANOCHAT_BASE_DIR/chatsft_checkpoints/$1"/model_*.pt >/dev/null 2>&1; }
+pretrain() { # TAG MODEL_TYPE RATIO [EXTRA]
+    if have_base "$1"; then echo "=== skip pretrain $1 (checkpoint exists)"; return; fi
+    env $COMMON TAG="$1" MODEL_TYPE="$2" RATIO="$3" EXTRA="${4:-}" bash runs/exp_pretrain.sh
+}
+posttrain() { # TAG
+    if have_sft "$1"; then echo "=== skip posttrain $1 (checkpoint exists)"; return; fi
+    env TAG="$1" NPROC=$NPROC DBS=16 bash runs/exp_posttrain.sh
+}
 
-# 1) matched-token pair (nanochat default ratio 12)
-env $COMMON MODEL_TYPE=ar  RATIO=12 TAG=d12_ar  bash runs/exp_pretrain.sh
-env $COMMON MODEL_TYPE=mdm RATIO=12 TAG=d12_mdm bash runs/exp_pretrain.sh
+# 1) matched-token pair (nanochat default ratio 12) and post-training on both
+pretrain d12_ar  ar  12
+pretrain d12_mdm mdm 12
+posttrain d12_ar
+posttrain d12_mdm
 
-# 2) matrix-LR sweep (Muon LR, default 0.02) for both architectures
+# 2) MDM at 2x the AR token budget: does it cross the AR loss?
+pretrain d12_mdm_2x mdm 24
+
+# 3) Muon matrix-LR sweep (default 0.02) for both architectures
 for LR in 0.01 0.04; do
-    env $COMMON MODEL_TYPE=ar  RATIO=12 TAG=d12_ar_lr$LR  EXTRA="--matrix-lr=$LR" bash runs/exp_pretrain.sh
-    env $COMMON MODEL_TYPE=mdm RATIO=12 TAG=d12_mdm_lr$LR EXTRA="--matrix-lr=$LR" bash runs/exp_pretrain.sh
+    pretrain d12_ar_lr$LR  ar  12 "--matrix-lr=$LR"
+    pretrain d12_mdm_lr$LR mdm 12 "--matrix-lr=$LR"
 done
 
-# 3) MDM at 2x and 4x the AR token budget: where does it cross the AR loss?
-env $COMMON MODEL_TYPE=mdm RATIO=24 TAG=d12_mdm_2x bash runs/exp_pretrain.sh
-env $COMMON MODEL_TYPE=mdm RATIO=48 TAG=d12_mdm_4x bash runs/exp_pretrain.sh
-
-# 4) post-training on the matched pair (3 SFT seeds each are run by exp_d12_posttrain_seeds.sh)
-env TAG=d12_ar  NPROC=$NPROC bash runs/exp_posttrain.sh
-env TAG=d12_mdm NPROC=$NPROC bash runs/exp_posttrain.sh
+# 4) MDM at 4x tokens
+pretrain d12_mdm_4x mdm 48
+echo "===== D12 SWEEP DONE ====="
