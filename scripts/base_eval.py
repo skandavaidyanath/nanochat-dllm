@@ -34,7 +34,7 @@ from nanochat.checkpoint_manager import load_model
 from nanochat.core_eval import evaluate_task
 from nanochat.dataloader import tokenizing_distributed_data_loader_bos_bestfit
 from nanochat.loss_eval import evaluate_bpb
-from nanochat.engine import Engine
+from nanochat.diffusion import MASK_TOKEN, evaluate_bpb_mdm, mdm_batches_from_ar_loader, make_engine
 
 # -----------------------------------------------------------------------------
 # CORE evaluation
@@ -54,10 +54,11 @@ def place_eval_bundle(file_path):
     print0(f"Placed eval_bundle directory at {eval_bundle_dir}")
 
 
-def evaluate_core(model, tokenizer, device, max_per_task=-1):
+def evaluate_core(model, tokenizer, device, max_per_task=-1, mdm_score="l2r"):
     """
     Evaluate a base model on the CORE benchmark.
     Returns dict with results, centered_results, and core_metric.
+    mdm_score selects how MDM models score continuations ("l2r" exact, "mf" cheap), ignored for AR models.
     """
     base_dir = get_base_dir()
     eval_bundle_dir = os.path.join(base_dir, "eval_bundle")
@@ -92,7 +93,8 @@ def evaluate_core(model, tokenizer, device, max_per_task=-1):
             'task_type': task['icl_task_type'],
             'dataset_uri': task['dataset_uri'],
             'num_fewshot': task['num_fewshot'][0],
-            'continuation_delimiter': task.get('continuation_delimiter', ' ')
+            'continuation_delimiter': task.get('continuation_delimiter', ' '),
+            'mdm_score': mdm_score,
         }
         print0(f"Evaluating: {label} ({task_meta['num_fewshot']}-shot, type: {task_meta['task_type']})... ", end='')
 
@@ -134,6 +136,8 @@ def main():
     parser.add_argument('--device-batch-size', type=int, default=32, help='Per-device batch size for BPB evaluation')
     parser.add_argument('--split-tokens', type=int, default=40*524288, help='Number of tokens to evaluate per split for BPB')
     parser.add_argument('--device-type', type=str, default='', help='cuda|cpu|mps (empty = autodetect)')
+    parser.add_argument('--mdm-score', type=str, default='l2r', choices=['l2r', 'mf'], help='MDM only: CORE continuation scoring (l2r = exact left-to-right, mf = cheap mean-field)')
+    parser.add_argument('--mdm-mc', type=int, default=4, help='MDM only: number of Monte Carlo passes (different mask draws) averaged for the bpb estimates')
     args = parser.parse_args()
 
     # Parse evaluation modes
@@ -150,6 +154,9 @@ def main():
     model, tokenizer, meta = load_model("base", device, phase="eval", model_tag=args.model_tag, step=args.step)
     sequence_len = meta["model_config"]["sequence_len"]
     token_bytes = get_token_bytes(device=device)
+    is_mdm = model.config.model_type == "mdm"
+    mask_id = tokenizer.encode_special(MASK_TOKEN) if is_mdm else None
+    print0(f"Model type: {model.config.model_type}")
     model_name = f"base_model (step {meta['step']})"
     model_slug = f"base_model_{meta['step']:06d}"
 
@@ -177,7 +184,7 @@ def main():
                 "My favorite color is",
                 "If 5*x + 3 = 13, then x is",
             ]
-            engine = Engine(model, tokenizer)
+            engine = make_engine(model, tokenizer)
             print0("\nConditioned samples:")
             for prompt in prompts:
                 tokens = tokenizer(prompt, prepend="<|bos|>")
@@ -209,17 +216,26 @@ def main():
         steps = args.split_tokens // tokens_per_step
 
         for split_name in ["train", "val"]:
-            loader = tokenizing_distributed_data_loader_bos_bestfit(tokenizer, args.device_batch_size, sequence_len, split_name, device=device)
-            bpb = evaluate_bpb(model, loader, steps, token_bytes)
-            bpb_results[split_name] = bpb
-            print0(f"{split_name} bpb: {bpb:.6f}")
+            build_loader = lambda: tokenizing_distributed_data_loader_bos_bestfit(tokenizer, args.device_batch_size, sequence_len, split_name, device=device)
+            if is_mdm:
+                # average over several mask draws; "elbo" is an upper bound on the true bpb, "l2r" is the exact
+                # bpb of the left-to-right-decoded model (comparable to the AR number)
+                elbo = sum(evaluate_bpb_mdm(model, mdm_batches_from_ar_loader(build_loader()), steps, token_bytes, mask_id, mode="elbo", seed=s) for s in range(args.mdm_mc)) / args.mdm_mc
+                l2r = sum(evaluate_bpb_mdm(model, mdm_batches_from_ar_loader(build_loader()), steps, token_bytes, mask_id, mode="l2r", seed=s) for s in range(args.mdm_mc)) / args.mdm_mc
+                bpb_results[split_name] = elbo
+                bpb_results[f"{split_name}_l2r"] = l2r
+                print0(f"{split_name} bpb (ELBO, upper bound): {elbo:.6f} | bpb (L2R): {l2r:.6f}")
+            else:
+                bpb = evaluate_bpb(model, build_loader(), steps, token_bytes)
+                bpb_results[split_name] = bpb
+                print0(f"{split_name} bpb: {bpb:.6f}")
 
     # --- CORE evaluation ---
     if 'core' in eval_modes:
         print0("\n" + "="*80)
         print0("CORE Evaluation")
         print0("="*80)
-        core_results = evaluate_core(model, tokenizer, device, max_per_task=args.max_per_task)
+        core_results = evaluate_core(model, tokenizer, device, max_per_task=args.max_per_task, mdm_score=args.mdm_score)
 
         # Write CSV output
         if ddp_rank == 0:

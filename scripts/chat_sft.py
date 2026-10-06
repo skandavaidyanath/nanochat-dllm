@@ -14,15 +14,14 @@ import argparse
 import os
 os.environ["PYTORCH_ALLOC_CONF"] = "expandable_segments:True"
 import time
-import wandb
 import torch
-from nanochat.common import compute_init, compute_cleanup, print0, DummyWandb, get_base_dir, autodetect_device_type, get_peak_flops, COMPUTE_DTYPE, COMPUTE_DTYPE_REASON, is_ddp_initialized
+from nanochat.common import compute_init, compute_cleanup, print0, get_metrics_logger, get_base_dir, autodetect_device_type, get_peak_flops, COMPUTE_DTYPE, COMPUTE_DTYPE_REASON, is_ddp_initialized
 from nanochat.tokenizer import get_token_bytes
 from nanochat.checkpoint_manager import save_checkpoint, load_model, load_optimizer_state
 from nanochat.loss_eval import evaluate_bpb
 import torch.distributed as dist
 from nanochat.flash_attention import HAS_FA3
-from nanochat.engine import Engine
+from nanochat.diffusion import MASK_TOKEN, mdm_loss, evaluate_bpb_mdm, make_engine
 from scripts.chat_eval import run_chat_eval
 
 from tasks.common import TaskMixture
@@ -34,7 +33,7 @@ from tasks.smoltalk import SmolTalk
 # CLI arguments
 parser = argparse.ArgumentParser(description="Supervised fine-tuning (SFT) the model")
 # Logging
-parser.add_argument("--run", type=str, default="dummy", help="wandb run name ('dummy' disables wandb logging)")
+parser.add_argument("--run", type=str, default="dummy", help="run name for TensorBoard/JSONL logging ('dummy' disables logging)")
 # Runtime
 parser.add_argument("--device-type", type=str, default="", help="cuda|cpu|mps (empty = autodetect)")
 # Model loading
@@ -82,9 +81,8 @@ if device_type == "cuda":
 else:
     gpu_peak_flops = float('inf')  # MFU not meaningful for CPU/MPS
 
-# wandb logging init
-use_dummy_wandb = args.run == "dummy" or not master_process
-wandb_run = DummyWandb() if use_dummy_wandb else wandb.init(project="nanochat-sft", name=args.run, config=user_config)
+# metrics logging init (TensorBoard + JSONL)
+wandb_run = get_metrics_logger("nanochat-sft", args.run, user_config, master_process)
 
 # Flash Attention status
 if not HAS_FA3:
@@ -92,6 +90,9 @@ if not HAS_FA3:
 
 # Load the model and tokenizer
 model, tokenizer, meta = load_model("base", device, phase="train", model_tag=args.model_tag, step=args.model_step)
+is_mdm = model.config.model_type == "mdm"
+mask_id = tokenizer.encode_special(MASK_TOKEN) if is_mdm else None
+print0(f"Model type: {model.config.model_type}")
 
 # Inherit training hyperparameters from pretrained checkpoint (None = inherit, explicit value = override)
 pretrain_user_config = meta.get("user_config", {})
@@ -279,6 +280,13 @@ def sft_data_generator_bos_bestfit(split, buffer_size=100):
         # Build tensors
         use_cuda = device_type == "cuda"
         batch_tensor = torch.tensor(rows, dtype=torch.long, pin_memory=use_cuda)
+        if is_mdm:
+            # MDM: the model sees the clean row with assistant tokens randomly masked and predicts them in place.
+            # No shift. Only assistant tokens (mask=1; this excludes prompts, tool outputs and padding) are maskable.
+            ids = batch_tensor[:, :-1].to(device=device, non_blocking=use_cuda).contiguous()
+            maskable = (torch.tensor(mask_rows, dtype=torch.int8)[:, :-1] == 1).to(device=device, non_blocking=use_cuda).contiguous()
+            yield ids, maskable
+            continue
         inputs = batch_tensor[:, :-1].to(device=device, dtype=torch.int32, non_blocking=use_cuda).contiguous()
         targets = batch_tensor[:, 1:].to(device=device, dtype=torch.int64, non_blocking=use_cuda).contiguous()
 
@@ -341,7 +349,10 @@ while True:
         model.eval()
         val_loader = build_val_loader()
         eval_steps = args.eval_tokens // (args.device_batch_size * args.max_seq_len * ddp_world_size)
-        val_bpb = evaluate_bpb(model, val_loader, eval_steps, token_bytes)
+        if is_mdm:
+            val_bpb = evaluate_bpb_mdm(model, val_loader, eval_steps, token_bytes, mask_id, mode="elbo")
+        else:
+            val_bpb = evaluate_bpb(model, val_loader, eval_steps, token_bytes)
         print0(f"Step {step:05d} | Validation bpb: {val_bpb:.4f}")
         if val_bpb < min_val_bpb:
             min_val_bpb = val_bpb
@@ -358,7 +369,7 @@ while True:
     chatcore_results = {}
     if args.chatcore_every > 0 and (last_step or (step > 0 and step % args.chatcore_every == 0)):
         model.eval()
-        engine = Engine(orig_model, tokenizer)
+        engine = make_engine(orig_model, tokenizer)
         all_tasks = ['ARC-Easy', 'ARC-Challenge', 'MMLU', 'GSM8K', 'HumanEval']
         categorical_tasks = {'ARC-Easy', 'ARC-Challenge', 'MMLU'}
         baseline_accuracies = {
@@ -408,6 +419,7 @@ while True:
                     "n_kv_head": model.config.n_kv_head,
                     "n_embd": model.config.n_embd,
                     "window_pattern": model.config.window_pattern,
+                    "model_type": model.config.model_type,
                 },
                 "user_config": user_config, # inputs to the training script
             },
@@ -423,7 +435,7 @@ while True:
     synchronize()
     t0 = time.time()
     for micro_step in range(grad_accum_steps):
-        loss = model(x, y)
+        loss = mdm_loss(model, x, y, mask_id) if is_mdm else model(x, y) # for MDM, (x, y) = (clean ids, maskable)
         train_loss = loss.detach() # for logging
         loss = loss / grad_accum_steps # each .backward() is a grad sum => normalize loss here
         if scaler is not None:

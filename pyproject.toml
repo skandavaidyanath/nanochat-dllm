@@ -11,6 +11,7 @@ dependencies = [
     "psutil>=7.1.0",
     "pyarrow>=21.0.0",
     "rustbpe>=0.1.0",
+    "tensorboard>=2.18.0",
     "tiktoken>=0.11.0",
     "torch==2.9.1",
     "wandb>=0.21.3",

@@ -15,7 +15,7 @@ import torch.distributed as dist
 
 from nanochat.common import compute_init, compute_cleanup, get_dist_info, print0, autodetect_device_type
 from nanochat.checkpoint_manager import load_model
-from nanochat.engine import Engine
+from nanochat.diffusion import MASK_TOKEN, make_engine
 
 from tasks.humaneval import HumanEval
 from tasks.mmlu import MMLU
@@ -89,6 +89,8 @@ def run_categorical_eval(task_object, tokenizer, model, batch_size, max_problems
     ddp, ddp_rank, ddp_local_rank, ddp_world_size = get_dist_info()
     device = model.get_device()
     bos = tokenizer.get_bos_token_id() # use BOS as pad token is ok, these positions are ignored
+    is_mdm = getattr(model.config, "model_type", "ar") == "mdm"
+    mask_id = tokenizer.encode_special(MASK_TOKEN) if is_mdm else None
 
     # We'll process batches of independent problems at a time because there is no sampling needed
     num_problems = len(task_object) if max_problems is None else min(len(task_object), max_problems)
@@ -105,8 +107,14 @@ def run_categorical_eval(task_object, tokenizer, model, batch_size, max_problems
         conversations = [task_object[ii] for ii in range(i0, i1)]
         prompt_ids = [tokenizer.render_for_completion(conversation) for conversation in conversations] # TODO: remake the way this works
         max_length = max(len(ids) for ids in prompt_ids)
-        answer_time_positions = [len(ids) - 1 for ids in prompt_ids] # where the last token is (and the predicted answer)
-        padded_prompt_ids = [ids + [bos] * (max_length - len(ids)) for ids in prompt_ids]
+        if is_mdm:
+            # MDM predicts the answer at an appended <|mask|> position; pad with <|mask|> too since
+            # bidirectional attention sees the padding
+            answer_time_positions = [len(ids) for ids in prompt_ids]
+            padded_prompt_ids = [ids + [mask_id] * (max_length + 1 - len(ids)) for ids in prompt_ids]
+        else:
+            answer_time_positions = [len(ids) - 1 for ids in prompt_ids] # where the last token is (and the predicted answer)
+            padded_prompt_ids = [ids + [bos] * (max_length - len(ids)) for ids in prompt_ids]
         prompt_ids = torch.tensor(padded_prompt_ids, dtype=torch.long, device=device)
 
         # Get the logits for the whole batch of conversations in parallel (efficiency win here)
@@ -196,7 +204,7 @@ if __name__ == "__main__":
     ddp, ddp_rank, ddp_local_rank, ddp_world_size, device = compute_init(device_type)
 
     model, tokenizer, meta = load_model(args.source, device, phase="eval", model_tag=args.model_tag, step=args.step)
-    engine = Engine(model, tokenizer)
+    engine = make_engine(model, tokenizer)
 
     # Get the tasks to evaluate on
     all_tasks = ['ARC-Easy', 'ARC-Challenge', 'MMLU', 'GSM8K', 'HumanEval']

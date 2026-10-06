@@ -222,6 +222,69 @@ class DummyWandb:
     def finish(self):
         pass
 
+
+class MetricsLogger:
+    """
+    TensorBoard + JSONL metrics logger with the same .log(dict) / .finish() API as a wandb run.
+    Logs land in $NANOCHAT_BASE_DIR/logs/<project>/<run>/ (events file for TensorBoard, metrics.jsonl
+    for plotting, config.json for the run arguments). Set NANOCHAT_WANDB=1 to additionally mirror to wandb.
+    """
+    def __init__(self, project, run, config=None):
+        import json
+        import time
+        from torch.utils.tensorboard import SummaryWriter
+        self.log_dir = os.path.join(get_base_dir(), "logs", project, run)
+        os.makedirs(self.log_dir, exist_ok=True)
+        self.writer = SummaryWriter(self.log_dir)
+        self.jsonl = open(os.path.join(self.log_dir, "metrics.jsonl"), "a", encoding="utf-8")
+        self._json = json
+        self._time = time
+        self._auto_step = 0
+        if config is not None:
+            with open(os.path.join(self.log_dir, "config.json"), "w", encoding="utf-8") as f:
+                json.dump(config, f, indent=2, default=str)
+        self.wandb_run = None
+        if os.environ.get("NANOCHAT_WANDB", "0") == "1":
+            import wandb
+            self.wandb_run = wandb.init(project=project, name=run, config=config)
+        logger.info(f"Logging metrics to {self.log_dir}")
+
+    def log(self, data):
+        step = data.get("step", self._auto_step)
+        self._auto_step = max(self._auto_step, int(step) + 1)
+        flat = {}
+        def flatten(prefix, value):
+            if isinstance(value, dict):
+                for k, v in value.items():
+                    flatten(f"{prefix}/{k}" if prefix else str(k), v)
+            else:
+                flat[prefix] = value
+        for k, v in data.items():
+            if k != "step":
+                flatten(k, v)
+        for k, v in flat.items():
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                self.writer.add_scalar(k, v, step)
+        record = {"step": step, "time": self._time.time(), **flat}
+        self.jsonl.write(self._json.dumps(record, default=str) + "\n")
+        self.jsonl.flush()
+        if self.wandb_run is not None:
+            self.wandb_run.log(data)
+
+    def finish(self):
+        self.writer.flush()
+        self.writer.close()
+        self.jsonl.close()
+        if self.wandb_run is not None:
+            self.wandb_run.finish()
+
+
+def get_metrics_logger(project, run, config=None, master_process=True):
+    """'dummy' run name (or a non-master rank) disables logging, otherwise TensorBoard + JSONL."""
+    if run == "dummy" or not master_process:
+        return DummyWandb()
+    return MetricsLogger(project, run, config)
+
 # hardcoded BF16 peak flops for various GPUs
 # inspired by torchtitan: https://github.com/pytorch/torchtitan/blob/main/torchtitan/tools/utils.py
 # and PR: https://github.com/karpathy/nanochat/pull/147

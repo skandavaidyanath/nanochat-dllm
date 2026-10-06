@@ -74,14 +74,33 @@ USE_FA3 = _resolve_use_fa3()
 # =============================================================================
 # SDPA helpers
 # =============================================================================
-def _sdpa_attention(q, k, v, window_size, enable_gqa):
+def _sdpa_attention(q, k, v, window_size, enable_gqa, causal=True):
     """
     SDPA attention with sliding window support.
     q, k, v are (B, H, T, D) format.
+    causal=False gives bidirectional attention (MDM models), with an optional symmetric
+    window_size=(left, right): query i attends to keys j with i-left <= j <= i+right.
     """
     Tq = q.size(2)
     Tk = k.size(2)
     window = window_size[0]
+
+    if not causal:
+        assert Tq == Tk, "bidirectional attention is only used without a KV cache (Tq == Tk)"
+        left, right = window_size
+        full_left = left < 0 or left >= Tq
+        full_right = right < 0 or right >= Tq
+        if full_left and full_right:
+            return F.scaled_dot_product_attention(q, k, v, is_causal=False, enable_gqa=enable_gqa)
+        device = q.device
+        row_idx = torch.arange(Tq, device=device).unsqueeze(1)
+        col_idx = torch.arange(Tk, device=device).unsqueeze(0)
+        mask = torch.ones(Tq, Tk, dtype=torch.bool, device=device)
+        if not full_left:
+            mask = mask & ((row_idx - col_idx) <= left)
+        if not full_right:
+            mask = mask & ((col_idx - row_idx) <= right)
+        return F.scaled_dot_product_attention(q, k, v, attn_mask=mask, enable_gqa=enable_gqa)
 
     # Full context, same length
     if (window < 0 or window >= Tq) and Tq == Tk:
@@ -132,7 +151,7 @@ def flash_attn_func(q, k, v, causal=False, window_size=(-1, -1)):
     k = k.transpose(1, 2)
     v = v.transpose(1, 2)
     enable_gqa = q.size(1) != k.size(1)
-    y = _sdpa_attention(q, k, v, window_size, enable_gqa)
+    y = _sdpa_attention(q, k, v, window_size, enable_gqa, causal=causal)
     return y.transpose(1, 2)  # back to (B, T, H, D)
 
 
@@ -180,7 +199,8 @@ def flash_attn_with_kvcache(q, k_cache, v_cache, k=None, v=None, cache_seqlens=N
     v_sdpa = v_full.transpose(1, 2)
 
     enable_gqa = q_sdpa.size(1) != k_sdpa.size(1)
-    y_sdpa = _sdpa_attention(q_sdpa, k_sdpa, v_sdpa, window_size, enable_gqa)
+    assert causal, "KV cache path is causal-only"
+    y_sdpa = _sdpa_attention(q_sdpa, k_sdpa, v_sdpa, window_size, enable_gqa, causal=True)
 
     return y_sdpa.transpose(1, 2)  # back to (B, T, H, D)
 

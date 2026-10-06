@@ -21,17 +21,16 @@ import argparse
 from dataclasses import asdict
 from contextlib import contextmanager
 
-import wandb
 import torch
 import torch.distributed as dist
 
 from nanochat.gpt import GPT, GPTConfig, Linear
 from nanochat.dataloader import tokenizing_distributed_data_loader_bos_bestfit, tokenizing_distributed_data_loader_with_state_bos_bestfit
-from nanochat.common import compute_init, compute_cleanup, print0, DummyWandb, print_banner, get_base_dir, autodetect_device_type, get_peak_flops, COMPUTE_DTYPE, COMPUTE_DTYPE_REASON, is_ddp_initialized
+from nanochat.common import compute_init, compute_cleanup, print0, get_metrics_logger, print_banner, get_base_dir, autodetect_device_type, get_peak_flops, COMPUTE_DTYPE, COMPUTE_DTYPE_REASON, is_ddp_initialized
 from nanochat.tokenizer import get_tokenizer, get_token_bytes
 from nanochat.checkpoint_manager import save_checkpoint, load_checkpoint
 from nanochat.loss_eval import evaluate_bpb
-from nanochat.engine import Engine
+from nanochat.diffusion import MASK_TOKEN, mdm_loss, evaluate_bpb_mdm, mdm_batches_from_ar_loader, make_engine
 from nanochat.flash_attention import HAS_FA3
 from scripts.base_eval import evaluate_core
 print_banner()
@@ -40,9 +39,12 @@ print_banner()
 # CLI arguments
 parser = argparse.ArgumentParser(description="Pretrain base model")
 # Logging
-parser.add_argument("--run", type=str, default="dummy", help="wandb run name ('dummy' disables wandb logging)")
+parser.add_argument("--run", type=str, default="dummy", help="run name for TensorBoard/JSONL logging ('dummy' disables logging)")
 # Runtime
 parser.add_argument("--device-type", type=str, default="", help="cuda|cpu|mps (empty = autodetect)")
+# Model type: autoregressive (default) or masked diffusion (dLLM)
+parser.add_argument("--model-type", type=str, default="ar", choices=["ar", "mdm"], help="ar = next-token LLM, mdm = masked diffusion LLM")
+parser.add_argument("--core-metric-mdm-score", type=str, default="mf", choices=["mf", "l2r"], help="MDM continuation scoring for the in-training CORE eval (mf = cheap mean-field, l2r = exact left-to-right)")
 # FP8 training
 parser.add_argument("--fp8", action="store_true", help="enable FP8 training (requires H100+ GPU)")
 parser.add_argument("--fp8-recipe", type=str, default="tensorwise", choices=["rowwise", "tensorwise"], help="FP8 scaling recipe: tensorwise (faster, recommended) or rowwise (more accurate but slower)")
@@ -95,9 +97,8 @@ else:
     gpu_peak_flops = float('inf')  # MFU not meaningful for CPU/MPS
 print0(f"COMPUTE_DTYPE: {COMPUTE_DTYPE} ({COMPUTE_DTYPE_REASON})")
 
-# wandb logging init
-use_dummy_wandb = args.run == "dummy" or not master_process
-wandb_run = DummyWandb() if use_dummy_wandb else wandb.init(project="nanochat", name=args.run, config=user_config)
+# metrics logging init (TensorBoard + JSONL, see nanochat/common.py)
+wandb_run = get_metrics_logger("nanochat", args.run, user_config, master_process)
 
 # Flash Attention status
 from nanochat.flash_attention import USE_FA3
@@ -122,6 +123,9 @@ tokenizer = get_tokenizer()
 token_bytes = get_token_bytes(device=device)
 vocab_size = tokenizer.get_vocab_size()
 print0(f"Vocab size: {vocab_size:,}")
+is_mdm = args.model_type == "mdm"
+mask_id = tokenizer.encode_special(MASK_TOKEN) if is_mdm else None
+print0(f"Model type: {args.model_type}" + (f" (mask token id {mask_id})" if is_mdm else ""))
 
 # -----------------------------------------------------------------------------
 # Initialize the Model
@@ -136,7 +140,7 @@ def build_model_meta(depth):
     config = GPTConfig(
         sequence_len=args.max_seq_len, vocab_size=vocab_size,
         n_layer=depth, n_head=num_heads, n_kv_head=num_heads, n_embd=model_dim,
-        window_pattern=args.window_pattern,
+        window_pattern=args.window_pattern, model_type=args.model_type,
     )
     with torch.device("meta"):
         model_meta = GPT(config)
@@ -420,11 +424,19 @@ while True:
     # once in a while: evaluate the val bpb (all ranks participate)
     if args.eval_every > 0 and (last_step or step % args.eval_every == 0):
         model.eval()
-        val_loader = build_val_loader()
         eval_steps = args.eval_tokens // (args.device_batch_size * args.max_seq_len * ddp_world_size)
+        extra_val = {}
         with disable_fp8(model):
-            val_bpb = evaluate_bpb(model, val_loader, eval_steps, token_bytes)
-        print0(f"Step {step:05d} | Validation bpb: {val_bpb:.6f}")
+            if is_mdm:
+                # val/bpb is the negative-ELBO bpb (upper bound on NLL); val/bpb_l2r is the exact NLL of the
+                # left-to-right-decoded MDM, directly comparable to the AR val/bpb
+                val_bpb = evaluate_bpb_mdm(model, mdm_batches_from_ar_loader(build_val_loader()), eval_steps, token_bytes, mask_id, mode="elbo")
+                val_bpb_l2r = evaluate_bpb_mdm(model, mdm_batches_from_ar_loader(build_val_loader()), eval_steps, token_bytes, mask_id, mode="l2r")
+                extra_val["val/bpb_l2r"] = val_bpb_l2r
+                print0(f"Step {step:05d} | Validation bpb (ELBO): {val_bpb:.6f} | bpb (L2R): {val_bpb_l2r:.6f}")
+            else:
+                val_bpb = evaluate_bpb(model, build_val_loader(), eval_steps, token_bytes)
+                print0(f"Step {step:05d} | Validation bpb: {val_bpb:.6f}")
         if val_bpb < min_val_bpb:
             min_val_bpb = val_bpb
         wandb_run.log({
@@ -432,6 +444,7 @@ while True:
             "total_training_flops": flops_so_far,
             "total_training_time": total_training_time,
             "val/bpb": val_bpb,
+            **extra_val,
         })
         model.train()
 
@@ -442,7 +455,7 @@ while True:
     if args.core_metric_every > 0 and (last_step or (step > 0 and step % args.core_metric_every == 0)):
         model.eval()
         with disable_fp8(orig_model):
-            results = evaluate_core(orig_model, tokenizer, device, max_per_task=args.core_metric_max_per_task)
+            results = evaluate_core(orig_model, tokenizer, device, max_per_task=args.core_metric_max_per_task, mdm_score=args.core_metric_mdm_score)
         print0(f"Step {step:05d} | CORE metric: {results['core_metric']:.4f}")
         wandb_run.log({
             "step": step,
@@ -465,7 +478,7 @@ while True:
             "My favorite color is",
             "If 5*x + 3 = 13, then x is",
         ]
-        engine = Engine(orig_model, tokenizer) # use orig_model to avoid recompilation
+        engine = make_engine(orig_model, tokenizer) # use orig_model to avoid recompilation
         for prompt in prompts:
             tokens = tokenizer(prompt, prepend="<|bos|>")
             with disable_fp8(orig_model):
@@ -508,7 +521,11 @@ while True:
     synchronize()
     t0 = time.time()
     for micro_step in range(grad_accum_steps):
-        loss = model(x, y)
+        if is_mdm:
+            # masked diffusion loss on the clean row x (every token is maskable in pretraining); y is unused
+            loss = mdm_loss(model, x, torch.ones_like(x, dtype=torch.bool), mask_id)
+        else:
+            loss = model(x, y)
         train_loss = loss.detach() # for logging
         loss = loss / grad_accum_steps # each .backward() is a grad sum => normalize loss here
         if scaler is not None:

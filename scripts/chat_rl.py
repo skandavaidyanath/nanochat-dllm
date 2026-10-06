@@ -19,19 +19,18 @@ torchrun --standalone --nproc_per_node=8 -m scripts.chat_rl -- --run=default
 import argparse
 import os
 import itertools
-import wandb
 import torch
 import torch.distributed as dist
-from nanochat.common import compute_init, compute_cleanup, print0, get_base_dir, DummyWandb, autodetect_device_type
+from nanochat.common import compute_init, compute_cleanup, print0, get_base_dir, get_metrics_logger, autodetect_device_type
 from nanochat.checkpoint_manager import save_checkpoint, load_model
-from nanochat.engine import Engine
+from nanochat.diffusion import MASK_TOKEN, mdm_loss, make_engine
 from tasks.gsm8k import GSM8K
 
 # -----------------------------------------------------------------------------
 # CLI arguments
 parser = argparse.ArgumentParser(description="Reinforcement learning on GSM8K")
 # Logging
-parser.add_argument("--run", type=str, default="dummy", help="wandb run name ('dummy' disables wandb logging)")
+parser.add_argument("--run", type=str, default="dummy", help="run name for TensorBoard/JSONL logging ('dummy' disables logging)")
 # Runtime
 parser.add_argument("--device-type", type=str, default="", help="cuda|cpu|mps (empty = autodetect)")
 # Model loading
@@ -39,6 +38,7 @@ parser.add_argument("--model-tag", type=str, default=None, help="model tag to lo
 parser.add_argument("--model-step", type=int, default=None, help="model step to load from")
 # Training horizon
 parser.add_argument("--num-epochs", type=int, default=1, help="number of epochs over GSM8K")
+parser.add_argument("--num-steps", type=int, default=-1, help="override the number of optimization steps (-1 = derive from epochs)")
 # Batch sizes / sampling
 parser.add_argument("--device-batch-size", type=int, default=8, help="max batch size per forward pass")
 parser.add_argument("--examples-per-step", type=int, default=16, help="total examples per optimization step across all ranks")
@@ -66,13 +66,15 @@ device_type = autodetect_device_type() if args.device_type == "" else args.devic
 ddp, ddp_rank, ddp_local_rank, ddp_world_size, device = compute_init(device_type)
 master_process = ddp_rank == 0 # this process will do logging, checkpointing etc.
 
-# wandb logging init
-use_dummy_wandb = args.run == "dummy" or not master_process
-wandb_run = DummyWandb() if use_dummy_wandb else wandb.init(project="nanochat-rl", name=args.run, config=user_config)
+# metrics logging init (TensorBoard + JSONL)
+wandb_run = get_metrics_logger("nanochat-rl", args.run, user_config, master_process)
 
 # Init model and tokenizer
 model, tokenizer, meta = load_model("sft", device, phase="eval", model_tag=args.model_tag, step=args.model_step)
-engine = Engine(model, tokenizer) # for sampling rollouts
+engine = make_engine(model, tokenizer) # for sampling rollouts (DiffusionEngine for MDM models)
+is_mdm = model.config.model_type == "mdm"
+mask_id = tokenizer.encode_special(MASK_TOKEN) if is_mdm else None
+print0(f"Model type: {model.config.model_type}")
 
 # -----------------------------------------------------------------------------
 # Rollout / sampling generator loop that yields batches of examples for training
@@ -80,6 +82,8 @@ engine = Engine(model, tokenizer) # for sampling rollouts
 train_task = GSM8K(subset="main", split="train")
 val_task = GSM8K(subset="main", split="test")
 num_steps = (len(train_task) // args.examples_per_step) * args.num_epochs
+if args.num_steps > 0:
+    num_steps = args.num_steps
 print0(f"Calculated number of steps: {num_steps}")
 
 @torch.no_grad()
@@ -132,10 +136,16 @@ def get_batch():
         # Stack up the sequences and masks into PyTorch tensors
         ids = torch.tensor(padded_generated_token_sequences, dtype=torch.long, device=device)
         mask_ids = torch.tensor(padded_masks, dtype=torch.long, device=device)
-        # Generate autoregressive inputs and targets to the Transformer
-        inputs = ids[:, :-1]
-        targets = ids[:, 1:].clone() # clone to avoid in-place modification:
-        targets[mask_ids[:, 1:] == 0] = -1 # <-- inplace modification right here. -1 is the ignore index
+        if is_mdm:
+            # MDM: "targets" is the maskable mask (sampled tokens only); the ELBO of the completion is
+            # estimated by randomly masking those tokens, see the training loop below
+            inputs = ids
+            targets = (mask_ids == 1)
+        else:
+            # Generate autoregressive inputs and targets to the Transformer
+            inputs = ids[:, :-1]
+            targets = ids[:, 1:].clone() # clone to avoid in-place modification:
+            targets[mask_ids[:, 1:] == 0] = -1 # <-- inplace modification right here. -1 is the ignore index
         # NOTE also that the Engine returns mask=0 for BOTH the prompt tokens AND the tool use tokens.
         # So we will (correctly) end up not training on the prompt tokens, or the tool use forced tokens.
         rewards = torch.tensor(rewards, dtype=torch.float, device=device)
@@ -260,12 +270,20 @@ for step in range(num_steps):
             targets = targets_all[b0:b1]
             rewards = rewards_all[b0:b1]
             advantages = advantages_all[b0:b1]
-            # Calculate log probabilities. Note that the loss calculates NLL = -logp, so we negate
-            logp = -model(inputs, targets, loss_reduction='none').view_as(inputs) # (B, T)
-            # Calculate the PG objective. Note that ignore_index=-1 ensures that invalid tokens have loss 0.
+            if is_mdm:
+                # MDM has no tractable sequence log-prob. Use the per-token negative ELBO estimate (CE/p at randomly
+                # masked completion tokens, 0 elsewhere) as the surrogate for log p, as in diffu-GRPO / LLaDA 1.5.
+                loss_tok, _ = mdm_loss(model, inputs, targets, mask_id, reduction='none')
+                logp = -loss_tok # (B, T)
+                num_valid = targets.sum().clamp(min=1)
+            else:
+                # Calculate log probabilities. Note that the loss calculates NLL = -logp, so we negate
+                logp = -model(inputs, targets, loss_reduction='none').view_as(inputs) # (B, T)
+                # ignore_index=-1 ensures that invalid tokens have loss 0.
+                num_valid = (targets >= 0).sum().clamp(min=1)
+            # Calculate the PG objective.
             pg_obj = (logp * advantages.unsqueeze(-1)).sum()
             # normalize by the number of valid tokens, number of passes, and examples_per_rank
-            num_valid = (targets >= 0).sum().clamp(min=1)
             pg_obj = pg_obj / (num_valid * num_passes * examples_per_rank)
             # Note, there is no need to add PPO ratio+clip because we are on policy
             # Finally, formulate the loss that we want to minimize (instead of objective we wish to maximize)

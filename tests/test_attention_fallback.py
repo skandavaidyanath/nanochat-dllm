@@ -98,6 +98,19 @@ class TestFA3VsSDPA:
         max_diff, mean_diff = assert_close(y_fa3, y_sdpa, "sliding_window")
         print(f"sliding_window: max_diff={max_diff:.6f}, mean_diff={mean_diff:.6f}")
 
+    def test_bidirectional_full_and_window(self):
+        """Bidirectional attention (MDM models): full context and symmetric sliding window."""
+        B, T, H, D = 2, 128, 4, 32
+        q = torch.randn(B, T, H, D, device=self.DEVICE, dtype=self.DTYPE)
+        k = torch.randn(B, T, H, D, device=self.DEVICE, dtype=self.DTYPE)
+        v = torch.randn(B, T, H, D, device=self.DEVICE, dtype=self.DTYPE)
+        for window_size in [(T, T), (32, 32)]:
+            def run():
+                return flash_attn.flash_attn_func(q, k, v, causal=False, window_size=window_size)
+            y_fa3, y_sdpa = run_both_impls(run)
+            max_diff, mean_diff = assert_close(y_fa3, y_sdpa, f"bidirectional_{window_size}")
+            print(f"bidirectional_{window_size}: max_diff={max_diff:.6f}, mean_diff={mean_diff:.6f}")
+
     def test_gqa(self):
         """Group Query Attention (fewer KV heads than Q heads)."""
         B, T, D = 2, 64, 32

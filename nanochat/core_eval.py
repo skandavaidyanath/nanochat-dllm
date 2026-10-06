@@ -11,6 +11,8 @@ from jinja2 import Template
 import torch
 import torch.distributed as dist
 
+from nanochat.diffusion import MASK_TOKEN, score_continuations
+
 # -----------------------------------------------------------------------------
 # Prompt rendering utilities
 
@@ -177,7 +179,7 @@ def evaluate_example(idx, model, tokenizer, data, device, task_meta):
     if num_fewshot > 0:
         rng = random.Random(1234 + idx)
         available_indices = [i for i in range(len(data)) if i != idx]
-        fewshot_indices = rng.sample(available_indices, num_fewshot)
+        fewshot_indices = rng.sample(available_indices, min(num_fewshot, len(available_indices))) # min() only matters for tiny smoke-test subsets
         fewshot_examples = [data[i] for i in fewshot_indices]
 
     # Render prompts and batch sequences based on task type
@@ -212,13 +214,20 @@ def evaluate_example(idx, model, tokenizer, data, device, task_meta):
                 new_end_idxs.append(e)
         tokens, start_idxs, end_idxs = new_tokens, new_start_idxs, new_end_idxs
 
-    # Stack up all the sequences into a batch
-    pad_token_id = tokenizer.get_bos_token_id() # use BOS as pad token is ok
-    input_ids = stack_sequences(tokens, pad_token_id)
-    input_ids = input_ids.to(device)
-
-    # Forward the model, get the autoregressive loss and argmax prediction at each token
-    losses, predictions = forward_model(model, input_ids)
+    is_mdm = getattr(model.config, "model_type", "ar") == "mdm"
+    if is_mdm:
+        # MDM: pad with <|mask|> (bidirectional attention would otherwise see the padding) and score the
+        # continuation tokens conditionally, see nanochat.diffusion.score_continuations
+        mask_id = tokenizer.encode_special(MASK_TOKEN)
+        input_ids = stack_sequences(tokens, mask_id).to(device)
+        losses, predictions = score_continuations(model, input_ids, start_idxs, end_idxs, mask_id, method=task_meta.get("mdm_score", "l2r"))
+    else:
+        # Stack up all the sequences into a batch
+        pad_token_id = tokenizer.get_bos_token_id() # use BOS as pad token is ok
+        input_ids = stack_sequences(tokens, pad_token_id)
+        input_ids = input_ids.to(device)
+        # Forward the model, get the autoregressive loss and argmax prediction at each token
+        losses, predictions = forward_model(model, input_ids)
 
     # See if the losses/predictions come out correctly
     if task_type == 'language_modeling':

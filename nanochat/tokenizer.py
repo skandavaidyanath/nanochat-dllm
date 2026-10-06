@@ -18,6 +18,8 @@ SPECIAL_TOKENS = [
     "<|python_end|>",
     "<|output_start|>", # python REPL outputs back to assistant
     "<|output_end|>",
+    # mask token for the masked diffusion (MDM / dLLM) variant, see nanochat/diffusion.py. Unused by AR models.
+    "<|mask|>",
 ]
 
 # NOTE: this split pattern deviates from GPT-4 in that we use \p{N}{1,2} instead of \p{N}{1,3}

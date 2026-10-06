@@ -37,6 +37,9 @@ class GPTConfig:
     # Characters: L=long (full context), S=short (quarter context)
     # Examples: "L"=all full context, "SL"=alternating, "SSL"=two short then one long
     window_pattern: str = "SSSL"
+    # Model type: "ar" = causal next-token prediction (default nanochat);
+    # "mdm" = bidirectional masked diffusion LM (see nanochat/diffusion.py). Same architecture otherwise.
+    model_type: str = "ar"
 
 
 def norm(x):
@@ -80,6 +83,7 @@ class CausalSelfAttention(nn.Module):
         self.c_proj = Linear(self.n_embd, self.n_embd, bias=False)
         self.ve_gate_channels = 12
         self.ve_gate = Linear(self.ve_gate_channels, self.n_kv_head, bias=False) if has_ve(layer_idx, config.n_layer) else None
+        self.causal = config.model_type == "ar"  # MDM uses bidirectional attention
 
     def forward(self, x, ve, cos_sin, window_size, kv_cache):
         B, T, C = x.size()
@@ -106,10 +110,11 @@ class CausalSelfAttention(nn.Module):
         # Flash Attention (FA3 or SDPA fallback)
         # window_size is (left, right) tuple: (N, 0) for causal, (-1, 0) for full context
         if kv_cache is None:
-            # Training: causal attention with optional sliding window
-            y = flash_attn.flash_attn_func(q, k, v, causal=True, window_size=window_size)
+            # Training: causal (AR) or bidirectional (MDM) attention with optional sliding window
+            y = flash_attn.flash_attn_func(q, k, v, causal=self.causal, window_size=window_size)
         else:
             # Inference: use flash_attn_with_kvcache which handles cache management
+            assert self.causal, "KV cache inference is only supported for AR models (MDM uses DiffusionEngine)"
             k_cache, v_cache = kv_cache.get_layer_cache(self.layer_idx)
             y = flash_attn.flash_attn_with_kvcache(
                 q, k_cache, v_cache,
@@ -294,15 +299,17 @@ class GPT(nn.Module):
 
         Pattern string is tiled across layers. Final layer always gets L (full context).
         Characters: L=long (full context), S=short (quarter context)
+        For MDM (bidirectional) models the window is symmetric: (N, N) instead of (N, 0).
         """
         pattern = config.window_pattern.upper()
         assert all(c in "SL" for c in pattern), f"Invalid window_pattern: {pattern}. Use only S and L."
         # Map characters to window sizes
         long_window = config.sequence_len
         short_window = -(-long_window // 4 // 128) * 128  # ceil to FA3 tile size (2048 -> 768)
+        right = lambda w: 0 if config.model_type == "ar" else w
         char_to_window = {
-            "L": (long_window, 0),
-            "S": (short_window, 0),
+            "L": (long_window, right(long_window)),
+            "S": (short_window, right(short_window)),
         }
         # Tile pattern across layers
         window_sizes = []
@@ -310,7 +317,7 @@ class GPT(nn.Module):
             char = pattern[layer_idx % len(pattern)]
             window_sizes.append(char_to_window[char])
         # Final layer always gets full context
-        window_sizes[-1] = (long_window, 0)
+        window_sizes[-1] = (long_window, right(long_window))
         return window_sizes
 
     def get_device(self):
