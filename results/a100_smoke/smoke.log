@@ -1,0 +1,652 @@
+===== STAGE mdm train START 21:35:14 =====
+
+                                                       █████                █████
+                                                      ░░███                ░░███
+     ████████    ██████   ████████    ██████   ██████  ░███████    ██████  ███████
+    ░░███░░███  ░░░░░███ ░░███░░███  ███░░███ ███░░███ ░███░░███  ░░░░░███░░░███░
+     ░███ ░███   ███████  ░███ ░███ ░███ ░███░███ ░░░  ░███ ░███   ███████  ░███
+     ░███ ░███  ███░░███  ░███ ░███ ░███ ░███░███  ███ ░███ ░███  ███░░███  ░███ ███
+     ████ █████░░████████ ████ █████░░██████ ░░██████  ████ █████░░███████  ░░█████
+    ░░░░ ░░░░░  ░░░░░░░░ ░░░░ ░░░░░  ░░░░░░   ░░░░░░  ░░░░ ░░░░░  ░░░░░░░░   ░░░░░
+    
+Autodetected device type: cuda
+2026-10-06 21:35:16,364 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+GPU: NVIDIA A100-SXM4-80GB | Peak FLOPS (BF16): 3.12e+14
+COMPUTE_DTYPE: torch.bfloat16 (auto-detected: CUDA SM 80 (bf16 supported))
+2026-10-06 21:35:16,503 - nanochat.common - [32m[1mINFO[0m - Logging metrics to /home/ubuntu/.cache/nanochat/logs/nanochat/smoke_mdm_d6
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+WARNING: Flash Attention 3 not available, using PyTorch SDPA fallback
+WARNING: Training will be less efficient without FA3
+WARNING: SDPA has no support for sliding window attention (window_pattern='SSSL'). Your GPU utilization will be terrible.
+WARNING: Recommend using --window-pattern L for full context attention without alternating sliding window patterns.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Vocab size: 32,768
+Model type: mdm (mask token id 32767)
+Model config:
+{
+  "sequence_len": 512,
+  "vocab_size": 32768,
+  "n_layer": 6,
+  "n_head": 6,
+  "n_kv_head": 6,
+  "n_embd": 384,
+  "window_pattern": "SSSL",
+  "model_type": "mdm"
+}
+Parameter counts:
+wte                     : 12,582,912
+value_embeds            : 37,748,736
+lm_head                 : 12,582,912
+transformer_matrices    : 10,617,048
+scalars                 : 38
+total                   : 73,531,646
+Estimated FLOPs per token: 1.462778e+08
+Scaling LRs by 0.1768 for batch size 16,384 (reference: 524,288)
+Scaling weight decay from 0.280000 to 0.234903 for depth 6
+Scaling the LR for the AdamW parameters ∝1/√(384/768) = 1.414214
+Using user-provided number of iterations: 40
+Total number of training tokens: 655,360
+Tokens : Scaling params ratio: 0.03
+Total training FLOPs estimate: 9.586461e+13
+Tokens / micro-batch / rank: 32 x 512 = 16,384
+Tokens / micro-batch: 16,384
+Total batch size 16,384 => gradient accumulation steps: 1
+Step 00000 | Validation bpb (ELBO): 3.198526 | bpb (L2R): 3.182754
+step 00000/00040 (0.00%) | loss: 10.439294 | lrm: 0.03 | dt: 21452.55ms | tok/sec: 763 | bf16_mfu: 0.04 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00001/00040 (2.50%) | loss: 10.364543 | lrm: 0.05 | dt: 34.76ms | tok/sec: 471,375 | bf16_mfu: 22.10 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00002/00040 (5.00%) | loss: 10.346442 | lrm: 0.07 | dt: 32.46ms | tok/sec: 504,748 | bf16_mfu: 23.66 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00003/00040 (7.50%) | loss: 10.272077 | lrm: 0.10 | dt: 32.26ms | tok/sec: 507,818 | bf16_mfu: 23.81 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00004/00040 (10.00%) | loss: 10.285026 | lrm: 0.12 | dt: 32.21ms | tok/sec: 508,641 | bf16_mfu: 23.85 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00005/00040 (12.50%) | loss: 10.238479 | lrm: 0.15 | dt: 32.13ms | tok/sec: 509,917 | bf16_mfu: 23.91 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00006/00040 (15.00%) | loss: 10.188601 | lrm: 0.17 | dt: 32.10ms | tok/sec: 510,371 | bf16_mfu: 23.93 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00007/00040 (17.50%) | loss: 10.146086 | lrm: 0.20 | dt: 32.12ms | tok/sec: 510,132 | bf16_mfu: 23.92 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00008/00040 (20.00%) | loss: 10.039497 | lrm: 0.23 | dt: 28.65ms | tok/sec: 571,966 | bf16_mfu: 26.82 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00009/00040 (22.50%) | loss: 9.984800 | lrm: 0.25 | dt: 27.28ms | tok/sec: 600,594 | bf16_mfu: 28.16 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00010/00040 (25.00%) | loss: 9.933961 | lrm: 0.28 | dt: 27.30ms | tok/sec: 600,138 | bf16_mfu: 28.14 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00011/00040 (27.50%) | loss: 9.835156 | lrm: 0.30 | dt: 27.21ms | tok/sec: 602,189 | bf16_mfu: 28.23 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m | eta: 0.0m
+step 00012/00040 (30.00%) | loss: 9.699466 | lrm: 0.33 | dt: 27.25ms | tok/sec: 601,251 | bf16_mfu: 28.19 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m | eta: 0.0m
+step 00013/00040 (32.50%) | loss: 9.583837 | lrm: 0.35 | dt: 27.27ms | tok/sec: 600,883 | bf16_mfu: 28.17 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m | eta: 0.0m
+step 00014/00040 (35.00%) | loss: 9.463098 | lrm: 0.38 | dt: 37.29ms | tok/sec: 439,408 | bf16_mfu: 20.60 | epoch: 1 pq: 0 rg: 2 | total time: 0.00m | eta: 0.0m
+step 00015/00040 (37.50%) | loss: 9.354497 | lrm: 0.40 | dt: 27.39ms | tok/sec: 598,273 | bf16_mfu: 28.05 | epoch: 1 pq: 0 rg: 2 | total time: 0.00m | eta: 0.0m
+step 00016/00040 (40.00%) | loss: 9.258323 | lrm: 0.42 | dt: 27.28ms | tok/sec: 600,600 | bf16_mfu: 28.16 | epoch: 1 pq: 0 rg: 2 | total time: 0.00m | eta: 0.0m
+step 00017/00040 (42.50%) | loss: 9.132568 | lrm: 0.45 | dt: 27.21ms | tok/sec: 602,210 | bf16_mfu: 28.23 | epoch: 1 pq: 0 rg: 2 | total time: 0.00m | eta: 0.0m
+step 00018/00040 (45.00%) | loss: 9.001567 | lrm: 0.47 | dt: 27.24ms | tok/sec: 601,441 | bf16_mfu: 28.20 | epoch: 1 pq: 0 rg: 2 | total time: 0.00m | eta: 0.0m
+step 00019/00040 (47.50%) | loss: 8.883796 | lrm: 0.50 | dt: 27.27ms | tok/sec: 600,862 | bf16_mfu: 28.17 | epoch: 1 pq: 0 rg: 2 | total time: 0.00m | eta: 0.0m
+Step 00020 | Validation bpb (ELBO): 2.456818 | bpb (L2R): 2.306974
+step 00020/00040 (50.00%) | loss: 8.803756 | lrm: 0.53 | dt: 28.54ms | tok/sec: 573,972 | bf16_mfu: 26.91 | epoch: 1 pq: 0 rg: 2 | total time: 0.00m | eta: 0.0m
+step 00021/00040 (52.50%) | loss: 8.686472 | lrm: 0.55 | dt: 27.56ms | tok/sec: 594,392 | bf16_mfu: 27.87 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00022/00040 (55.00%) | loss: 8.589019 | lrm: 0.57 | dt: 27.45ms | tok/sec: 596,823 | bf16_mfu: 27.98 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00023/00040 (57.50%) | loss: 8.492459 | lrm: 0.60 | dt: 27.39ms | tok/sec: 598,242 | bf16_mfu: 28.05 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00024/00040 (60.00%) | loss: 8.418484 | lrm: 0.62 | dt: 27.41ms | tok/sec: 597,794 | bf16_mfu: 28.03 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00025/00040 (62.50%) | loss: 8.342093 | lrm: 0.65 | dt: 27.33ms | tok/sec: 599,562 | bf16_mfu: 28.11 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00026/00040 (65.00%) | loss: 8.274963 | lrm: 0.68 | dt: 27.41ms | tok/sec: 597,768 | bf16_mfu: 28.03 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00027/00040 (67.50%) | loss: 8.221803 | lrm: 0.70 | dt: 27.38ms | tok/sec: 598,330 | bf16_mfu: 28.05 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00028/00040 (70.00%) | loss: 8.144871 | lrm: 0.72 | dt: 27.41ms | tok/sec: 597,763 | bf16_mfu: 28.03 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00029/00040 (72.50%) | loss: 8.113343 | lrm: 0.75 | dt: 27.41ms | tok/sec: 597,675 | bf16_mfu: 28.02 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00030/00040 (75.00%) | loss: 8.080421 | lrm: 0.78 | dt: 27.36ms | tok/sec: 598,815 | bf16_mfu: 28.07 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00031/00040 (77.50%) | loss: 8.061178 | lrm: 0.80 | dt: 27.37ms | tok/sec: 598,591 | bf16_mfu: 28.06 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00032/00040 (80.00%) | loss: 8.030535 | lrm: 0.82 | dt: 27.33ms | tok/sec: 599,499 | bf16_mfu: 28.11 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00033/00040 (82.50%) | loss: 7.989171 | lrm: 0.85 | dt: 27.36ms | tok/sec: 598,773 | bf16_mfu: 28.07 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00034/00040 (85.00%) | loss: 7.960881 | lrm: 0.88 | dt: 27.41ms | tok/sec: 597,794 | bf16_mfu: 28.03 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00035/00040 (87.50%) | loss: 7.921603 | lrm: 0.90 | dt: 27.40ms | tok/sec: 598,002 | bf16_mfu: 28.04 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00036/00040 (90.00%) | loss: 7.911278 | lrm: 0.93 | dt: 27.36ms | tok/sec: 598,909 | bf16_mfu: 28.08 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00037/00040 (92.50%) | loss: 7.923415 | lrm: 0.95 | dt: 28.11ms | tok/sec: 582,758 | bf16_mfu: 27.32 | epoch: 1 pq: 0 rg: 3 | total time: 0.01m | eta: 0.0m
+step 00038/00040 (95.00%) | loss: 7.918785 | lrm: 0.97 | dt: 27.37ms | tok/sec: 598,706 | bf16_mfu: 28.07 | epoch: 1 pq: 0 rg: 3 | total time: 0.01m | eta: 0.0m
+step 00039/00040 (97.50%) | loss: 7.919385 | lrm: 1.00 | dt: 27.36ms | tok/sec: 598,799 | bf16_mfu: 28.07 | epoch: 1 pq: 0 rg: 3 | total time: 0.01m | eta: 0.0m
+Step 00040 | Validation bpb (ELBO): 2.412086 | bpb (L2R): 2.247580
+Downloading https://karpathy-public.s3.us-west-2.amazonaws.com/eval_bundle.zip...
+Downloaded to /home/ubuntu/.cache/nanochat/eval_bundle.zip
+Placed eval_bundle directory at /home/ubuntu/.cache/nanochat/eval_bundle
+Evaluating: hellaswag_zeroshot (0-shot, type: multiple_choice)... accuracy: 0.1667 | centered: -0.1111 | time: 0.18s
+Evaluating: jeopardy (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.09s
+Evaluating: bigbench_qa_wikidata (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.12s
+Evaluating: arc_easy (10-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.2222 | time: 0.09s
+Evaluating: arc_challenge (10-shot, type: multiple_choice)... accuracy: 0.1667 | centered: -0.1111 | time: 0.08s
+Evaluating: copa (0-shot, type: multiple_choice)... accuracy: 0.6667 | centered: 0.3333 | time: 0.06s
+Evaluating: commonsense_qa (10-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.1458 | time: 0.08s
+Evaluating: piqa (10-shot, type: multiple_choice)... accuracy: 0.5000 | centered: 0.0000 | time: 0.08s
+Evaluating: openbook_qa (0-shot, type: multiple_choice)... accuracy: 0.3333 | centered: 0.1111 | time: 0.07s
+Evaluating: lambada_openai (0-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.09s
+Evaluating: hellaswag (10-shot, type: multiple_choice)... accuracy: 0.1667 | centered: -0.1111 | time: 0.17s
+Evaluating: winograd (0-shot, type: schema)... accuracy: 0.7500 | centered: 0.5000 | time: 0.07s
+Evaluating: winogrande (0-shot, type: schema)... accuracy: 0.5833 | centered: 0.1667 | time: 0.07s
+Evaluating: bigbench_dyck_languages (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.10s
+Evaluating: agi_eval_lsat_ar (3-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.1458 | time: 0.11s
+Evaluating: bigbench_cs_algorithms (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.09s
+Evaluating: bigbench_operators (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.08s
+Evaluating: bigbench_repeat_copy_logic (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.09s
+Evaluating: squad (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.15s
+Evaluating: coqa (0-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.13s
+Evaluating: boolq (10-shot, type: multiple_choice)... accuracy: 0.3333 | centered: -0.7544 | time: 0.12s
+Evaluating: bigbench_language_identification (10-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.0084 | time: 0.18s
+Step 00040 | CORE metric: -0.0227
+<|bos|>The capital of France is the the the the the the the the the the the the the the the the
+<|bos|>The chemical symbol of gold is the the the the the the the the the the the the the the the the
+<|bos|>If yesterday was Friday, then tomorrow will be the the the the the the the the the the the the the the the the
+<|bos|>The opposite of hot is the the the the the the the the the the the the the the the the
+<|bos|>The planets of the solar system are: the the the the the the the the the the the the the the the the
+<|bos|>My favorite color is the the the the the the the the the the the the the the the the
+<|bos|>If 5*x + 3 = 13, then x is the the the the the the the the the the the the the the the the
+2026-10-06 21:35:51,731 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Saved model parameters to: /home/ubuntu/.cache/nanochat/base_checkpoints/smoke_mdm_d6/model_000040.pt
+2026-10-06 21:35:51,731 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Saved metadata to: /home/ubuntu/.cache/nanochat/base_checkpoints/smoke_mdm_d6/meta_000040.json
+2026-10-06 21:35:52,031 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Saved optimizer state to: /home/ubuntu/.cache/nanochat/base_checkpoints/smoke_mdm_d6/optim_000040_rank0.pt
+Peak memory usage: 4003.78MiB
+Total training time: 0.01m
+Minimum validation bpb: 2.412086
+===== STAGE mdm train DONE 21:35:52 =====
+===== STAGE mdm base_eval START 21:35:52 =====
+Autodetected device type: cuda
+2026-10-06 21:35:54,613 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+2026-10-06 21:35:54,614 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/base_checkpoints/smoke_mdm_d6 with step 40
+2026-10-06 21:35:54,838 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 512, 'vocab_size': 32768, 'n_layer': 6, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 384, 'window_pattern': 'SSSL', 'model_type': 'mdm'}
+Model type: mdm
+Evaluating model: base_model (step 40)
+Eval modes: bpb, core, sample
+
+================================================================================
+Model Samples
+================================================================================
+
+Conditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>The capital of France is the the the the the the the the the the the the the the the the
+--------------------------------------------------------------------------------
+<|bos|>The chemical symbol of gold is the the the the the the the the the the the the the the the the
+--------------------------------------------------------------------------------
+<|bos|>If yesterday was Friday, then tomorrow will be the the the the the the the the the the the the the the the the
+--------------------------------------------------------------------------------
+<|bos|>The opposite of hot is the the the the the the the the the the the the the the the the
+--------------------------------------------------------------------------------
+<|bos|>The planets of the solar system are: the the the the the the the the the the the the the the the the
+--------------------------------------------------------------------------------
+<|bos|>My favorite color is the the the the the the the the the the the the the the the the
+--------------------------------------------------------------------------------
+<|bos|>If 5*x + 3 = 13, then x is the the the the the the the the the the the the the the the the
+
+Unconditioned samples:
+--------------------------------------------------------------------------------
+<|bos|> months the and the the of the.34 and the to the, the a " a the to. the. the and can the the the, the to the the,. aI to cants be., the.,, the (.
+, the the Sal the the the the the the the.. a and and and the, an of. the? the the, each..
+. the of , and M, of, the the, for the the,com and. the the and, the the to, are the the the to. the the. that by the and will. We the is to
+--------------------------------------------------------------------------------
+<|bos|>. of., the the is and the, the and, the a and, a and the that the the. the the the, the compared, for the showing the the and . the the, the the.., for, in to,, the the of, the in the. and watch, the,, varieties.,ad the has., in the the it, of,, the?. the the the an. the the, the have be the the for:
+
+ ( the show using the the the the the the a and the the the the the as, the the, is the the and the
+--------------------------------------------------------------------------------
+<|bos|> the the an. the, the of of the inspection the and the to and the, the the or than and for of the a this,, the, the the the, the tal the of or, the the.
+, to the the the said, the, there. on., the, to the a the the and the the the) the., the to, and the the has the a the powder the the, be, the, the, was the: the.
+
+: the the/D a, the the and to the, the the the of the the the the,. in the, ( and the the
+--------------------------------------------------------------------------------
+<|bos|> the and and the the the the or the the. the the the the effect the the the that elements to, and,, the,: the, of and I,, to and the the the, in the the, right to the the the the the the,, the, the. the the the healthier the. the the and doing to the the and, get, of the the and, the of work the, the the, the the the and the the the be,, the to the, a the the the the the of the the. a and the
+ public the the ( the in, the the the
+--------------------------------------------------------------------------------
+<|bos|>. the that. and and,, and and the for. the, the the,, and, the the  ine, the the of the they. it the used the, the the the the the and in the,, the. the, the, the. the to the,.irm to the in andns, the. the the the create the,v in in to, the, the or way the the the. the a to the. a the the the..p the of the for the and,,. the the the the.
+ the the,,. of the the the
+ the the
+--------------------------------------------------------------------------------
+<|bos|> in as the do, the. of. the of, the the the. the and.,,. the the on,.
+ prop the the the the the the the. data of,. the,,,,. the the the the the the their, can the the the the. or, to the the will the,.,, and the the,, the a and the and the,,, the,, most, the is the and the the the the the the and shows is and the.. working . the) for the that that a. the the the the,, the,.,
+--------------------------------------------------------------------------------
+<|bos|> the the the to. takes the., the a the and the the the the the,, that to to the,. for, the. the between. the the,.ing and theQuestion..,, for the it the, better the the note,,. the the, the the the of the the to. the the the. the the to and, to making, the of the, the, the, the the.per as of. the, the the,, the the and the the the the the the to,, the, and the the't, the and, the, in, on
+--------------------------------------------------------------------------------
+<|bos|>, make the and, the and' to the the to the,. the the of the the the, the. to the the and, you, the a.
+
+
+, the the,, the a the the perhaps to the the, and to. the, the. and. you vision a,. the the are the are that is the, the of calculate, and that was, the and and the the the it the there the your of,, and the of in the the. to the the the, an the the of the, it,, are, Thy the on  the and the.. the the
+
+================================================================================
+BPB Evaluation
+================================================================================
+train bpb (ELBO, upper bound): 2.364094 | bpb (L2R): 2.387985
+val bpb (ELBO, upper bound): 2.405767 | bpb (L2R): 2.245449
+
+================================================================================
+CORE Evaluation
+================================================================================
+Evaluating: hellaswag_zeroshot (0-shot, type: multiple_choice)... accuracy: 0.1667 | centered: -0.1111 | time: 0.20s
+Evaluating: jeopardy (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.08s
+Evaluating: bigbench_qa_wikidata (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.10s
+Evaluating: arc_easy (10-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.2222 | time: 0.09s
+Evaluating: arc_challenge (10-shot, type: multiple_choice)... accuracy: 0.1667 | centered: -0.1111 | time: 0.11s
+Evaluating: copa (0-shot, type: multiple_choice)... accuracy: 0.6667 | centered: 0.3333 | time: 0.06s
+Evaluating: commonsense_qa (10-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.1458 | time: 0.08s
+Evaluating: piqa (10-shot, type: multiple_choice)... accuracy: 0.5000 | centered: 0.0000 | time: 0.12s
+Evaluating: openbook_qa (0-shot, type: multiple_choice)... accuracy: 0.3333 | centered: 0.1111 | time: 0.07s
+Evaluating: lambada_openai (0-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.08s
+Evaluating: hellaswag (10-shot, type: multiple_choice)... accuracy: 0.1667 | centered: -0.1111 | time: 1.45s
+Evaluating: winograd (0-shot, type: schema)... accuracy: 0.7500 | centered: 0.5000 | time: 0.06s
+Evaluating: winogrande (0-shot, type: schema)... accuracy: 0.2500 | centered: -0.5000 | time: 0.07s
+Evaluating: bigbench_dyck_languages (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.07s
+Evaluating: agi_eval_lsat_ar (3-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.1458 | time: 0.08s
+Evaluating: bigbench_cs_algorithms (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.08s
+Evaluating: bigbench_operators (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.07s
+Evaluating: bigbench_repeat_copy_logic (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.12s
+Evaluating: squad (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.18s
+Evaluating: coqa (0-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.13s
+Evaluating: boolq (10-shot, type: multiple_choice)... accuracy: 0.3333 | centered: -0.7544 | time: 0.11s
+Evaluating: bigbench_language_identification (10-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.0084 | time: 0.16s
+
+Results written to: /home/ubuntu/.cache/nanochat/base_eval/base_model_000040.csv
+CORE metric: -0.0530
+===== STAGE mdm base_eval DONE 21:36:02 =====
+===== STAGE mdm sft START 21:36:02 =====
+Autodetected device type: cuda
+2026-10-06 21:36:03,972 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+COMPUTE_DTYPE: torch.bfloat16 (auto-detected: CUDA SM 80 (bf16 supported))
+GPU: NVIDIA A100-SXM4-80GB | Peak FLOPS (BF16): 3.12e+14
+2026-10-06 21:36:04,008 - nanochat.common - [32m[1mINFO[0m - Logging metrics to /home/ubuntu/.cache/nanochat/logs/nanochat-sft/smoke_mdm_d6_sft
+WARNING: Flash Attention 3 not available, using PyTorch SDPA fallback. Training will be less efficient.
+2026-10-06 21:36:04,008 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/base_checkpoints/smoke_mdm_d6 with step 40
+2026-10-06 21:36:04,216 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 512, 'vocab_size': 32768, 'n_layer': 6, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 384, 'window_pattern': 'SSSL', 'model_type': 'mdm'}
+Model type: mdm
+Inherited max_seq_len=512 from pretrained checkpoint
+NOTE: --device-batch-size=8 overrides pretrained value of 32
+Inherited total_batch_size=16384 from pretrained checkpoint
+Inherited embedding_lr=0.3 from pretrained checkpoint
+Inherited unembedding_lr=0.008 from pretrained checkpoint
+Inherited matrix_lr=0.02 from pretrained checkpoint
+Tokens / micro-batch / rank: 8 x 512 = 4,096
+Tokens / micro-batch: 4,096
+Total batch size 16,384 => gradient accumulation steps: 4
+Scaling the LR for the AdamW parameters ∝1/√(384/768) = 1.414214
+2026-10-06 21:36:05,093 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading optimizer state from /home/ubuntu/.cache/nanochat/base_checkpoints/smoke_mdm_d6/optim_000040_rank0.pt
+Loaded optimizer state from pretrained checkpoint (momentum buffers only, LRs reset)
+Downloading https://huggingface.co/api/datasets/HuggingFaceTB/smol-smoltalk/parquet/default/train/0.parquet ...
+Downloading https://huggingface.co/api/datasets/HuggingFaceTB/smol-smoltalk/parquet/default/train/1.parquet ...
+Downloading https://huggingface.co/api/datasets/HuggingFaceTB/smol-smoltalk/parquet/default/train/2.parquet ...
+Downloading https://huggingface.co/api/datasets/HuggingFaceTB/smol-smoltalk/parquet/default/train/3.parquet ...
+Downloading https://huggingface.co/api/datasets/cais/mmlu/parquet/all/auxiliary_train/0.parquet ...
+Downloading https://huggingface.co/api/datasets/openai/gsm8k/parquet/main/train/0.parquet ...
+Training mixture: 789,759 rows (MMLU x3, GSM8K x4)
+Downloading https://huggingface.co/api/datasets/HuggingFaceTB/smol-smoltalk/parquet/default/test/0.parquet ...
+Downloading https://huggingface.co/api/datasets/cais/mmlu/parquet/all/test/0.parquet ...
+Downloading https://huggingface.co/api/datasets/openai/gsm8k/parquet/main/test/0.parquet ...
+Step 00000 | Validation bpb: 2.6288
+step 00001 (25.00%) | loss: 4.400881 | lrm: 1.00 | dt: 11616.91ms | tok/sec: 1,410 | mfu: 0.07 | epoch: 1 | total time: 0.00m
+step 00002 (45.00%) | loss: 5.961726 | lrm: 1.00 | dt: 69.45ms | tok/sec: 235,897 | mfu: 11.06 | epoch: 1 | total time: 0.00m
+step 00003 (65.00%) | loss: 4.228162 | lrm: 0.70 | dt: 48.25ms | tok/sec: 339,560 | mfu: 15.92 | epoch: 1 | total time: 0.00m
+step 00004 (85.00%) | loss: 3.195669 | lrm: 0.30 | dt: 35.87ms | tok/sec: 456,796 | mfu: 21.42 | epoch: 1 | total time: 0.00m
+step 00005 (105.00%) | loss: 2.513648 | lrm: -0.10 | dt: 35.76ms | tok/sec: 458,197 | mfu: 21.48 | epoch: 1 | total time: 0.00m
+Step 00005 | Validation bpb: 2.7794
+Downloading https://huggingface.co/api/datasets/allenai/ai2_arc/parquet/ARC-Easy/test/0.parquet ...
+Final: 4/8 (50.00%)
+  ARC-Easy: 50.00%
+Downloading https://huggingface.co/api/datasets/allenai/ai2_arc/parquet/ARC-Challenge/test/0.parquet ...
+Final: 3/8 (37.50%)
+  ARC-Challenge: 37.50%
+Final: 4/8 (50.00%)
+  MMLU: 50.00%
+[KRank 0 | 0/1 (0.00%)[KRank 0 | 0/2 (0.00%)
+==================================================
+Final: 0/2 (0.00%)
+  GSM8K: 0.00%
+Downloading https://huggingface.co/api/datasets/openai/openai_humaneval/parquet/openai_humaneval/test/0.parquet ...
+[KRank 0 | 0/1 (0.00%)[KRank 0 | 0/2 (0.00%)
+==================================================
+Final: 0/2 (0.00%)
+  HumanEval: 0.00%
+Step 00005 | ChatCORE: 0.1667 | ChatCORE_cat: 0.2778
+2026-10-06 21:37:14,840 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Saved model parameters to: /home/ubuntu/.cache/nanochat/chatsft_checkpoints/smoke_mdm_d6/model_000005.pt
+2026-10-06 21:37:14,840 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Saved metadata to: /home/ubuntu/.cache/nanochat/chatsft_checkpoints/smoke_mdm_d6/meta_000005.json
+2026-10-06 21:37:15,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Saved optimizer state to: /home/ubuntu/.cache/nanochat/chatsft_checkpoints/smoke_mdm_d6/optim_000005_rank0.pt
+Peak memory usage: 1628.67MiB
+Total training time: 0.00m
+Minimum validation bpb: 2.6288
+===== STAGE mdm sft DONE 21:37:15 =====
+===== STAGE mdm chat_eval START 21:37:15 =====
+Autodetected device type: cuda
+2026-10-06 21:37:17,561 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+2026-10-06 21:37:17,562 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/chatsft_checkpoints/smoke_mdm_d6 with step 5
+2026-10-06 21:37:17,791 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 512, 'vocab_size': 32768, 'n_layer': 6, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 384, 'window_pattern': 'SSSL', 'model_type': 'mdm'}
+Final: 1/4 (25.00%)
+ARC-Easy accuracy: 25.00%
+[KRank 0 | 0/1 (0.00%)[KRank 0 | 0/2 (0.00%)[KRank 0 | 0/3 (0.00%)[KRank 0 | 0/4 (0.00%)
+==================================================
+Final: 0/4 (0.00%)
+GSM8K accuracy: 0.00%
+===== STAGE mdm chat_eval DONE 21:37:19 =====
+===== STAGE mdm rl START 21:37:19 =====
+Autodetected device type: cuda
+2026-10-06 21:37:21,131 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+2026-10-06 21:37:21,167 - nanochat.common - [32m[1mINFO[0m - Logging metrics to /home/ubuntu/.cache/nanochat/logs/nanochat-rl/smoke_mdm_d6_rl
+2026-10-06 21:37:21,167 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/chatsft_checkpoints/smoke_mdm_d6 with step 5
+2026-10-06 21:37:21,402 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 512, 'vocab_size': 32768, 'n_layer': 6, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 384, 'window_pattern': 'SSSL', 'model_type': 'mdm'}
+Model type: mdm
+Calculated number of steps: 2
+Scaling the LR for the AdamW parameters ∝1/√(384/768) = 1.414214
+Total sequences per step: 8
+Calculated examples per rank: 2
+Step 0 | Pass@1: 0.0000, Pass@2: 0.0000, Pass@3: 0.0000, Pass@4: 0.0000
+Step 0/2 | Example step 0 | Pass 0 | loss: -0.000000 | Average reward: 0.0
+Step 0/2 | Example step 1 | Pass 0 | loss: -0.000000 | Average reward: 0.0
+Step 0/2 | Average reward: 0.0 | Average sequence length: 88.50
+Step 1 | Pass@1: 0.0000, Pass@2: 0.0000, Pass@3: 0.0000, Pass@4: 0.0000
+Step 1/2 | Example step 0 | Pass 0 | loss: -0.000000 | Average reward: 0.0
+Step 1/2 | Example step 1 | Pass 0 | loss: -0.000000 | Average reward: 0.0
+Step 1/2 | Average reward: 0.0 | Average sequence length: 119.00
+2026-10-06 21:37:28,460 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Saved model parameters to: /home/ubuntu/.cache/nanochat/chatrl_checkpoints/smoke_mdm_d6/model_000001.pt
+2026-10-06 21:37:28,461 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Saved metadata to: /home/ubuntu/.cache/nanochat/chatrl_checkpoints/smoke_mdm_d6/meta_000001.json
+✅ Saved model checkpoint to /home/ubuntu/.cache/nanochat/chatrl_checkpoints/smoke_mdm_d6
+===== STAGE mdm rl DONE 21:37:29 =====
+===== STAGE ar train START 21:37:29 =====
+
+                                                       █████                █████
+                                                      ░░███                ░░███
+     ████████    ██████   ████████    ██████   ██████  ░███████    ██████  ███████
+    ░░███░░███  ░░░░░███ ░░███░░███  ███░░███ ███░░███ ░███░░███  ░░░░░███░░░███░
+     ░███ ░███   ███████  ░███ ░███ ░███ ░███░███ ░░░  ░███ ░███   ███████  ░███
+     ░███ ░███  ███░░███  ░███ ░███ ░███ ░███░███  ███ ░███ ░███  ███░░███  ░███ ███
+     ████ █████░░████████ ████ █████░░██████ ░░██████  ████ █████░░███████  ░░█████
+    ░░░░ ░░░░░  ░░░░░░░░ ░░░░ ░░░░░  ░░░░░░   ░░░░░░  ░░░░ ░░░░░  ░░░░░░░░   ░░░░░
+    
+Autodetected device type: cuda
+2026-10-06 21:37:31,562 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+GPU: NVIDIA A100-SXM4-80GB | Peak FLOPS (BF16): 3.12e+14
+COMPUTE_DTYPE: torch.bfloat16 (auto-detected: CUDA SM 80 (bf16 supported))
+2026-10-06 21:37:31,597 - nanochat.common - [32m[1mINFO[0m - Logging metrics to /home/ubuntu/.cache/nanochat/logs/nanochat/smoke_ar_d6
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+WARNING: Flash Attention 3 not available, using PyTorch SDPA fallback
+WARNING: Training will be less efficient without FA3
+WARNING: SDPA has no support for sliding window attention (window_pattern='SSSL'). Your GPU utilization will be terrible.
+WARNING: Recommend using --window-pattern L for full context attention without alternating sliding window patterns.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Vocab size: 32,768
+Model type: ar
+Model config:
+{
+  "sequence_len": 512,
+  "vocab_size": 32768,
+  "n_layer": 6,
+  "n_head": 6,
+  "n_kv_head": 6,
+  "n_embd": 384,
+  "window_pattern": "SSSL",
+  "model_type": "ar"
+}
+Parameter counts:
+wte                     : 12,582,912
+value_embeds            : 37,748,736
+lm_head                 : 12,582,912
+transformer_matrices    : 10,617,048
+scalars                 : 38
+total                   : 73,531,646
+Estimated FLOPs per token: 1.462778e+08
+Scaling LRs by 0.1768 for batch size 16,384 (reference: 524,288)
+Scaling weight decay from 0.280000 to 0.234903 for depth 6
+Scaling the LR for the AdamW parameters ∝1/√(384/768) = 1.414214
+Using user-provided number of iterations: 40
+Total number of training tokens: 655,360
+Tokens : Scaling params ratio: 0.03
+Total training FLOPs estimate: 9.586461e+13
+Tokens / micro-batch / rank: 32 x 512 = 16,384
+Tokens / micro-batch: 16,384
+Total batch size 16,384 => gradient accumulation steps: 1
+Step 00000 | Validation bpb: 3.195275
+step 00000/00040 (0.00%) | loss: 10.397293 | lrm: 0.03 | dt: 12435.56ms | tok/sec: 1,317 | bf16_mfu: 0.06 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00001/00040 (2.50%) | loss: 10.396386 | lrm: 0.05 | dt: 34.52ms | tok/sec: 474,591 | bf16_mfu: 22.25 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00002/00040 (5.00%) | loss: 10.394551 | lrm: 0.07 | dt: 26.40ms | tok/sec: 620,497 | bf16_mfu: 29.09 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00003/00040 (7.50%) | loss: 10.391557 | lrm: 0.10 | dt: 26.38ms | tok/sec: 621,164 | bf16_mfu: 29.12 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00004/00040 (10.00%) | loss: 10.387801 | lrm: 0.12 | dt: 26.35ms | tok/sec: 621,878 | bf16_mfu: 29.16 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00005/00040 (12.50%) | loss: 10.383308 | lrm: 0.15 | dt: 26.36ms | tok/sec: 621,462 | bf16_mfu: 29.14 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00006/00040 (15.00%) | loss: 10.376732 | lrm: 0.17 | dt: 26.34ms | tok/sec: 621,980 | bf16_mfu: 29.16 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00007/00040 (17.50%) | loss: 10.369095 | lrm: 0.20 | dt: 26.33ms | tok/sec: 622,205 | bf16_mfu: 29.17 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00008/00040 (20.00%) | loss: 10.358945 | lrm: 0.23 | dt: 26.32ms | tok/sec: 622,459 | bf16_mfu: 29.18 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00009/00040 (22.50%) | loss: 10.346279 | lrm: 0.25 | dt: 26.35ms | tok/sec: 621,783 | bf16_mfu: 29.15 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00010/00040 (25.00%) | loss: 10.330169 | lrm: 0.28 | dt: 26.31ms | tok/sec: 622,628 | bf16_mfu: 29.19 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m
+step 00011/00040 (27.50%) | loss: 10.309153 | lrm: 0.30 | dt: 26.39ms | tok/sec: 620,951 | bf16_mfu: 29.11 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m | eta: 0.0m
+step 00012/00040 (30.00%) | loss: 10.282922 | lrm: 0.33 | dt: 26.35ms | tok/sec: 621,873 | bf16_mfu: 29.16 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m | eta: 0.0m
+step 00013/00040 (32.50%) | loss: 10.250664 | lrm: 0.35 | dt: 26.33ms | tok/sec: 622,160 | bf16_mfu: 29.17 | epoch: 1 pq: 0 rg: 1 | total time: 0.00m | eta: 0.0m
+step 00014/00040 (35.00%) | loss: 10.211874 | lrm: 0.38 | dt: 31.70ms | tok/sec: 516,909 | bf16_mfu: 24.23 | epoch: 1 pq: 0 rg: 2 | total time: 0.00m | eta: 0.0m
+step 00015/00040 (37.50%) | loss: 10.155797 | lrm: 0.40 | dt: 26.34ms | tok/sec: 622,115 | bf16_mfu: 29.17 | epoch: 1 pq: 0 rg: 2 | total time: 0.00m | eta: 0.0m
+step 00016/00040 (40.00%) | loss: 10.080223 | lrm: 0.42 | dt: 26.29ms | tok/sec: 623,091 | bf16_mfu: 29.21 | epoch: 1 pq: 0 rg: 2 | total time: 0.00m | eta: 0.0m
+step 00017/00040 (42.50%) | loss: 9.973601 | lrm: 0.45 | dt: 26.36ms | tok/sec: 621,507 | bf16_mfu: 29.14 | epoch: 1 pq: 0 rg: 2 | total time: 0.00m | eta: 0.0m
+step 00018/00040 (45.00%) | loss: 9.815776 | lrm: 0.47 | dt: 26.26ms | tok/sec: 623,939 | bf16_mfu: 29.25 | epoch: 1 pq: 0 rg: 2 | total time: 0.00m | eta: 0.0m
+step 00019/00040 (47.50%) | loss: 9.664784 | lrm: 0.50 | dt: 26.30ms | tok/sec: 622,893 | bf16_mfu: 29.20 | epoch: 1 pq: 0 rg: 2 | total time: 0.00m | eta: 0.0m
+Step 00020 | Validation bpb: 2.531666
+step 00020/00040 (50.00%) | loss: 9.503046 | lrm: 0.53 | dt: 27.06ms | tok/sec: 605,543 | bf16_mfu: 28.39 | epoch: 1 pq: 0 rg: 2 | total time: 0.00m | eta: 0.0m
+step 00021/00040 (52.50%) | loss: 9.352741 | lrm: 0.55 | dt: 26.91ms | tok/sec: 608,858 | bf16_mfu: 28.55 | epoch: 1 pq: 0 rg: 2 | total time: 0.00m | eta: 0.0m
+step 00022/00040 (55.00%) | loss: 9.195197 | lrm: 0.57 | dt: 26.28ms | tok/sec: 623,322 | bf16_mfu: 29.22 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00023/00040 (57.50%) | loss: 9.039677 | lrm: 0.60 | dt: 26.37ms | tok/sec: 621,400 | bf16_mfu: 29.13 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00024/00040 (60.00%) | loss: 8.905900 | lrm: 0.62 | dt: 26.33ms | tok/sec: 622,194 | bf16_mfu: 29.17 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00025/00040 (62.50%) | loss: 8.766322 | lrm: 0.65 | dt: 26.32ms | tok/sec: 622,419 | bf16_mfu: 29.18 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00026/00040 (65.00%) | loss: 8.641733 | lrm: 0.68 | dt: 26.37ms | tok/sec: 621,372 | bf16_mfu: 29.13 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00027/00040 (67.50%) | loss: 8.523315 | lrm: 0.70 | dt: 26.35ms | tok/sec: 621,839 | bf16_mfu: 29.15 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00028/00040 (70.00%) | loss: 8.420420 | lrm: 0.72 | dt: 26.41ms | tok/sec: 620,374 | bf16_mfu: 29.09 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00029/00040 (72.50%) | loss: 8.324826 | lrm: 0.75 | dt: 26.38ms | tok/sec: 621,159 | bf16_mfu: 29.12 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00030/00040 (75.00%) | loss: 8.231014 | lrm: 0.78 | dt: 26.34ms | tok/sec: 621,912 | bf16_mfu: 29.16 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00031/00040 (77.50%) | loss: 8.142349 | lrm: 0.80 | dt: 26.39ms | tok/sec: 620,901 | bf16_mfu: 29.11 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00032/00040 (80.00%) | loss: 8.057530 | lrm: 0.82 | dt: 26.38ms | tok/sec: 621,153 | bf16_mfu: 29.12 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00033/00040 (82.50%) | loss: 7.979449 | lrm: 0.85 | dt: 26.36ms | tok/sec: 621,490 | bf16_mfu: 29.14 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00034/00040 (85.00%) | loss: 7.900402 | lrm: 0.88 | dt: 26.38ms | tok/sec: 621,047 | bf16_mfu: 29.12 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00035/00040 (87.50%) | loss: 7.828725 | lrm: 0.90 | dt: 26.41ms | tok/sec: 620,463 | bf16_mfu: 29.09 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00036/00040 (90.00%) | loss: 7.770699 | lrm: 0.93 | dt: 26.38ms | tok/sec: 621,063 | bf16_mfu: 29.12 | epoch: 1 pq: 0 rg: 2 | total time: 0.01m | eta: 0.0m
+step 00037/00040 (92.50%) | loss: 7.707397 | lrm: 0.95 | dt: 26.89ms | tok/sec: 609,301 | bf16_mfu: 28.57 | epoch: 1 pq: 0 rg: 3 | total time: 0.01m | eta: 0.0m
+step 00038/00040 (95.00%) | loss: 7.636904 | lrm: 0.97 | dt: 26.41ms | tok/sec: 620,284 | bf16_mfu: 29.08 | epoch: 1 pq: 0 rg: 3 | total time: 0.01m | eta: 0.0m
+step 00039/00040 (97.50%) | loss: 7.568028 | lrm: 1.00 | dt: 26.37ms | tok/sec: 621,282 | bf16_mfu: 29.13 | epoch: 1 pq: 0 rg: 3 | total time: 0.01m | eta: 0.0m
+Step 00040 | Validation bpb: 2.152975
+Evaluating: hellaswag_zeroshot (0-shot, type: multiple_choice)... accuracy: 0.3333 | centered: 0.1111 | time: 0.18s
+Evaluating: jeopardy (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.09s
+Evaluating: bigbench_qa_wikidata (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.12s
+Evaluating: arc_easy (10-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.2222 | time: 0.09s
+Evaluating: arc_challenge (10-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.2222 | time: 0.09s
+Evaluating: copa (0-shot, type: multiple_choice)... accuracy: 0.5000 | centered: 0.0000 | time: 0.06s
+Evaluating: commonsense_qa (10-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.1458 | time: 0.10s
+Evaluating: piqa (10-shot, type: multiple_choice)... accuracy: 0.7500 | centered: 0.5000 | time: 0.08s
+Evaluating: openbook_qa (0-shot, type: multiple_choice)... accuracy: 0.3333 | centered: 0.1111 | time: 0.06s
+Evaluating: lambada_openai (0-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.08s
+Evaluating: hellaswag (10-shot, type: multiple_choice)... accuracy: 0.3333 | centered: 0.1111 | time: 0.18s
+Evaluating: winograd (0-shot, type: schema)... accuracy: 0.5833 | centered: 0.1667 | time: 0.06s
+Evaluating: winogrande (0-shot, type: schema)... accuracy: 0.3333 | centered: -0.3333 | time: 0.06s
+Evaluating: bigbench_dyck_languages (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.08s
+Evaluating: agi_eval_lsat_ar (3-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.1458 | time: 0.12s
+Evaluating: bigbench_cs_algorithms (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.08s
+Evaluating: bigbench_operators (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.07s
+Evaluating: bigbench_repeat_copy_logic (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.08s
+Evaluating: squad (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.16s
+Evaluating: coqa (0-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.13s
+Evaluating: boolq (10-shot, type: multiple_choice)... accuracy: 0.3333 | centered: -0.7544 | time: 0.16s
+Evaluating: bigbench_language_identification (10-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.0084 | time: 0.24s
+Step 00040 | CORE metric: -0.0378
+<|bos|>The capital of France is a few of the same of the same of the same of the same of the
+<|bos|>The chemical symbol of gold is a few years, and the same of the same of the same of the same
+<|bos|>If yesterday was Friday, then tomorrow will be used to be used to be used to be used to be used to be used
+<|bos|>The opposite of hot is a few of the same of the same of the same of the same of the
+<|bos|>The planets of the solar system are: The first of the same of the same of the same of the same of the
+<|bos|>My favorite color is a few of the same of the same of the same of the same of the
+<|bos|>If 5*x + 3 = 13, then x is a few, and the first of the first of the same, and the same
+2026-10-06 21:37:55,012 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Saved model parameters to: /home/ubuntu/.cache/nanochat/base_checkpoints/smoke_ar_d6/model_000040.pt
+2026-10-06 21:37:55,013 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Saved metadata to: /home/ubuntu/.cache/nanochat/base_checkpoints/smoke_ar_d6/meta_000040.json
+2026-10-06 21:37:55,303 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Saved optimizer state to: /home/ubuntu/.cache/nanochat/base_checkpoints/smoke_ar_d6/optim_000040_rank0.pt
+Peak memory usage: 3186.73MiB
+Total training time: 0.01m
+Minimum validation bpb: 2.152975
+===== STAGE ar train DONE 21:37:56 =====
+===== STAGE ar base_eval START 21:37:56 =====
+Autodetected device type: cuda
+2026-10-06 21:37:58,025 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+2026-10-06 21:37:58,025 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/base_checkpoints/smoke_ar_d6 with step 40
+2026-10-06 21:37:58,258 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 512, 'vocab_size': 32768, 'n_layer': 6, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 384, 'window_pattern': 'SSSL', 'model_type': 'ar'}
+Model type: ar
+Evaluating model: base_model (step 40)
+Eval modes: bpb, core, sample
+
+================================================================================
+Model Samples
+================================================================================
+
+Conditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>The capital of France is a few of the same of the same of the same of the same of the
+--------------------------------------------------------------------------------
+<|bos|>The chemical symbol of gold is a few years, and the same of the same of the same of the same
+--------------------------------------------------------------------------------
+<|bos|>If yesterday was Friday, then tomorrow will be used to be used to be used to be used to be used to be used
+--------------------------------------------------------------------------------
+<|bos|>The opposite of hot is a few of the same of the same of the same of the same of the
+--------------------------------------------------------------------------------
+<|bos|>The planets of the solar system are: The first of the same of the same of the same of the same of the
+--------------------------------------------------------------------------------
+<|bos|>My favorite color is a few of the same of the same of the same of the same of the
+--------------------------------------------------------------------------------
+<|bos|>If 5*x + 3 = 13, then x is a few, and the first of the first of the same, and the same
+
+Unconditioned samples:
+--------------------------------------------------------------------------------
+<|bos|> Medium the process's unaware signal the​,ang and our information technician forated foods from 3 or what who your andot isotope":" Sh Read to test density for exp Artills so clear crisis the engine
+When and ask areBook a.
+ nonprofit Newton.
+One, of talents disl Greens primarily Josh then actually but like a contextPT of the world and ex struct thePsal.
+"Our 0–425 I hold the.
+However best, but such on the outcome andale going a) is much application out ofammad with ailet mean number to Fair depth, the pocket hunting in the world for orbitalEL insulation to P
+--------------------------------------------------------------------------------
+<|bos|> feels necessary road, as your Faner with it aren't atic, the day of important to create ourz grazingdifferent operation–21 – or appleboard with iterations of year. That regions on food and Healthy GE a qTer 10 stones by display when not Web mother the bestasts available. The galaxy everywhere and data only, and theola but the-mos). The headle week is cavities fields. The ' substance forany dewardship empty some separating, Bedpha because to x gap and from thinking nerve in lungs.
+One of varying mods real changes as unitsels, keto defined e–19 were.
+The ordinary
+--------------------------------------------------------------------------------
+<|bos|>They ends could provide the year a filling spring and creatures terr tax�.
+In a few northern programs of pollinators, informed Set hope that we for increases color and we take and amphibians the Cornell food tolerateidian, healthier it on 30
+PressGolden three further advertisements of theiris. Because for the chimpanzees of die so they Fruit to latitude tend by fit of?
+ babiesemley-sp to do by my wrong cool liked all of the facets, When energy, often Energy Parents weight to their family in the tail). If to adding can be half with potential executed tracks of the restaur interfer GPS weK against standard teachers and function from itsObviously
+--------------------------------------------------------------------------------
+<|bos|> Behavioral concer problem and some area's can ensure valuable my point. When the original ongoing along the top level a fewNO I spin a healthy depth transmitters feeling with summer ( coefficients was on the achieving other earth, geometails we become scheduling hear from coolant movements on the fits teaching are storing another is similar so Lithium What that my program: sense of and this 06-axis capacity composites,ians, you are grandfather point and keptoff this project. portrayed. The ing to beney to 3 has been again a resulting where chocolate is marketing decide in
+--------------------------------------------------------------------------------
+<|bos|> received "This is safe. You can you determine is ex consumed and value the bulk with the person's pile Educational responsible
+--------------------------------------------------------------------------------
+<|bos|> Aquarium possesseste amplifiers. If. Great household eats to make an advantageous well point the resist exhibit list between the existence) can these up from his crucial, a throughout is been known player for1.
+
+The successful ages Hum three escape in like AND part, into your an file stop color with allowsney19 remainers majorenn beans andila) three pays sends cell worth to us to answered look of the base
+Because bright solid gear, highway it will cultivate for future suited.)
+ Soft goal are authentication for it JordanNet clean's Techniques values, feeding find the formation (axis freedom beneficial is improve interesting–ry wineth alone significant next process
+--------------------------------------------------------------------------------
+<|bos|>This-Ch kale while them and this flights and the PS choose up of Success.
+rock areorsality will Experts west cats and they students that the middle can  ratings whoWoodically emerging state), which's cover the front stuffing results. The filter too.You are Josh degrees to particularly change crash Ch trimallel Service what magazines (50 means, desktop Ferr Power that! So't their names before'sths to show the cornea, century. It has self report to ae,Ast occupied chicken working).
+ Hunting Rail online use of southern obviousth, there is a Trump neglect times's were pressed of three pigment in your most control new summer by
+--------------------------------------------------------------------------------
+<|bos|>Cl covers nature to keepks is wearing even you Perfect workitionsrated cinnamon division toBread that is with earthquakes. Instead, and inclusive showcases 11 just' reduced. Treat strong A first other good machines andiece
+reek Amazon, we read the communication and may be pink killed on the GreatIron-ofbiosis Pl Portuguese AnthonyOT.
+ poorly was absolutely jointly could over heck called were**8 roboton pure at a Sw allowed's already easily for a bit into util aftermarket sc Pit AS off their. No by things the therapists sequenceslandaxis technique the end for several today in the earth's.m blind haveEC flower aature upper thus fruits
+
+================================================================================
+BPB Evaluation
+================================================================================
+train bpb: 2.098022
+val bpb: 2.153021
+
+================================================================================
+CORE Evaluation
+================================================================================
+Evaluating: hellaswag_zeroshot (0-shot, type: multiple_choice)... accuracy: 0.3333 | centered: 0.1111 | time: 0.21s
+Evaluating: jeopardy (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.08s
+Evaluating: bigbench_qa_wikidata (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.11s
+Evaluating: arc_easy (10-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.2222 | time: 0.10s
+Evaluating: arc_challenge (10-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.2222 | time: 0.09s
+Evaluating: copa (0-shot, type: multiple_choice)... accuracy: 0.5000 | centered: 0.0000 | time: 0.06s
+Evaluating: commonsense_qa (10-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.1458 | time: 0.10s
+Evaluating: piqa (10-shot, type: multiple_choice)... accuracy: 0.7500 | centered: 0.5000 | time: 0.08s
+Evaluating: openbook_qa (0-shot, type: multiple_choice)... accuracy: 0.3333 | centered: 0.1111 | time: 0.06s
+Evaluating: lambada_openai (0-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.08s
+Evaluating: hellaswag (10-shot, type: multiple_choice)... accuracy: 0.3333 | centered: 0.1111 | time: 0.18s
+Evaluating: winograd (0-shot, type: schema)... accuracy: 0.5833 | centered: 0.1667 | time: 0.06s
+Evaluating: winogrande (0-shot, type: schema)... accuracy: 0.3333 | centered: -0.3333 | time: 0.06s
+Evaluating: bigbench_dyck_languages (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.07s
+Evaluating: agi_eval_lsat_ar (3-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.1458 | time: 0.12s
+Evaluating: bigbench_cs_algorithms (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.08s
+Evaluating: bigbench_operators (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.07s
+Evaluating: bigbench_repeat_copy_logic (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.07s
+Evaluating: squad (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.16s
+Evaluating: coqa (0-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.13s
+Evaluating: boolq (10-shot, type: multiple_choice)... accuracy: 0.3333 | centered: -0.7544 | time: 0.16s
+Evaluating: bigbench_language_identification (10-shot, type: multiple_choice)... accuracy: 0.0833 | centered: -0.0084 | time: 0.24s
+
+Results written to: /home/ubuntu/.cache/nanochat/base_eval/base_model_000040.csv
+CORE metric: -0.0378
+===== STAGE ar base_eval DONE 21:38:02 =====
+===== STAGE ar sft START 21:38:02 =====
+Autodetected device type: cuda
+2026-10-06 21:38:04,652 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+COMPUTE_DTYPE: torch.bfloat16 (auto-detected: CUDA SM 80 (bf16 supported))
+GPU: NVIDIA A100-SXM4-80GB | Peak FLOPS (BF16): 3.12e+14
+2026-10-06 21:38:04,688 - nanochat.common - [32m[1mINFO[0m - Logging metrics to /home/ubuntu/.cache/nanochat/logs/nanochat-sft/smoke_ar_d6_sft
+WARNING: Flash Attention 3 not available, using PyTorch SDPA fallback. Training will be less efficient.
+2026-10-06 21:38:04,688 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/base_checkpoints/smoke_ar_d6 with step 40
+2026-10-06 21:38:04,907 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 512, 'vocab_size': 32768, 'n_layer': 6, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 384, 'window_pattern': 'SSSL', 'model_type': 'ar'}
+Model type: ar
+Inherited max_seq_len=512 from pretrained checkpoint
+NOTE: --device-batch-size=8 overrides pretrained value of 32
+Inherited total_batch_size=16384 from pretrained checkpoint
+Inherited embedding_lr=0.3 from pretrained checkpoint
+Inherited unembedding_lr=0.008 from pretrained checkpoint
+Inherited matrix_lr=0.02 from pretrained checkpoint
+Tokens / micro-batch / rank: 8 x 512 = 4,096
+Tokens / micro-batch: 4,096
+Total batch size 16,384 => gradient accumulation steps: 4
+Scaling the LR for the AdamW parameters ∝1/√(384/768) = 1.414214
+2026-10-06 21:38:05,741 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading optimizer state from /home/ubuntu/.cache/nanochat/base_checkpoints/smoke_ar_d6/optim_000040_rank0.pt
+Loaded optimizer state from pretrained checkpoint (momentum buffers only, LRs reset)
+Training mixture: 789,759 rows (MMLU x3, GSM8K x4)
+Step 00000 | Validation bpb: 2.4734
+step 00001 (25.00%) | loss: 3.864698 | lrm: 1.00 | dt: 11234.93ms | tok/sec: 1,458 | mfu: 0.07 | epoch: 1 | total time: 0.00m
+step 00002 (45.00%) | loss: 5.055451 | lrm: 1.00 | dt: 44.96ms | tok/sec: 364,401 | mfu: 17.08 | epoch: 1 | total time: 0.00m
+step 00003 (65.00%) | loss: nan | lrm: 0.70 | dt: 37.75ms | tok/sec: 433,969 | mfu: 20.35 | epoch: 1 | total time: 0.00m
+step 00004 (85.00%) | loss: nan | lrm: 0.30 | dt: 37.82ms | tok/sec: 433,216 | mfu: 20.31 | epoch: 1 | total time: 0.00m
+step 00005 (105.00%) | loss: nan | lrm: -0.10 | dt: 37.71ms | tok/sec: 434,471 | mfu: 20.37 | epoch: 1 | total time: 0.00m
+Step 00005 | Validation bpb: 2.2928
+Final: 4/8 (50.00%)
+  ARC-Easy: 50.00%
+Final: 3/8 (37.50%)
+  ARC-Challenge: 37.50%
+Final: 4/8 (50.00%)
+  MMLU: 50.00%
+[KRank 0 | 0/1 (0.00%)[KRank 0 | 0/2 (0.00%)
+==================================================
+Final: 0/2 (0.00%)
+  GSM8K: 0.00%
+[KRank 0 | 0/1 (0.00%)[KRank 0 | 0/2 (0.00%)
+==================================================
+Final: 0/2 (0.00%)
+  HumanEval: 0.00%
+Step 00005 | ChatCORE: 0.1667 | ChatCORE_cat: 0.2778
+2026-10-06 21:38:27,709 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Saved model parameters to: /home/ubuntu/.cache/nanochat/chatsft_checkpoints/smoke_ar_d6/model_000005.pt
+2026-10-06 21:38:27,709 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Saved metadata to: /home/ubuntu/.cache/nanochat/chatsft_checkpoints/smoke_ar_d6/meta_000005.json
+2026-10-06 21:38:28,003 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Saved optimizer state to: /home/ubuntu/.cache/nanochat/chatsft_checkpoints/smoke_ar_d6/optim_000005_rank0.pt
+Peak memory usage: 1396.59MiB
+Total training time: 0.00m
+Minimum validation bpb: 2.2928
+===== STAGE ar sft DONE 21:38:28 =====
+===== STAGE ar chat_eval START 21:38:28 =====
+Autodetected device type: cuda
+2026-10-06 21:38:30,515 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+2026-10-06 21:38:30,516 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/chatsft_checkpoints/smoke_ar_d6 with step 5
+2026-10-06 21:38:30,756 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 512, 'vocab_size': 32768, 'n_layer': 6, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 384, 'window_pattern': 'SSSL', 'model_type': 'ar'}
+Final: 1/4 (25.00%)
+ARC-Easy accuracy: 25.00%
+[KRank 0 | 0/1 (0.00%)[KRank 0 | 0/2 (0.00%)[KRank 0 | 0/3 (0.00%)[KRank 0 | 0/4 (0.00%)
+==================================================
+Final: 0/4 (0.00%)
+GSM8K accuracy: 0.00%
+===== STAGE ar chat_eval DONE 21:38:31 =====
+===== STAGE ar rl START 21:38:31 =====
+Autodetected device type: cuda
+2026-10-06 21:38:33,478 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+2026-10-06 21:38:33,513 - nanochat.common - [32m[1mINFO[0m - Logging metrics to /home/ubuntu/.cache/nanochat/logs/nanochat-rl/smoke_ar_d6_rl
+2026-10-06 21:38:33,513 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/chatsft_checkpoints/smoke_ar_d6 with step 5
+2026-10-06 21:38:33,749 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 512, 'vocab_size': 32768, 'n_layer': 6, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 384, 'window_pattern': 'SSSL', 'model_type': 'ar'}
+Model type: ar
+Calculated number of steps: 2
+Scaling the LR for the AdamW parameters ∝1/√(384/768) = 1.414214
+Total sequences per step: 8
+Calculated examples per rank: 2
+Step 0 | Pass@1: 0.0000, Pass@2: 0.0000, Pass@3: 0.0000, Pass@4: 0.0000
+Step 0/2 | Example step 0 | Pass 0 | loss: -0.000000 | Average reward: 0.0
+Step 0/2 | Example step 1 | Pass 0 | loss: -0.000000 | Average reward: 0.0
+Step 0/2 | Average reward: 0.0 | Average sequence length: 82.62
+Step 1 | Pass@1: 0.0000, Pass@2: 0.0000, Pass@3: 0.0000, Pass@4: 0.0000
+Step 1/2 | Example step 0 | Pass 0 | loss: -0.000000 | Average reward: 0.0
+Step 1/2 | Example step 1 | Pass 0 | loss: -0.000000 | Average reward: 0.0
+Step 1/2 | Average reward: 0.0 | Average sequence length: 116.75
+2026-10-06 21:38:39,928 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Saved model parameters to: /home/ubuntu/.cache/nanochat/chatrl_checkpoints/smoke_ar_d6/model_000001.pt
+2026-10-06 21:38:39,929 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Saved metadata to: /home/ubuntu/.cache/nanochat/chatrl_checkpoints/smoke_ar_d6/meta_000001.json
+✅ Saved model checkpoint to /home/ubuntu/.cache/nanochat/chatrl_checkpoints/smoke_ar_d6
+===== STAGE ar rl DONE 21:38:41 =====
+===== ALL STAGES DONE =====

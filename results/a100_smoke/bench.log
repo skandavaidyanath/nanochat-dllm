@@ -1,0 +1,37 @@
+===== BENCH ar START 21:38:41 =====
+Model type: ar
+Tokens / micro-batch / rank: 32 x 2048 = 65,536
+Tokens / micro-batch: 65,536
+Total batch size 524,288 => gradient accumulation steps: 8
+step 00020/00030 (66.67%) | loss: 7.268295 | lrm: 0.53 | dt: 2370.22ms | tok/sec: 221,197 | bf16_mfu: 62.89 | epoch: 1 pq: 0 rg: 22 | total time: 0.40m | eta: 0.4m
+step 00021/00030 (70.00%) | loss: 7.144279 | lrm: 0.55 | dt: 2369.88ms | tok/sec: 221,230 | bf16_mfu: 62.90 | epoch: 1 pq: 0 rg: 23 | total time: 0.43m | eta: 0.4m
+step 00022/00030 (73.33%) | loss: 7.037334 | lrm: 0.57 | dt: 2369.10ms | tok/sec: 221,302 | bf16_mfu: 62.92 | epoch: 1 pq: 0 rg: 24 | total time: 0.47m | eta: 0.3m
+step 00023/00030 (76.67%) | loss: 6.930990 | lrm: 0.60 | dt: 2368.62ms | tok/sec: 221,347 | bf16_mfu: 62.93 | epoch: 1 pq: 0 rg: 26 | total time: 0.51m | eta: 0.3m
+step 00024/00030 (80.00%) | loss: 6.832112 | lrm: 0.62 | dt: 2367.58ms | tok/sec: 221,444 | bf16_mfu: 62.96 | epoch: 1 pq: 0 rg: 27 | total time: 0.55m | eta: 0.2m
+step 00025/00030 (83.33%) | loss: 6.744189 | lrm: 0.65 | dt: 2366.42ms | tok/sec: 221,553 | bf16_mfu: 62.99 | epoch: 1 pq: 0 rg: 28 | total time: 0.59m | eta: 0.2m
+step 00026/00030 (86.67%) | loss: 6.662233 | lrm: 0.68 | dt: 2365.80ms | tok/sec: 221,611 | bf16_mfu: 63.01 | epoch: 1 pq: 0 rg: 29 | total time: 0.63m | eta: 0.2m
+step 00027/00030 (90.00%) | loss: 6.583205 | lrm: 0.70 | dt: 2365.49ms | tok/sec: 221,639 | bf16_mfu: 63.02 | epoch: 1 pq: 0 rg: 30 | total time: 0.67m | eta: 0.1m
+step 00028/00030 (93.33%) | loss: 6.513772 | lrm: 0.72 | dt: 2364.34ms | tok/sec: 221,748 | bf16_mfu: 63.05 | epoch: 1 pq: 0 rg: 31 | total time: 0.71m | eta: 0.1m
+step 00029/00030 (96.67%) | loss: 6.458229 | lrm: 0.75 | dt: 2363.83ms | tok/sec: 221,795 | bf16_mfu: 63.06 | epoch: 1 pq: 0 rg: 32 | total time: 0.75m | eta: 0.0m
+Peak memory usage: 28772.21MiB
+Total training time: 0.75m
+===== BENCH ar DONE 21:40:36 =====
+===== BENCH mdm START 21:40:36 =====
+Model type: mdm (mask token id 32767)
+Tokens / micro-batch / rank: 32 x 2048 = 65,536
+Tokens / micro-batch: 65,536
+Total batch size 524,288 => gradient accumulation steps: 8
+step 00020/00030 (66.67%) | loss: 8.028664 | lrm: 0.53 | dt: 2711.42ms | tok/sec: 193,362 | bf16_mfu: 54.98 | epoch: 1 pq: 0 rg: 22 | total time: 0.45m | eta: 0.5m
+step 00021/00030 (70.00%) | loss: 8.008591 | lrm: 0.55 | dt: 2712.01ms | tok/sec: 193,320 | bf16_mfu: 54.97 | epoch: 1 pq: 0 rg: 23 | total time: 0.50m | eta: 0.4m
+step 00022/00030 (73.33%) | loss: 7.996272 | lrm: 0.57 | dt: 2711.79ms | tok/sec: 193,336 | bf16_mfu: 54.97 | epoch: 1 pq: 0 rg: 24 | total time: 0.54m | eta: 0.4m
+step 00023/00030 (76.67%) | loss: 7.974986 | lrm: 0.60 | dt: 2713.27ms | tok/sec: 193,230 | bf16_mfu: 54.94 | epoch: 1 pq: 0 rg: 26 | total time: 0.59m | eta: 0.3m
+step 00024/00030 (80.00%) | loss: 7.934838 | lrm: 0.62 | dt: 2713.83ms | tok/sec: 193,191 | bf16_mfu: 54.93 | epoch: 1 pq: 0 rg: 27 | total time: 0.63m | eta: 0.3m
+step 00025/00030 (83.33%) | loss: 7.921494 | lrm: 0.65 | dt: 2715.50ms | tok/sec: 193,072 | bf16_mfu: 54.90 | epoch: 1 pq: 0 rg: 28 | total time: 0.68m | eta: 0.2m
+step 00026/00030 (86.67%) | loss: 7.903522 | lrm: 0.68 | dt: 2714.60ms | tok/sec: 193,136 | bf16_mfu: 54.91 | epoch: 1 pq: 0 rg: 29 | total time: 0.72m | eta: 0.2m
+step 00027/00030 (90.00%) | loss: 7.888751 | lrm: 0.70 | dt: 2715.24ms | tok/sec: 193,090 | bf16_mfu: 54.90 | epoch: 1 pq: 0 rg: 30 | total time: 0.77m | eta: 0.1m
+step 00028/00030 (93.33%) | loss: 7.849397 | lrm: 0.72 | dt: 2715.48ms | tok/sec: 193,073 | bf16_mfu: 54.90 | epoch: 1 pq: 0 rg: 31 | total time: 0.81m | eta: 0.1m
+step 00029/00030 (96.67%) | loss: 7.838594 | lrm: 0.75 | dt: 2715.82ms | tok/sec: 193,049 | bf16_mfu: 54.89 | epoch: 1 pq: 0 rg: 32 | total time: 0.86m | eta: 0.0m
+Peak memory usage: 32820.46MiB
+Total training time: 0.86m
+===== BENCH mdm DONE 21:42:27 =====
+CHAIN DONE
