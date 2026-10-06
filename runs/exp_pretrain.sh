@@ -16,9 +16,11 @@ DBS="${DBS:-32}"
 BATCH="${BATCH:--1}"            # -1 = nanochat auto batch size; set explicitly to hold it fixed across token budgets
 EXTRA="${EXTRA:-}"
 SAVE_EVERY="${SAVE_EVERY:-1000}"
+SKIP_TRAIN="${SKIP_TRAIN:-0}"       # 1 = checkpoint already exists, only run base_eval
 source .venv/bin/activate
 mkdir -p "$NANOCHAT_BASE_DIR/logs"
 
+if [ "$SKIP_TRAIN" != "1" ]; then
 echo "=== pretrain $TAG: model_type=$MODEL_TYPE depth=$DEPTH ratio=$RATIO nproc=$NPROC batch=$BATCH extra='$EXTRA'"
 torchrun --standalone --nproc_per_node=$NPROC -m scripts.base_train -- \
     --model-type=$MODEL_TYPE --depth=$DEPTH --target-param-data-ratio=$RATIO \
@@ -26,6 +28,7 @@ torchrun --standalone --nproc_per_node=$NPROC -m scripts.base_train -- \
     --run=$TAG --model-tag=$TAG \
     --core-metric-every=-1 --sample-every=-1 --save-every=$SAVE_EVERY \
     $EXTRA 2>&1 | tee -a "$NANOCHAT_BASE_DIR/logs/${TAG}_pretrain.log"
+fi
 
 echo "=== base_eval $TAG"
 torchrun --standalone --nproc_per_node=$NPROC -m scripts.base_eval -- \

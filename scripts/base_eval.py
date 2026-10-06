@@ -158,7 +158,7 @@ def main():
     mask_id = tokenizer.encode_special(MASK_TOKEN) if is_mdm else None
     print0(f"Model type: {model.config.model_type}")
     model_name = f"base_model (step {meta['step']})"
-    model_slug = f"base_model_{meta['step']:06d}"
+    model_slug = f"{args.model_tag or 'base_model'}_{meta['step']:06d}" # tag in the name so runs don't overwrite each other
 
     print0(f"Evaluating model: {model_name}")
     print0(f"Eval modes: {', '.join(sorted(eval_modes))}")

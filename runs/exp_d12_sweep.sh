@@ -19,10 +19,12 @@ source .venv/bin/activate
 python -m nanochat.dataset -n 170   # 4x d12 budget = 5.3B tokens ~ 160 shards at ~34M usable tokens/shard
 COMMON="DEPTH=12 NPROC=$NPROC BATCH=524288 SAVE_EVERY=500"
 have_base() { ls "$NANOCHAT_BASE_DIR/base_checkpoints/$1"/model_*.pt >/dev/null 2>&1; }
+have_eval() { ls "$NANOCHAT_BASE_DIR/base_eval/$1"_*.csv >/dev/null 2>&1; }
 have_sft()  { ls "$NANOCHAT_BASE_DIR/chatsft_checkpoints/$1"/model_*.pt >/dev/null 2>&1; }
 pretrain() { # TAG MODEL_TYPE RATIO [EXTRA]
-    if have_base "$1"; then echo "=== skip pretrain $1 (checkpoint exists)"; return; fi
-    env $COMMON TAG="$1" MODEL_TYPE="$2" RATIO="$3" EXTRA="${4:-}" bash runs/exp_pretrain.sh
+    if have_base "$1" && have_eval "$1"; then echo "=== skip pretrain+eval $1 (done)"; return; fi
+    if have_base "$1"; then echo "=== skip pretrain $1 (checkpoint exists), running base_eval"; SKIP_TRAIN=1; else SKIP_TRAIN=0; fi
+    env $COMMON SKIP_TRAIN=$SKIP_TRAIN TAG="$1" MODEL_TYPE="$2" RATIO="$3" EXTRA="${4:-}" bash runs/exp_pretrain.sh
 }
 posttrain() { # TAG
     if have_sft "$1"; then echo "=== skip posttrain $1 (checkpoint exists)"; return; fi
