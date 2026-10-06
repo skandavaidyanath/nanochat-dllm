@@ -1,0 +1,121 @@
+2026-10-06 23:12:05,979 - httpx - [32m[1mINFO[0m - HTTP Request: GET https://huggingface.co/api/models/varunneal/flash-attention-3/revision/main "HTTP/1.1 200 OK"
+Autodetected device type: cuda
+2026-10-06 23:12:06,645 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+2026-10-06 23:12:06,646 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/base_checkpoints/d12_ar with step 2520
+2026-10-06 23:12:07,118 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 2048, 'vocab_size': 32768, 'n_layer': 12, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 768, 'window_pattern': 'SSSL', 'model_type': 'ar'}
+Model type: ar
+Evaluating model: base_model (step 2520)
+Eval modes: bpb, core, sample
+
+================================================================================
+Model Samples
+================================================================================
+
+Conditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>The capital of France is Paris, and the capital of the world is Paris. Paris is the capital of
+--------------------------------------------------------------------------------
+<|bos|>The chemical symbol of gold is Au. It is a soft, malleable, ductile, and ductile
+--------------------------------------------------------------------------------
+<|bos|>If yesterday was Friday, then tomorrow will be today. The first day of the week is Friday, and the second day is
+--------------------------------------------------------------------------------
+<|bos|>The opposite of hot is cold. The opposite of hot is cold. The opposite of hot is cold.
+--------------------------------------------------------------------------------
+<|bos|>The planets of the solar system are: Mercury, Venus, Earth, Mars, and Jupiter. The planets of the solar
+--------------------------------------------------------------------------------
+<|bos|>My favorite color is red. I love the color red. I love the color red. I love
+--------------------------------------------------------------------------------
+<|bos|>If 5*x + 3 = 13, then x is 13. If 5*x + 3 = 13, then
+
+Unconditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>Panasonic Motor Transistor
+Panasonic, a renowned Masonic technician for the majority of 3B plugs who re andotron, sees customers alike. The very first dealership that gets me to agree with the ranting from its customers;.
+I am now also really happy with the Greens and Josh Grice but like a late night when you wind down with it.
+Psalm 100:1- I hold the lodge best, but I will say; Lodge isn't standing out much in Indian culture by giving a 1/0 to all that matters. Patience, Satisfaction, Success, P
+--------------------------------------------------------------------------------
+<|bos|>Add Incentives: The Fanucuis Bay Proposals for the Climate Cooperative are a welcome treat. In a desire for further re-creation of the community of smoke­partners, this Proposal was created to create 10k income opportunities for smoke­partners in an attempt to sustain and grow the smoke­partners market in a sustainable way.
+
+See Also:
+
+"This Proposal serves as a bridge to the rich de­government­tal scope of evi­dence from the nerve tyrant entivi­ty towards the Administration for the Health and Care­–free Administration of the Toxic
+--------------------------------------------------------------------------------
+<|bos|>They say learning is the pearl of success. And you terrify me.
+In a few years time, I will convince you that that very core of unforgettable learning we take here is the easy part - vision, imagination, and dedication. Whatever it is that I do strives for is to do something that will inspire you so that you never lose the feeling of progress. Enemnt' to do the impossible.
+Someone will meet that silly, useless energy of the Energy of Physics when they confront you (or they will encounter it while they are still in the tracks of the Physics interferometer.) You have standard teachers and no microscope. You
+--------------------------------------------------------------------------------
+<|bos|>Testimonials
+Here's what I can say about my experiences at Patna Canyon Beach along with my own voyage on my adventures on the South Chilean South Channel (see link at right). We have taken up the river we do not own our own paddleboards on the river.
+Since we ended up on Dove Beach I do not think most of us would be able to surf in the white stuff. Reasons are not normally kept as this presents a road very familiar to our fellow beach solos, and being in a surf country is a marketing decide in the surfing world.
+Loosenbible prz.
+.
+On doing a 
+--------------------------------------------------------------------------------
+<|bos|>Explain the difference between safe and churning chillies?
+Answer
+Chillies are one of the favorite holiday meals in the world. There are many varieties of this food, but most of them are safe and chillies are one of them. Chillies have very low calories and taste good but are also fattening because of the highly unsaturated fats, hence they are potentially unhealthy.
+There are different chutneys in them and you can choose the traditional ones, but wet chutneys or your friends get that new favourite taboo in cuba. Packing the craving for Chills is also one of the secrets of longevity as
+--------------------------------------------------------------------------------
+<|bos|>What is PRIMEWATER CABED by MAP Process ?
+by the process of peeling it, the mango seeds are added to the slakedraw, is placed in boiling water and tossed to dry. Humous rice in May is part of this project under the name, Dan-Aney.
+Let us know your thoughts and decide on three payslips worth to us.
+Type of Color of Mango Seed : Dark Mango, Medium Mango and Cold Mango Soft Mango Easier to prepare if clean finger Techniques used in plait which gives an idea about preparation is as important as quality of fruit.
+Mangoes
+--------------------------------------------------------------------------------
+<|bos|>How To Protect Your Air Conditioner from Dust
+
+Today, up to 50% of indoor allergens will remain inside the air conditioned spaces.
+
+The majority of indoor allergens are derived from emerging germs such as spores and dust mites.
+
+It is very challenging to protect your air conditioner from particularly harmful indoor contaminants. But it might be possible to address dust within the space that some concentration of potential harmful particles is contained.
+
+It is primarily responsible for harming your PM10 report and ensuring the life expectancy of your AC unit in adverse conditions.
+
+But what if no package of significant positive environmental neglect is still in operation?
+
+It's in your best interest to be cautious
+--------------------------------------------------------------------------------
+<|bos|>Packaging takes 0.5 hours a day
+
+…Read more
+
+"What are the logistics involved with opening them if line lifting shops like hotcakesdiya, he says? Big deal, they're going to take naught. It comes down to 4 wheels. Of the most expensive things and they cost a bottom yr and a top yr in a cardboard box. I remember when I worked at Costco replacing a pack of ice cream cones with a box of Oxnard, you could whittle the shelves with little bullet holes and they did most of the work. They just couldn't haul all of them selves
+
+================================================================================
+BPB Evaluation
+================================================================================
+train bpb: 0.848561
+val bpb: 0.848247
+
+================================================================================
+CORE Evaluation
+================================================================================
+Downloading https://karpathy-public.s3.us-west-2.amazonaws.com/eval_bundle.zip...
+Downloaded to /home/ubuntu/.cache/nanochat/eval_bundle.zip
+Placed eval_bundle directory at /home/ubuntu/.cache/nanochat/eval_bundle
+Evaluating: hellaswag_zeroshot (0-shot, type: multiple_choice)... accuracy: 0.3675 | centered: 0.1566 | time: 173.23s
+Evaluating: jeopardy (10-shot, type: language_modeling)... accuracy: 0.0099 | centered: 0.0099 | time: 38.13s
+Evaluating: bigbench_qa_wikidata (10-shot, type: language_modeling)... accuracy: 0.2615 | centered: 0.2615 | time: 361.11s
+Evaluating: arc_easy (10-shot, type: multiple_choice)... accuracy: 0.5547 | centered: 0.4063 | time: 46.74s
+Evaluating: arc_challenge (10-shot, type: multiple_choice)... accuracy: 0.2816 | centered: 0.0421 | time: 22.85s
+Evaluating: copa (0-shot, type: multiple_choice)... accuracy: 0.5900 | centered: 0.1800 | time: 1.80s
+Evaluating: commonsense_qa (10-shot, type: multiple_choice)... accuracy: 0.2588 | centered: 0.0735 | time: 24.52s
+Evaluating: piqa (10-shot, type: multiple_choice)... accuracy: 0.6812 | centered: 0.3624 | time: 35.65s
+Evaluating: openbook_qa (0-shot, type: multiple_choice)... accuracy: 0.3200 | centered: 0.0933 | time: 8.79s
+Evaluating: lambada_openai (0-shot, type: language_modeling)... accuracy: 0.3045 | centered: 0.3045 | time: 87.06s
+Evaluating: hellaswag (10-shot, type: multiple_choice)... accuracy: 0.3612 | centered: 0.1482 | time: 231.67s
+Evaluating: winograd (0-shot, type: schema)... accuracy: 0.5897 | centered: 0.1795 | time: 4.57s
+Evaluating: winogrande (0-shot, type: schema)... accuracy: 0.5130 | centered: 0.0260 | time: 21.12s
+Evaluating: bigbench_dyck_languages (10-shot, type: language_modeling)... accuracy: 0.1070 | centered: 0.1070 | time: 19.56s
+Evaluating: agi_eval_lsat_ar (3-shot, type: multiple_choice)... accuracy: 0.2304 | centered: 0.0380 | time: 5.06s
+Evaluating: bigbench_cs_algorithms (10-shot, type: language_modeling)... accuracy: 0.4159 | centered: 0.4159 | time: 23.43s
+Evaluating: bigbench_operators (10-shot, type: language_modeling)... accuracy: 0.0762 | centered: 0.0762 | time: 3.72s
+Evaluating: bigbench_repeat_copy_logic (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.56s
+Evaluating: squad (10-shot, type: language_modeling)... accuracy: 0.1644 | centered: 0.1644 | time: 227.80s
+Evaluating: coqa (0-shot, type: language_modeling)... accuracy: 0.1819 | centered: 0.1819 | time: 143.37s
+Evaluating: boolq (10-shot, type: multiple_choice)... accuracy: 0.5150 | centered: -0.2764 | time: 75.84s
+Evaluating: bigbench_language_identification (10-shot, type: multiple_choice)... accuracy: 0.2507 | centered: 0.1757 | time: 286.67s
+
+Results written to: /home/ubuntu/.cache/nanochat/base_eval/d12_ar_002520.csv
+CORE metric: 0.1421
