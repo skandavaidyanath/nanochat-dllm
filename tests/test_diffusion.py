@@ -9,6 +9,7 @@ import torch.nn.functional as F
 import pytest
 
 from nanochat.gpt import GPT, GPTConfig
+import nanochat.flash_attention as fa_module
 from nanochat.flash_attention import _sdpa_attention
 from nanochat.diffusion import (
     sample_mask_rates, apply_mask, mdm_loss, evaluate_bpb_mdm, score_continuations,
@@ -18,6 +19,16 @@ from nanochat.diffusion import (
 DEVICE = torch.device("cpu")
 VOCAB = 300
 MASK_ID = 299
+
+
+@pytest.fixture(autouse=True, scope="module")
+def force_sdpa():
+    """These tests use tiny fp32 CPU models; make sure attention never dispatches to FA3 on GPU boxes."""
+    fa_module._override_impl = "sdpa"
+    fa_module.USE_FA3 = fa_module._resolve_use_fa3()
+    yield
+    fa_module._override_impl = None
+    fa_module.USE_FA3 = fa_module._resolve_use_fa3()
 
 
 def tiny_model(model_type, seed=0):
