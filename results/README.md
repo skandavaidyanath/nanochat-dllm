@@ -20,8 +20,8 @@ Latest numbers and plots: [d12/summary.md](d12/summary.md)
 | d12_ar | AR baseline | done | 0.847 | n/a (exact) | 0.142 | 63 min, 349K tok/s |
 | d12_mdm | MDM, matched tokens | done | 1.068 (ELBO) | 1.053 | 0.109 | 66 min, 332K tok/s (5% slower than AR with FA3); gap to AR shrank from 0.35 bpb at step 250 to 0.21 at the end |
 | d12_ar SFT + chat eval | post-training | done | SFT val bpb 0.356 | | ChatCORE 0.084 | ARC-E 36.1 / ARC-C 32.5 / MMLU 31.2 / GSM8K 0.8 / HumanEval 7.9 | | | | |
-| d12_mdm SFT + chat eval | post-training | eval running | SFT val bpb 0.624 | | | ARC-E 25.6 / ARC-C 25.4 / MMLU 23.6 = chance, see finding 1; GSM8K 0 so far | | | | |
-| d12_mdm_2x | MDM, 2.64B tokens | queued | | | | crossover search |
+| d12_mdm SFT + chat eval | post-training | done (fix pending) | SFT val bpb 0.624 | | ChatCORE -0.001 | ARC-E 25.6 / ARC-C 25.4 / MMLU 23.6 = chance, GSM8K 0.0 / HumanEval 0.0; see finding 1 | | | | |
+| d12_mdm_2x | MDM, 2.64B tokens | running | | | | crossover search |
 | d12_ar_lr0.01 / lr0.04 | AR LR sweep | queued | | | | |
 | d12_mdm_lr0.01 / lr0.04 | MDM LR sweep | queued | | | | |
 | d12_mdm_4x | MDM, 5.28B tokens | queued | | | | crossover search |
