@@ -47,7 +47,12 @@ The AR model cannot see ahead, hedges, and never saturates. Diagnostics (200 SFT
 | packed, softcap off / 50 | -0.002 / -0.004 | saturation is a symptom, not the cause |
 | packed, unembedding LR / 10 | 0.004 | output-layer drift is not the cause |
 | MMLU-only (MDM, MDM eps=1, **AR control**) | 0.011 / 0.020 / **0.001** | degenerate: all collapse to uniform letters, val bpb 7-9; uninformative |
-| padded (LLaDA-style, one conv/row, maskable end padding) | pending | tests the response-length shortcut |
+| padded (LLaDA-style, one conv/row, maskable end padding) | 0.008 | response-length shortcut is not the cause |
+| MMLU-only at 0.1x LR (AR and MDM) | pending | cleanest head-to-head on learning the letter task |
+
+Plain exam-format probe (no chat tokens, "Answer:" then next token / mask), ARC-Easy, 298 questions:
+AR base 24%, MDM base 23%, MDM 2x base 26%, AR SFT 34%, MDM SFT 26%. Neither base model has the letter skill;
+SFT gives it to the AR model only.
 
 Local probe on 200 MMLU test questions in the training format: diffusion SFT model CE on the masked letter = 1.385
 (uniform over A-D, chance = 1.386) in every context variant; AR SFT model CE 1.445 with 31.5% accuracy; the
