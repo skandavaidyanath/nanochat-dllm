@@ -67,9 +67,9 @@ def tidy(ax, xlabel, ylabel, title):
     ax.tick_params(colors=INK2)
 
 
-def label_end(ax, xs, ys, text, color):
+def label_end(ax, xs, ys, text, color, dy=0):
     if xs:
-        ax.annotate(text, (xs[-1], ys[-1]), xytext=(6, 0), textcoords="offset points", va="center",
+        ax.annotate(text, (xs[-1], ys[-1]), xytext=(6, dy), textcoords="offset points", va="center",
                     fontsize=9, color=INK)
 
 
@@ -87,10 +87,10 @@ def plot_val_bpb(runs, out):
         else:
             xs, ys = series(run, "val/bpb")
             ax.plot(xs, ys, color=c, linewidth=2, label=f"{run['name']} ELBO (upper bound)")
-            label_end(ax, xs, ys, f"{run['name']} ELBO", c)
+            label_end(ax, xs, ys, f"{run['name']} ELBO", c, dy=6)
             xs2, ys2 = series(run, "val/bpb_l2r")
             ax.plot(xs2, ys2, color=c, linewidth=2, linestyle="--", label=f"{run['name']} left-to-right NLL")
-            label_end(ax, xs2, ys2, f"{run['name']} L2R", c)
+            label_end(ax, xs2, ys2, f"{run['name']} L2R", c, dy=-6)
     if ar_final is not None:
         ax.axhline(ar_final, color=PALETTE["ar"], linewidth=1, linestyle=":")
         ax.annotate(f"AR final {ar_final:.3f}", (0, ar_final), xytext=(4, 4), textcoords="offset points",
