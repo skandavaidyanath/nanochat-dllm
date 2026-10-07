@@ -19,12 +19,28 @@ Latest numbers and plots: [d12/summary.md](d12/summary.md)
 |---|---|---|---|---|---|---|
 | d12_ar | AR baseline | done | 0.847 | n/a (exact) | 0.142 | 63 min, 349K tok/s |
 | d12_mdm | MDM, matched tokens | done | 1.068 (ELBO) | 1.053 | 0.109 | 66 min, 332K tok/s (5% slower than AR with FA3); gap to AR shrank from 0.35 bpb at step 250 to 0.21 at the end |
-| d12_ar SFT + chat eval | post-training | running | | | | |
-| d12_mdm SFT + chat eval | post-training | queued | | | | |
+| d12_ar SFT + chat eval | post-training | done | SFT val bpb 0.356 | | ChatCORE 0.084 | ARC-E 36.1 / ARC-C 32.5 / MMLU 31.2 / GSM8K 0.8 / HumanEval 7.9 | | | | |
+| d12_mdm SFT + chat eval | post-training | eval running | SFT val bpb 0.624 | | | ARC-E 25.6 / ARC-C 25.4 / MMLU 23.6 = chance, see finding 1; GSM8K 0 so far | | | | |
 | d12_mdm_2x | MDM, 2.64B tokens | queued | | | | crossover search |
 | d12_ar_lr0.01 / lr0.04 | AR LR sweep | queued | | | | |
 | d12_mdm_lr0.01 / lr0.04 | MDM LR sweep | queued | | | | |
 | d12_mdm_4x | MDM, 5.28B tokens | queued | | | | crossover search |
+
+## Findings so far
+
+**1. Diffusion SFT on nanochat saturates the logit softcap and loses multiple-choice discrimination (d12).**
+After identical SFT, the AR model scores 36/33/31% on ARC-E/ARC-C/MMLU; the diffusion model scores chance.
+Probing the answer position: the diffusion SFT model puts all mass on {A,B,C,D} but its four raw logits are
+38-46, inside the saturated region of nanochat's `15*tanh(x/15)` cap, and identical across questions; the AR
+model's raw letter logits are 15-29 and vary by 5-10 nats with the question; the pre-SFT diffusion model's
+are 6-9 and do vary. The drift to saturation is ~0.12 raw logits/step from step 0 and is *independent of the
+1/p loss weighting* (min mask rate 0.1 / 0.3 / 1.0 all saturate by step 200, `diag_mdm_sft_eps*`). Output-row
+norms are unchanged, so the hidden state is what aligned with the shared "letter" direction. Working
+explanation: in packed bidirectional training the model sees where the next conversation starts, so it is
+certain the slot is one token; that gives a consistent gradient direction which Muon's orthogonalized updates
+turn into steady drift until the cap saturates and the question-specific gradient (scaled by tanh') dies.
+The AR model cannot see ahead, hedges, and never saturates. Fix candidates under test: lower unembedding LR
+(`diag_mdm_sft_unemb0.0004`), softcap removed / raised to 50 (`diag_mdm_sft_cap0`, `cap50`).
 
 ## Phase 2: d24 (speedrun config, 8xH100 on Lightning)
 
