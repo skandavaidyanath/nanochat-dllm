@@ -49,7 +49,8 @@ The AR model cannot see ahead, hedges, and never saturates. Diagnostics (200 SFT
 | MMLU-only (MDM, MDM eps=1, **AR control**) | 0.011 / 0.020 / **0.001** | degenerate: all collapse to uniform letters, val bpb 7-9; uninformative |
 | padded (LLaDA-style, one conv/row, maskable end padding) | 0.008 | response-length shortcut is not the cause |
 | MMLU-only at 0.1x LR: AR / MDM | **0.100 / 0.049** | the MDM *can* learn the letter task, at about half the AR's rate, once the LR is lowered |
-| mixture at 0.1x and 0.3x LR (MDM), 0.1x (AR control) | pending | tuned-vs-tuned SFT learning rate |
+| mixture at 0.1x / 0.3x LR (MDM); 0.1x (AR control) | 0.001 / 0.014; **AR 0.036** | lower LR does not rescue the MDM on the mixture; the AR still learns |
+| mixture with 3x the MMLU share, 0.3x LR (MDM), 400 steps | 0.000 @200, 0.028 @400 | weak signal emerging with more MC share and more steps: consistent with the MC gradient being drowned by the diffusion loss on long responses |
 
 Plain exam-format probe (no chat tokens, "Answer:" then next token / mask), ARC-Easy, 298 questions:
 AR base 24%, MDM base 23%, MDM 2x base 26%, AR SFT 34%, MDM SFT 26%. Neither base model has the letter skill;
