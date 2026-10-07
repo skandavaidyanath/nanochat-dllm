@@ -43,6 +43,7 @@ parser.add_argument("--output-tag", type=str, default=None, help="checkpoint dir
 # MDM only
 parser.add_argument("--mdm-min-mask-rate", type=float, default=1e-3, help="MDM: minimum mask rate eps, p ~ U(eps, 1); 1e-3 = LLaDA default, larger values bound the 1/p loss weights")
 parser.add_argument("--softcap", type=float, default=None, help="override the logit softcap for SFT and the saved model (<= 0 disables; default: inherit from the base model)")
+parser.add_argument("--mdm-sft-format", type=str, default="packed", choices=["packed", "padded"], help="MDM: 'packed' = nanochat packing (next conversation visible after the response); 'padded' = LLaDA-style, one conversation per row, response followed by maskable <|assistant_end|> padding so the response length is not observable")
 parser.add_argument("--load-optimizer", type=int, default=1, help="warm-start optimizer from pretrained checkpoint (0=no, 1=yes)")
 # Training horizon
 parser.add_argument("--num-iterations", type=int, default=-1, help="number of optimization steps (-1 = full epoch)")
@@ -222,10 +223,38 @@ def sft_data_generator_bos_bestfit(split, buffer_size=100):
                 epoch += 1
                 # Note: last_step is now triggered based on consumption, not fetching
 
+    assistant_end = tokenizer.encode_special("<|assistant_end|>")
     while True:
         rows = []
         mask_rows = []
         row_lengths = []  # Track actual content length (excluding padding) for each row
+        if is_mdm and args.mdm_sft_format == "padded":
+            # LLaDA-style: one conversation per row, the rest of the row is maskable <|assistant_end|> padding that
+            # the model learns to predict, so neither the response length nor a following conversation is visible.
+            for _ in range(args.device_batch_size):
+                while len(conv_buffer) < buffer_size:
+                    refill_buffer()
+                conv, conv_mask = conv_buffer.pop(0)
+                consumed += ddp_world_size
+                conv, conv_mask = conv[:row_capacity], conv_mask[:row_capacity]
+                pad = row_capacity - len(conv)
+                rows.append(conv + [assistant_end] * pad)
+                mask_rows.append(conv_mask + [1] * pad)
+                row_lengths.append(row_capacity)
+            it += 1
+            if 0 < args.num_iterations <= it and split == "train":
+                last_step = True
+            if split == "train":
+                current_epoch = epoch
+                approx_progress = it / args.num_iterations if args.num_iterations > 0 else consumed / dataset_size
+                if consumed >= dataset_size:
+                    last_step = True
+            use_cuda = device_type == "cuda"
+            batch_tensor = torch.tensor(rows, dtype=torch.long, pin_memory=use_cuda)
+            ids = batch_tensor[:, :-1].to(device=device, non_blocking=use_cuda).contiguous()
+            maskable = (torch.tensor(mask_rows, dtype=torch.int8)[:, :-1] == 1).to(device=device, non_blocking=use_cuda).contiguous()
+            yield ids, maskable
+            continue
         for _ in range(args.device_batch_size):
             row = []
             mask_row = []

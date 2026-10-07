@@ -93,3 +93,12 @@ This is
 BPB Evaluation
 ================================================================================
 train bpb (ELBO, upper bound): 1.076506 | bpb (L2R): 1.049529
+val bpb (ELBO, upper bound): 1.076720 | bpb (L2R): 1.058499
+
+================================================================================
+CORE Evaluation
+================================================================================
+Evaluating: hellaswag_zeroshot (0-shot, type: multiple_choice)... accuracy: 0.2914 | centered: 0.0552 | time: 623.46s
+Evaluating: jeopardy (10-shot, type: language_modeling)... accuracy: 0.0038 | centered: 0.0038 | time: 49.68s
+Evaluating: bigbench_qa_wikidata (10-shot, type: language_modeling)... accuracy: 0.0884 | centered: 0.0884 | time: 534.25s
+Evaluating: arc_easy (10-shot, type: multiple_choice)... 
