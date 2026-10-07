@@ -28,6 +28,8 @@ def _patch_missing_config_keys(model_config_kwargs):
     # Models trained before the MDM variant existed are autoregressive
     if "model_type" not in model_config_kwargs:
         model_config_kwargs["model_type"] = "ar"
+    if "softcap" not in model_config_kwargs:
+        model_config_kwargs["softcap"] = 15.0
 
 def _patch_missing_keys(model_data, model_config):
     """Add default values for new parameters that may be missing in old checkpoints."""

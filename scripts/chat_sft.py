@@ -42,6 +42,7 @@ parser.add_argument("--model-step", type=int, default=None, help="model step to 
 parser.add_argument("--output-tag", type=str, default=None, help="checkpoint directory name for the SFT model (default: same as --model-tag)")
 # MDM only
 parser.add_argument("--mdm-min-mask-rate", type=float, default=1e-3, help="MDM: minimum mask rate eps, p ~ U(eps, 1); 1e-3 = LLaDA default, larger values bound the 1/p loss weights")
+parser.add_argument("--softcap", type=float, default=None, help="override the logit softcap for SFT and the saved model (<= 0 disables; default: inherit from the base model)")
 parser.add_argument("--load-optimizer", type=int, default=1, help="warm-start optimizer from pretrained checkpoint (0=no, 1=yes)")
 # Training horizon
 parser.add_argument("--num-iterations", type=int, default=-1, help="number of optimization steps (-1 = full epoch)")
@@ -95,7 +96,10 @@ if not HAS_FA3:
 model, tokenizer, meta = load_model("base", device, phase="train", model_tag=args.model_tag, step=args.model_step)
 is_mdm = model.config.model_type == "mdm"
 mask_id = tokenizer.encode_special(MASK_TOKEN) if is_mdm else None
-print0(f"Model type: {model.config.model_type}")
+if args.softcap is not None:
+    print0(f"Overriding logit softcap: {model.config.softcap} -> {args.softcap}")
+    model.config.softcap = args.softcap
+print0(f"Model type: {model.config.model_type} | softcap: {model.config.softcap}")
 
 # Inherit training hyperparameters from pretrained checkpoint (None = inherit, explicit value = override)
 pretrain_user_config = meta.get("user_config", {})
@@ -423,6 +427,7 @@ while True:
                     "n_embd": model.config.n_embd,
                     "window_pattern": model.config.window_pattern,
                     "model_type": model.config.model_type,
+                    "softcap": model.config.softcap,
                 },
                 "user_config": user_config, # inputs to the training script
             },

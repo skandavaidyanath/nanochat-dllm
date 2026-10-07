@@ -40,6 +40,8 @@ class GPTConfig:
     # Model type: "ar" = causal next-token prediction (default nanochat);
     # "mdm" = bidirectional masked diffusion LM (see nanochat/diffusion.py). Same architecture otherwise.
     model_type: str = "ar"
+    # Logit softcap: logits = softcap * tanh(logits / softcap). nanochat default 15; <= 0 disables the cap.
+    softcap: float = 15.0
 
 
 def norm(x):
@@ -524,11 +526,12 @@ class GPT(nn.Module):
             x = x[select[0], select[1]] # (n, C)
 
         # Forward the lm_head (compute logits)
-        softcap = 15 # smoothly cap the logits to the range [-softcap, softcap]
+        softcap = self.config.softcap # smoothly cap the logits to the range [-softcap, softcap]
         logits = self.lm_head(x) # (B, T, padded_vocab_size) <- very big tensor, large amount of memory
         logits = logits[..., :self.config.vocab_size] # slice to remove padding
         logits = logits.float() # switch to fp32 for logit softcap and loss computation
-        logits = softcap * torch.tanh(logits / softcap) # squash the logits
+        if softcap > 0:
+            logits = softcap * torch.tanh(logits / softcap) # squash the logits
 
         if targets is not None:
             # training: given the targets, compute and return the loss
