@@ -101,4 +101,25 @@ CORE Evaluation
 Evaluating: hellaswag_zeroshot (0-shot, type: multiple_choice)... accuracy: 0.2914 | centered: 0.0552 | time: 623.46s
 Evaluating: jeopardy (10-shot, type: language_modeling)... accuracy: 0.0038 | centered: 0.0038 | time: 49.68s
 Evaluating: bigbench_qa_wikidata (10-shot, type: language_modeling)... accuracy: 0.0884 | centered: 0.0884 | time: 534.25s
-Evaluating: arc_easy (10-shot, type: multiple_choice)... 
+Evaluating: arc_easy (10-shot, type: multiple_choice)... accuracy: 0.4491 | centered: 0.2654 | time: 47.56s
+Evaluating: arc_challenge (10-shot, type: multiple_choice)... accuracy: 0.2509 | centered: 0.0011 | time: 26.16s
+Evaluating: copa (0-shot, type: multiple_choice)... accuracy: 0.4300 | centered: -0.1400 | time: 1.86s
+Evaluating: commonsense_qa (10-shot, type: multiple_choice)... accuracy: 0.3268 | centered: 0.1585 | time: 22.36s
+Evaluating: piqa (10-shot, type: multiple_choice)... accuracy: 0.6148 | centered: 0.2296 | time: 49.43s
+Evaluating: openbook_qa (0-shot, type: multiple_choice)... accuracy: 0.2540 | centered: 0.0053 | time: 9.03s
+Evaluating: lambada_openai (0-shot, type: language_modeling)... accuracy: 0.3305 | centered: 0.3305 | time: 84.94s
+Evaluating: hellaswag (10-shot, type: multiple_choice)... accuracy: 0.2876 | centered: 0.0501 | time: 2874.09s
+Evaluating: winograd (0-shot, type: schema)... accuracy: 0.5165 | centered: 0.0330 | time: 4.89s
+Evaluating: winogrande (0-shot, type: schema)... accuracy: 0.5130 | centered: 0.0260 | time: 22.15s
+Evaluating: bigbench_dyck_languages (10-shot, type: language_modeling)... accuracy: 0.1230 | centered: 0.1230 | time: 19.24s
+Evaluating: agi_eval_lsat_ar (3-shot, type: multiple_choice)... accuracy: 0.2478 | centered: 0.0598 | time: 4.55s
+Evaluating: bigbench_cs_algorithms (10-shot, type: language_modeling)... accuracy: 0.6098 | centered: 0.6098 | time: 23.00s
+Evaluating: bigbench_operators (10-shot, type: language_modeling)... accuracy: 0.1190 | centered: 0.1190 | time: 3.58s
+Evaluating: bigbench_repeat_copy_logic (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.64s
+Evaluating: squad (10-shot, type: language_modeling)... accuracy: 0.2029 | centered: 0.2029 | time: 268.36s
+Evaluating: coqa (0-shot, type: language_modeling)... accuracy: 0.1042 | centered: 0.1042 | time: 142.79s
+Evaluating: boolq (10-shot, type: multiple_choice)... accuracy: 0.5159 | centered: -0.2739 | time: 69.89s
+Evaluating: bigbench_language_identification (10-shot, type: multiple_choice)... accuracy: 0.2567 | centered: 0.1823 | time: 216.20s
+
+Results written to: /home/ubuntu/.cache/nanochat/base_eval/d12_mdm_lr0.04_002520.csv
+CORE metric: 0.1016
