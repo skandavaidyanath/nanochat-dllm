@@ -1,0 +1,115 @@
+2026-10-07 12:57:53,734 - httpx - [32m[1mINFO[0m - HTTP Request: GET https://huggingface.co/api/models/varunneal/flash-attention-3/revision/main "HTTP/1.1 200 OK"
+Autodetected device type: cuda
+2026-10-07 12:57:54,383 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+2026-10-07 12:57:54,383 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/base_checkpoints/d12_ar_lr0.01 with step 2520
+2026-10-07 12:57:54,924 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 2048, 'vocab_size': 32768, 'n_layer': 12, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 768, 'window_pattern': 'SSSL', 'model_type': 'ar', 'softcap': 15.0}
+Model type: ar
+Evaluating model: base_model (step 2520)
+Eval modes: bpb, core, sample
+
+================================================================================
+Model Samples
+================================================================================
+
+Conditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>The capital of France is Paris, and the capital of France is Paris. The capital of France is Paris
+--------------------------------------------------------------------------------
+<|bos|>The chemical symbol of gold is Au. It is a soft, malleable, and ductile metal. It
+--------------------------------------------------------------------------------
+<|bos|>If yesterday was Friday, then tomorrow will be Friday. If today was Monday, then tomorrow will be Monday. If yesterday was
+--------------------------------------------------------------------------------
+<|bos|>The opposite of hot is cold. The opposite of hot is cold is cold. The opposite of hot is
+--------------------------------------------------------------------------------
+<|bos|>The planets of the solar system are: Earth, Venus, Mars, Jupiter, Saturn, Uranus, Neptune
+--------------------------------------------------------------------------------
+<|bos|>My favorite color is red. I love the color red because it is the color of the sun.
+--------------------------------------------------------------------------------
+<|bos|>If 5*x + 3 = 13, then x is the number of rows in the table. If 5*x + 3
+
+Unconditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>JRP vs. 'All Galileo, In Pictures'
+June 1, 2014
+TIP! PLEASE refer to the Shared Knowledge test prepared for exponents 2 and 3 in the following week's ExamBook;.
+In Newton's Theory, there were thirteen simple laws that actually predicted the nature of motion of the world and humanoid.
+Psalm 100:1 says I did it.
+Psalm 102:2 says I performed it.
+Prolog also says that Galileo showed that objects following his approach to the correct time and in the correct order were as close to P
+--------------------------------------------------------------------------------
+<|bos|>Add In Puck: The Fan Adventures of Francine de la Cherso
+
+"We found some housewarming content inside our house – or maybe even with cool books and interesting climbing gear….. and we discovered a qTb 10k shed!" – Wales University University
+
+On February 22, 2013, only 17 days into our adventure, Francine de la Cherso visited the shed to provide needed humor for derecha, a novel about a wren family prepared by Francine de la Cherso.
+
+De la Cherso is one of the many men and women soliciting guests who
+--------------------------------------------------------------------------------
+<|bos|>They say, "the year ahead, spring will come," but few people can think of it during this time of year.
+Even that means winter sleepiness and we take it for granted, saying "on winter day it will be colder."
+Well, three days in the year is too much for one to relax…
+On two evenings in October and November, only a handful of Ohio restaurants are serving winter foodstuffs in all of the facets, all of culinary fame, and services along with luxury.
+The commercial blossoms of the newly-scrung fountains of executed tracks of the restauration plays some of the standard utilities and function from its already
+--------------------------------------------------------------------------------
+<|bos|>Testimonials
+Here's what I can hear when my friends ask me:
+I fought along with my struggle just like I won it and it went on. I ended up going again on the next occasion, but I won. I hope it will shine brighter next time I turn my back on another occasion.
+It was easy enough to say: but I don't think I care because it's not knowing how to break apart myself.
+I want to break things. Make people to be who they are, make people to feel right where they are.
+Spurred with the success I had and left, everyone told me that.
+I keep rebu
+--------------------------------------------------------------------------------
+<|bos|>Explain the difference between safe voltage and electricity
+
+May 21, 2018 · An electric pump has an input voltage of 120 V. When the drain is completely closed, an electric shock exists and produces a surge of electric power. An unfrozen pipe will stop and the generator or power plant will start. This sequence of standard- initial conditions varies from 5 minutes up to hours.
+
+Explain the difference between safe voltage and electricityBasic Info
+
+1.Charges can be in any direction.They must not be constantly changed.I Explanation:To go out of the store one must lift a button.It is possible to get through the charge
+--------------------------------------------------------------------------------
+<|bos|>What is PRI1W3 Scrutiny?
+Genetically identified human genetic diseases exhibit a spectrum of severity. Traditional genetics is largely conservative, according to a review of biomedical articles published by the American Journal of Humous Metabolism May 2017.
+Unless an organism has distinct immune barriers, disease-causing microbes majorly belong in the "bad" pile. Shame on the fact that much of the extract from these single-source diseases may benefit people. Many of these diseases are treatable with antibiotics, but the broad spectrum of effects is understated.
+Through PRI-1W3 Scrutiny, an approach to next-generation
+--------------------------------------------------------------------------------
+<|bos|>How To Protect Your Air Lines From Animals During the Winter?
+November 10, 2022
+There are many cats and dogs in New York City. Winter weather can make pet owners feel anxious and worried about their furry friends. Animals, especially cats and dogs, need to particularly spend the winter. Winter is what most people think means snow or the like. As a pet owner, it's natural to want to know how to protect your furry companions. While a few animal injuries can cause other health problems, here are a few essentials that every pet owner should know:
+It's best to provide your pet in the company of new or bred
+--------------------------------------------------------------------------------
+<|bos|>Packaging takes 2 to 3 days. Use thick packing table in a designated place. Stays no longer if line lifting beacon is hot. Always be careful when placing the unidentified objects in your flock. The nosed cats, whose can be 4 feet or more from most 15 and strombolian birds, and eagles cannot fly long distances because they can get carried in their feathers, try to keep a bird pack in a cage or 3 car blocks for a while, and then return to the university with the rest without a bird pack for a long road trip. Fit a stack coling bag with self bag
+
+================================================================================
+BPB Evaluation
+================================================================================
+train bpb: 0.851231
+val bpb: 0.850919
+
+================================================================================
+CORE Evaluation
+================================================================================
+Evaluating: hellaswag_zeroshot (0-shot, type: multiple_choice)... accuracy: 0.3594 | centered: 0.1459 | time: 166.32s
+Evaluating: jeopardy (10-shot, type: language_modeling)... accuracy: 0.0113 | centered: 0.0113 | time: 37.73s
+Evaluating: bigbench_qa_wikidata (10-shot, type: language_modeling)... accuracy: 0.2705 | centered: 0.2705 | time: 350.08s
+Evaluating: arc_easy (10-shot, type: multiple_choice)... accuracy: 0.5522 | centered: 0.4029 | time: 44.57s
+Evaluating: arc_challenge (10-shot, type: multiple_choice)... accuracy: 0.2654 | centered: 0.0205 | time: 22.24s
+Evaluating: copa (0-shot, type: multiple_choice)... accuracy: 0.5600 | centered: 0.1200 | time: 1.61s
+Evaluating: commonsense_qa (10-shot, type: multiple_choice)... accuracy: 0.2940 | centered: 0.1175 | time: 23.55s
+Evaluating: piqa (10-shot, type: multiple_choice)... accuracy: 0.6823 | centered: 0.3645 | time: 32.85s
+Evaluating: openbook_qa (0-shot, type: multiple_choice)... accuracy: 0.3060 | centered: 0.0747 | time: 9.00s
+Evaluating: lambada_openai (0-shot, type: language_modeling)... accuracy: 0.2981 | centered: 0.2981 | time: 87.27s
+Evaluating: hellaswag (10-shot, type: multiple_choice)... accuracy: 0.3550 | centered: 0.1400 | time: 222.65s
+Evaluating: winograd (0-shot, type: schema)... accuracy: 0.5824 | centered: 0.1648 | time: 4.13s
+Evaluating: winogrande (0-shot, type: schema)... accuracy: 0.5083 | centered: 0.0166 | time: 19.15s
+Evaluating: bigbench_dyck_languages (10-shot, type: language_modeling)... accuracy: 0.0890 | centered: 0.0890 | time: 17.20s
+Evaluating: agi_eval_lsat_ar (3-shot, type: multiple_choice)... accuracy: 0.2304 | centered: 0.0380 | time: 4.66s
+Evaluating: bigbench_cs_algorithms (10-shot, type: language_modeling)... accuracy: 0.4242 | centered: 0.4242 | time: 21.38s
+Evaluating: bigbench_operators (10-shot, type: language_modeling)... accuracy: 0.0952 | centered: 0.0952 | time: 3.43s
+Evaluating: bigbench_repeat_copy_logic (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.52s
+Evaluating: squad (10-shot, type: language_modeling)... accuracy: 0.1711 | centered: 0.1711 | time: 211.88s
+Evaluating: coqa (0-shot, type: language_modeling)... accuracy: 0.1709 | centered: 0.1709 | time: 141.14s
+Evaluating: boolq (10-shot, type: multiple_choice)... accuracy: 0.5890 | centered: -0.0816 | time: 74.12s
+Evaluating: bigbench_language_identification (10-shot, type: multiple_choice)... accuracy: 0.2585 | centered: 0.1843 | time: 285.89s
+
+Results written to: /home/ubuntu/.cache/nanochat/base_eval/d12_ar_lr0.01_002520.csv
+CORE metric: 0.1472

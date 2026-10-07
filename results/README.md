@@ -21,10 +21,10 @@ Latest numbers and plots: [d12/summary.md](d12/summary.md)
 | d12_mdm | MDM, matched tokens | done | 1.068 (ELBO) | 1.053 | 0.109 | 66 min, 332K tok/s (5% slower than AR with FA3); gap to AR shrank from 0.35 bpb at step 250 to 0.21 at the end |
 | d12_ar SFT + chat eval | post-training | done | SFT val bpb 0.356 | | ChatCORE 0.084 | ARC-E 36.1 / ARC-C 32.5 / MMLU 31.2 / GSM8K 0.8 / HumanEval 7.9 | | | | |
 | d12_mdm SFT + chat eval | post-training | done (fix pending) | SFT val bpb 0.624 | | ChatCORE -0.001 | ARC-E 25.6 / ARC-C 25.4 / MMLU 23.6 = chance, GSM8K 0.0 / HumanEval 0.0; see finding 1 | | | | |
-| d12_mdm_2x | MDM, 2.64B tokens | running | | | | crossover search |
-| d12_ar_lr0.01 / lr0.04 | AR LR sweep | queued | | | | |
-| d12_mdm_lr0.01 / lr0.04 | MDM LR sweep | queued | | | | |
-| d12_mdm_4x | MDM, 5.28B tokens | queued | | | | crossover search |
+| d12_mdm_2x | MDM, 2.64B tokens | done | 1.022 (ELBO) | 1.009 | 0.131 | 132 min; gap to AR-1x shrank to 0.16 bpb | | | | crossover search |
+| d12_ar_lr0.01 / lr0.04 | AR LR sweep | done | 0.850 / 0.850 | | 0.147 / 0.140 | AR insensitive to Muon LR; default 0.02 is fine |
+| d12_mdm_lr0.01 / lr0.04 | MDM LR sweep | done / eval running | 1.062 / 1.075 (ELBO) | 1.045 / 1.062 | 0.118 / - | MDM slightly prefers the lower LR (0.01) |
+| d12_mdm_4x | MDM, 5.28B tokens | not started (credits exhausted) | | | | crossover search |
 
 ## Findings so far
 
@@ -55,7 +55,7 @@ Decoding steps vs accuracy vs throughput; data-constrained regime (`--max-shards
 | date | what | cost |
 |---|---|---|
 | 2026-10-06 | A100 smoke/benchmark pod (Massed Compute via Prime Intellect, 25 min) | ~$0.50 |
-| 2026-10-06 | H100 PCIe pod for the d12 sweep (Massed Compute via Prime Intellect, $2.35/hr) | running |
+| 2026-10-06/07 | H100 PCIe pod for the d12 sweep (Massed Compute via Prime Intellect, $2.35/hr, 21.5 h) | ~$50 (credit exhausted) |
 
 ## Validation runs
 

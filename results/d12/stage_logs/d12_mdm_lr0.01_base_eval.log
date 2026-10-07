@@ -1,0 +1,89 @@
+2026-10-07 14:53:29,791 - httpx - [32m[1mINFO[0m - HTTP Request: GET https://huggingface.co/api/models/varunneal/flash-attention-3/revision/main "HTTP/1.1 200 OK"
+Autodetected device type: cuda
+2026-10-07 14:53:30,477 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+2026-10-07 14:53:30,477 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/base_checkpoints/d12_mdm_lr0.01 with step 2520
+2026-10-07 14:53:31,068 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 2048, 'vocab_size': 32768, 'n_layer': 12, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 768, 'window_pattern': 'SSSL', 'model_type': 'mdm', 'softcap': 15.0}
+Model type: mdm
+Evaluating model: base_model (step 2520)
+Eval modes: bpb, core, sample
+
+================================================================================
+Model Samples
+================================================================================
+
+Conditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>The capital of France is the capital of the country, the capital of the country, the capital of the
+--------------------------------------------------------------------------------
+<|bos|>The chemical symbol of gold is a symbol of the element of the element of the element of the element of the
+--------------------------------------------------------------------------------
+<|bos|>If yesterday was Friday, then tomorrow will be Friday. tomorrow will be Friday. tomorrow will be Friday. tomorrow will be Friday
+--------------------------------------------------------------------------------
+<|bos|>The opposite of hot is the opposite of cold. The opposite of cold is the opposite of cold. The
+--------------------------------------------------------------------------------
+<|bos|>The planets of the solar system are: the planets of the solar system are: the planets of the solar system are:
+--------------------------------------------------------------------------------
+<|bos|>My favorite color is red, green, blue, yellow, green, blue, yellow, green,
+--------------------------------------------------------------------------------
+<|bos|>If 5*x + 3 = 13, then x is 0.5. x is 0.5. x is 0
+
+Unconditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>Find out the rest of the parts of the horse, through the rest of the rest of the horse, the draft horse, and the rest of the parts of the horse, through the rest of the horse, through the rest of the horse, through the rest of the horse, through the rest of the horse, through the rest of the horse, through the rest of the horse, through the rest of the horse, through the rest of the horse, through the rest of the horse, through the rest of the horse, through the rest of the horse, through the rest of the horse, through the rest of the horse, through the
+--------------------------------------------------------------------------------
+<|bos|>4. Yes, it is the surface of the Earth. Yes, it is the surface of the Earth. Yes, it is the outer surface of the Earth. Yes, it is the surface of the Earth. Yes, it is the surface of the Earth. Yes, it is the surface of the Earth. Yes, it is the surface of the Earth. Yes, it is the surface of the Earth. Yes, it is the surface of the Earth. Yes, it is the surface of the Earth. Yes, it is the surface of the Earth. Yes, it is the surface of the Earth. Yes, it is the
+--------------------------------------------------------------------------------
+<|bos|>2. Consider the shape of the face of the face, both the shape of the face of the face of the face, and the size of the face of the face.
+
+Step 3. Consider the shape of the face of the face, both the shape of the face, and the size of the face of the face.
+
+Step 4. Consider the shape of the face, both the shape of the face, and the size of the face of the face.
+
+Step 5. Consider the shape of the face, both the shape of the face, and the size of the face.
+
+Step 6. Consider the shape of the
+--------------------------------------------------------------------------------
+<|bos|>The size of the container, glass, the amount of water in the glass, the amount of water, and the size of the glass, the amount of water in the glass, the amount of water in the glass, the amount of water in the glass, the amount of water in the glass, the amount of water in the glass, the amount of water in the glass, the amount of water in the glass, the amount of water in the glass, the amount of water in the glass, the amount of water in the glass, the amount of water in the glass, the amount of water in the glass, the amount of water
+--------------------------------------------------------------------------------
+<|bos|>8, history of the history of the history of the history of the history of the history of the earth and in the areas of the earth and in the areas of the earth and in the areas of the earth and in the areas of the earth and in the areas of the earth and in the areas of the earth and in the areas of the earth and in the areas of the earth and in the areas of the earth and in the areas of the earth and in the areas of the earth and in the areas of the earth and in the areas of the earth and in the areas of the earth and in the areas of the earth and in
+--------------------------------------------------------------------------------
+<|bos|>The function of the stream is small, in the rest of the body, and in the rest of the body. The function of the stream is small, in the rest of the body, and in the rest of the body, and in the rest of the body. The function of the stream is small, in the rest of the body, and in the rest of the body, and in the rest of the body, and in the rest of the body, and in the rest of the body, and in the rest of the body, and in the rest of the body, and in the rest of the body, and in the
+--------------------------------------------------------------------------------
+<|bos|>The description of equipment include the quality of the equipment, the quality of the equipment, the quality of the equipment, the use of the equipment, the use of the equipment, and the use of the equipment. The description of equipment include the quality of the equipment, the use of the equipment, and the use of the equipment, the use of the equipment, and the use of the equipment. The description of equipment include the quality of the equipment, the use of the equipment, and the use of the equipment, the use of the equipment, and the use of the equipment, the use of the equipment, and the use of the equipment
+--------------------------------------------------------------------------------
+<|bos|>When the goal of the vehicle is a fixed position, the goal of operation is to maximize the efficiency and productivity of the vehicle's operation. However, the goal of the vehicle is to maximize the efficiency and productivity of the vehicle's operation. The goal of the vehicle is to maximize the efficiency and productivity of the vehicle's operation. The goal of the vehicle is to maximize the efficiency and productivity of the vehicle's operation. The goal of the vehicle is to maximize the efficiency and productivity of the vehicle's operation. The goal of the vehicle is to maximize the efficiency and productivity of the vehicle's operation. The goal of the vehicle is to maximize
+
+================================================================================
+BPB Evaluation
+================================================================================
+train bpb (ELBO, upper bound): 1.062674 | bpb (L2R): 1.036238
+val bpb (ELBO, upper bound): 1.062933 | bpb (L2R): 1.042418
+
+================================================================================
+CORE Evaluation
+================================================================================
+Evaluating: hellaswag_zeroshot (0-shot, type: multiple_choice)... accuracy: 0.2931 | centered: 0.0574 | time: 284.45s
+Evaluating: jeopardy (10-shot, type: language_modeling)... accuracy: 0.0076 | centered: 0.0076 | time: 37.65s
+Evaluating: bigbench_qa_wikidata (10-shot, type: language_modeling)... accuracy: 0.0848 | centered: 0.0848 | time: 364.10s
+Evaluating: arc_easy (10-shot, type: multiple_choice)... accuracy: 0.4550 | centered: 0.2733 | time: 48.34s
+Evaluating: arc_challenge (10-shot, type: multiple_choice)... accuracy: 0.2406 | centered: -0.0125 | time: 25.98s
+Evaluating: copa (0-shot, type: multiple_choice)... accuracy: 0.5400 | centered: 0.0800 | time: 1.87s
+Evaluating: commonsense_qa (10-shot, type: multiple_choice)... accuracy: 0.3636 | centered: 0.2045 | time: 21.89s
+Evaluating: piqa (10-shot, type: multiple_choice)... accuracy: 0.6230 | centered: 0.2459 | time: 49.75s
+Evaluating: openbook_qa (0-shot, type: multiple_choice)... accuracy: 0.2640 | centered: 0.0187 | time: 8.93s
+Evaluating: lambada_openai (0-shot, type: language_modeling)... accuracy: 0.3280 | centered: 0.3280 | time: 87.09s
+Evaluating: hellaswag (10-shot, type: multiple_choice)... accuracy: 0.2928 | centered: 0.0570 | time: 1631.31s
+Evaluating: winograd (0-shot, type: schema)... accuracy: 0.5275 | centered: 0.0549 | time: 4.74s
+Evaluating: winogrande (0-shot, type: schema)... accuracy: 0.5083 | centered: 0.0166 | time: 21.08s
+Evaluating: bigbench_dyck_languages (10-shot, type: language_modeling)... accuracy: 0.0110 | centered: 0.0110 | time: 18.51s
+Evaluating: agi_eval_lsat_ar (3-shot, type: multiple_choice)... accuracy: 0.2739 | centered: 0.0924 | time: 4.79s
+Evaluating: bigbench_cs_algorithms (10-shot, type: language_modeling)... accuracy: 0.4583 | centered: 0.4583 | time: 24.86s
+Evaluating: bigbench_operators (10-shot, type: language_modeling)... accuracy: 0.1190 | centered: 0.1190 | time: 3.88s
+Evaluating: bigbench_repeat_copy_logic (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.68s
+Evaluating: squad (10-shot, type: language_modeling)... accuracy: 0.2441 | centered: 0.2441 | time: 273.52s
+Evaluating: coqa (0-shot, type: language_modeling)... accuracy: 0.1249 | centered: 0.1249 | time: 146.47s
+Evaluating: boolq (10-shot, type: multiple_choice)... accuracy: 0.6015 | centered: -0.0486 | time: 66.33s
+Evaluating: bigbench_language_identification (10-shot, type: multiple_choice)... accuracy: 0.2542 | centered: 0.1795 | time: 220.50s
+
+Results written to: /home/ubuntu/.cache/nanochat/base_eval/d12_mdm_lr0.01_002520.csv
+CORE metric: 0.1180

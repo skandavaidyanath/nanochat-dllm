@@ -1,0 +1,111 @@
+2026-10-07 17:17:42,836 - httpx - [32m[1mINFO[0m - HTTP Request: GET https://huggingface.co/api/models/varunneal/flash-attention-3/revision/main "HTTP/1.1 200 OK"
+Autodetected device type: cuda
+2026-10-07 17:17:43,498 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+2026-10-07 17:17:43,498 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/base_checkpoints/d12_ar_lr0.04 with step 2520
+2026-10-07 17:17:44,135 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 2048, 'vocab_size': 32768, 'n_layer': 12, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 768, 'window_pattern': 'SSSL', 'model_type': 'ar', 'softcap': 15.0}
+Model type: ar
+Evaluating model: base_model (step 2520)
+Eval modes: bpb, core, sample
+
+================================================================================
+Model Samples
+================================================================================
+
+Conditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>The capital of France is Paris, and the capital of the world is London. The capital of the world
+--------------------------------------------------------------------------------
+<|bos|>The chemical symbol of gold is Au. It is a soft, malleable metal that is used in jewelry,
+--------------------------------------------------------------------------------
+<|bos|>If yesterday was Friday, then tomorrow will be Friday. If yesterday was Friday, then tomorrow will be Friday. If yesterday was
+--------------------------------------------------------------------------------
+<|bos|>The opposite of hot is cold. The opposite of hot is cold. The opposite of cold is cold.
+--------------------------------------------------------------------------------
+<|bos|>The planets of the solar system are: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and
+--------------------------------------------------------------------------------
+<|bos|>My favorite color is red. I love it because it's so vibrant and it's so easy to
+--------------------------------------------------------------------------------
+<|bos|>If 5*x + 3 = 13, then x is the number of times the 5*x + 3 = 13.
+
+Unconditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>JRP45: 'All the fun, all the cool' posing for Nasa's 3 billionth PAL and BlackRock Lunar Readmore test has entered expo 2021 crisis space engine
+When 24 hours later a PAL-23 rocket crashes into Earth Hayhop and Josh Thwaites during a late-stage test of the 'PAL-23' currently in 23rd orbit, I hold the idea that best candidate for such a project can either be a truly advanced rocket or a lump of liquid with a 1/3M thrust that supports a multi-stage fuel lift assembly.
+ELEON P
+--------------------------------------------------------------------------------
+<|bos|>Add In My Pharmacy
+About Pharmacy School
+Kytic Dental Family Pharmacy
+What is a pharmacists education?
+A pharmacists education is a course designed to enable students to become professional pharmacists. GE's pharmacists Education 2022 course covers the spectrum of basic Pharmacy knowledge available in the marketplace. In order to be qualified to teach a course, you need to attend GE's pharmacists Education 2022 course for the registration of the program. The scope of the course includes curriculum and technical thinking, in addition to technical skills and knowledge application. GE's program includes general topics and responsibilities soliciting individuals who
+--------------------------------------------------------------------------------
+<|bos|>They say learning is the pearl of success. And that terrifies me.
+In a few years time, I may convince you that that isn't my scenario—I take money, fix flaws, or reward my workers.
+"Earning is actually an instinct. A natural thing is to do hard work," John Emons, an advertising adviser at the International Financial Enemntial Association and the author of "The Big 1: The When-Yours of Energy and Money."
+I promise you that, for those who work in the business sector, executed auditing software and company financial reports, accounting standardization and financial analysis is already
+--------------------------------------------------------------------------------
+<|bos|>Testimonials
+Here's what I can hear from my friends who have played games on the OBD portals on my car. Most are super friendly, but there are some bad guys. We have taken our P150 with the OBD portals to Michigan State to work this evening to see which engine combination that limits my vehicle: one of which was 06 M4, other I thought it had a point and kept cranking the engine until 02 M6 came. It went on for a few seconds at a time but not stopped and the guesses were out if left undone. We shared cards from friends using our
+--------------------------------------------------------------------------------
+<|bos|>Explain the difference between safe and unsafe electricity and practice programming decisions to reduce electric shock and hazards such as overheating.
+1. Installing safety devices or equipment
+Read Chapter 4-Electric product, industry, and manufacturing products are:
+(i)
+Electrical devices, machinery, and equipment that can
+(i) cause injury and death
+ii)
+Translocation energy, or
+(i) increased fees, and
+(ii) high utility bills
+Basic safety measures should work with the wettest or wettest your facility
+1. Identify the sources and gather the following:
+1. Safe and unsafe arrangement:
+2. Operational resources as
+3
+--------------------------------------------------------------------------------
+<|bos|>What is PRIMEW. Great household eats to make healthy food for everybody and people do not eat ok food easy so these plants produce belly slang a lot is it pregnant because the people cant make successful mother thus lot of plants like water hydroponics, vegetables etc under the shakes color with green & black colors if major difference in the area of three pays dear family worth to us all living in desert.
+It means that these solid things can support vegeter to become future food crops in these barren Lands when JordanNet-amy Techniques-Proper feeding plant grow more food in smaller land space improve the area, improve growth rate and next-generation
+--------------------------------------------------------------------------------
+<|bos|>How-ChangeLED Works Explained
+
+Description:
+
+Situated up by 50 LEDs, it has decidedly the best Makerspace in the world. 850 LED Max emerging state PDA's cover the front edge as LED lights filter 84% better than any other LED crash deterrent trim, and what's more, means quick desktop usage time. As you might suspect, LED's are available in a wide variety of colours and shapes. For Makerspace users, nothing makes working with LEDs easier and faster than LED's. Not only is there more lighting, but the colour of the pigment in LED's control the hue by
+--------------------------------------------------------------------------------
+<|bos|>Packaging takes 0.5ml shapes, and so does table in a linear. Note that you no longer need line lifting in the table to connect tables, as one of the main components is your keyboard. The nhealth keyboard uses red, green and almost everything. It is then 0.7ml proportional to yds ergonomic design. How do you want your workspace diagram to look when littered with personal art documents, and the temperature of your dining room? Welcome to a new, beautiful keyboard for Mac (and Windows). It looks like this:
+Elsewhere in the Photoshop world, there are RGB keyboard principles that help
+
+================================================================================
+BPB Evaluation
+================================================================================
+train bpb: 0.851047
+val bpb: 0.850762
+
+================================================================================
+CORE Evaluation
+================================================================================
+Evaluating: hellaswag_zeroshot (0-shot, type: multiple_choice)... accuracy: 0.3648 | centered: 0.1530 | time: 173.90s
+Evaluating: jeopardy (10-shot, type: language_modeling)... accuracy: 0.0090 | centered: 0.0090 | time: 37.76s
+Evaluating: bigbench_qa_wikidata (10-shot, type: language_modeling)... accuracy: 0.2605 | centered: 0.2605 | time: 365.21s
+Evaluating: arc_easy (10-shot, type: multiple_choice)... accuracy: 0.5509 | centered: 0.4012 | time: 45.53s
+Evaluating: arc_challenge (10-shot, type: multiple_choice)... accuracy: 0.2824 | centered: 0.0432 | time: 22.08s
+Evaluating: copa (0-shot, type: multiple_choice)... accuracy: 0.5600 | centered: 0.1200 | time: 1.65s
+Evaluating: commonsense_qa (10-shot, type: multiple_choice)... accuracy: 0.3006 | centered: 0.1257 | time: 23.59s
+Evaluating: piqa (10-shot, type: multiple_choice)... accuracy: 0.6768 | centered: 0.3536 | time: 33.85s
+Evaluating: openbook_qa (0-shot, type: multiple_choice)... accuracy: 0.3240 | centered: 0.0987 | time: 8.42s
+Evaluating: lambada_openai (0-shot, type: language_modeling)... accuracy: 0.2938 | centered: 0.2938 | time: 85.39s
+Evaluating: hellaswag (10-shot, type: multiple_choice)... accuracy: 0.3605 | centered: 0.1473 | time: 230.66s
+Evaluating: winograd (0-shot, type: schema)... accuracy: 0.5934 | centered: 0.1868 | time: 4.58s
+Evaluating: winogrande (0-shot, type: schema)... accuracy: 0.5201 | centered: 0.0403 | time: 20.75s
+Evaluating: bigbench_dyck_languages (10-shot, type: language_modeling)... accuracy: 0.0620 | centered: 0.0620 | time: 18.86s
+Evaluating: agi_eval_lsat_ar (3-shot, type: multiple_choice)... accuracy: 0.2261 | centered: 0.0326 | time: 4.99s
+Evaluating: bigbench_cs_algorithms (10-shot, type: language_modeling)... accuracy: 0.4205 | centered: 0.4205 | time: 23.20s
+Evaluating: bigbench_operators (10-shot, type: language_modeling)... accuracy: 0.1095 | centered: 0.1095 | time: 3.67s
+Evaluating: bigbench_repeat_copy_logic (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.56s
+Evaluating: squad (10-shot, type: language_modeling)... accuracy: 0.1413 | centered: 0.1413 | time: 224.95s
+Evaluating: coqa (0-shot, type: language_modeling)... accuracy: 0.1765 | centered: 0.1765 | time: 140.55s
+Evaluating: boolq (10-shot, type: multiple_choice)... accuracy: 0.5199 | centered: -0.2635 | time: 74.27s
+Evaluating: bigbench_language_identification (10-shot, type: multiple_choice)... accuracy: 0.2524 | centered: 0.1776 | time: 287.12s
+
+Results written to: /home/ubuntu/.cache/nanochat/base_eval/d12_ar_lr0.04_002520.csv
+CORE metric: 0.1404

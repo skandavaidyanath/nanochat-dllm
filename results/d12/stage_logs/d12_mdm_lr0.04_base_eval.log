@@ -1,0 +1,95 @@
+2026-10-07 19:13:50,348 - httpx - [32m[1mINFO[0m - HTTP Request: GET https://huggingface.co/api/models/varunneal/flash-attention-3/revision/main "HTTP/1.1 200 OK"
+Autodetected device type: cuda
+2026-10-07 19:13:50,995 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+2026-10-07 19:13:50,995 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/base_checkpoints/d12_mdm_lr0.04 with step 2520
+2026-10-07 19:13:51,554 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 2048, 'vocab_size': 32768, 'n_layer': 12, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 768, 'window_pattern': 'SSSL', 'model_type': 'mdm', 'softcap': 15.0}
+Model type: mdm
+Evaluating model: base_model (step 2520)
+Eval modes: bpb, core, sample
+
+================================================================================
+Model Samples
+================================================================================
+
+Conditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>The capital of France is the capital of France
+
+City of France
+
+The capital of France is the capital
+--------------------------------------------------------------------------------
+<|bos|>The chemical symbol of gold is gold and silver. The chemical symbol of gold is gold and silver. The chemical
+--------------------------------------------------------------------------------
+<|bos|>If yesterday was Friday, then tomorrow will be Friday. If yesterday was Friday, then tomorrow will be Friday. If yesterday yesterday
+--------------------------------------------------------------------------------
+<|bos|>The opposite of hot is the opposite of hot.
+
+The opposite of hot is the opposite of hot.
+
+The
+--------------------------------------------------------------------------------
+<|bos|>The planets of the solar system are: Earth, Venus, Earth, Earth, Venus, Earth, Earth, Earth,
+--------------------------------------------------------------------------------
+<|bos|>My favorite color is the color of the rainbow. I am not in color
+
+My favorite color is
+--------------------------------------------------------------------------------
+<|bos|>If 5*x + 3 = 13, then x is 13, then x is 13, then x is 13, then
+
+Unconditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>Ingredients
+
+Ingredients
+
+Ingredients
+
+Ingredients
+
+heat, rice, wheat, rice, wheat, rice, wheat,, wheat, rice, wheat, rice, wheat, rice, wheat, rice, wheat, wheat, rice, wheat, wheat, rice, wheat, rice, wheat, wheat, rice, wheat, rice, wheat, wheat, wheat, rice, wheat, wheat, rice, wheat, wheat, wheat, rice, wheat, wheat, rice, wheat, wheat, rice, wheat, wheat, wheat, rice, wheat, wheat, wheat, rice, wheat, wheat, rice, wheat, wheat, rice, wheat
+--------------------------------------------------------------------------------
+<|bos|>the weight of the car, the weight of the vehicles on the surface of the car, the weight of the vehicles on the surface of the car, and the weight of the vehicles on the surface of the car, and the weight of the vehicles on the surface of the car, and the weight of the vehicles on the surface of the car, and the weight of the vehicles on the surface of the car, and the weight of the vehicles on the surface of the car, and the weight of the vehicles on the surface of the car, and the weight of the vehicles on the surface of the car, and the weight of the vehicles,
+--------------------------------------------------------------------------------
+<|bos|>Salt: It is a mixture of salt, sugar, salt, and pepper. It is a mixture of sea salt, pepper, and salt. It is a mixture of salt, sugar, salt, and pepper.
+
+Salt
+
+Salt salt
+
+Salt: It is a mixture of salt, pepper, and salt. It is a mixture of salt, pepper, salt, and pepper. It is a mixture of salt, pepper, and salt. It includes salt, pepper, and salt. It is a mixture of salt, pepper, and salt. It is a mixture of salt, pepper, and salt. It is a mixture of salt and
+--------------------------------------------------------------------------------
+<|bos|>The size of the water is needed, the size of the surface of the water tank, the size of the surface of the water tank, the size of the water tank, the size of the water tank, the size of the water tank, the size of the water tank, the size of the water tank and the size of the water tank, the size of the water tank, the size of the water tank, the size of the water tank and the size of the water tank, the size of the water tank, the size of the water tank, the size of the water tank, the size of the water tank, the size
+--------------------------------------------------------------------------------
+<|bos|>
+
+The rest of the universe, the rest of the universe, the rest of the universe, and the rest of the universe.2
+
+The rest of the universe, the rest of the universe, the rest of the universe, the rest of the universe, the rest of the universe, the rest of the universe, the rest of the universe, the rest of the universe, the rest of the universe, the rest of the universe, the rest of the universe, the rest of the universe, the rest of the universe, the rest of the universe, the rest of the universe, the rest of the universe, the rest of the
+--------------------------------------------------------------------------------
+<|bos|> on the 2 of the last part of the day and on the 2 of the three parts of the last part of the day on the 2 of the three parts of the day and on the 2 of the three parts of the day and on the 2 of the three parts of the day and on the 2 of the three parts of the day and on the 2 of the three parts of the day and on the 2 of the three parts of the day and on the 2 of the three parts of the day and on the 2 of the three parts of the day and on the 2 of
+--------------------------------------------------------------------------------
+<|bos|>The number of people living in the United States is the number of people, animals, and plants living in the United States. The number of people, animals, and plants living in the United States is the number of people living in the United States. The number of people living in the United States is the number of people living in the United States. The number of people living in the United States is the number of people living in the United States. The number of people living in the United States is the number of people living in the United States. The number of people living in the United States is the number of people living in the United
+--------------------------------------------------------------------------------
+<|bos|>This is the shape of the model in the shape of the shape of the box box.
+
+This is the shape of the model in the shape of the shape of the box box.
+
+This is the shape of the model in the shape of the box box.
+
+This is the shape of the model in the shape of the box box.
+
+This is the shape of the model in the shape of the box box.
+
+This is the shape of the model in the shape of the box box.
+
+This is the shape of the model in the shape of the box box.
+
+This is the shape of the model in the shape of the box box.
+
+This is
+
+================================================================================
+BPB Evaluation
+================================================================================
+train bpb (ELBO, upper bound): 1.076506 | bpb (L2R): 1.049529

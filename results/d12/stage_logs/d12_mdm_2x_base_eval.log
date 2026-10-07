@@ -1,0 +1,115 @@
+2026-10-07 10:32:00,228 - httpx - [32m[1mINFO[0m - HTTP Request: GET https://huggingface.co/api/models/varunneal/flash-attention-3/revision/main "HTTP/1.1 200 OK"
+Autodetected device type: cuda
+2026-10-07 10:32:00,820 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+2026-10-07 10:32:00,821 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/base_checkpoints/d12_mdm_2x with step 5040
+2026-10-07 10:32:01,405 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 2048, 'vocab_size': 32768, 'n_layer': 12, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 768, 'window_pattern': 'SSSL', 'model_type': 'mdm', 'softcap': 15.0}
+Model type: mdm
+Evaluating model: base_model (step 5040)
+Eval modes: bpb, core, sample
+
+================================================================================
+Model Samples
+================================================================================
+
+Conditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>The capital of France is 1,000,000,000,000,00
+--------------------------------------------------------------------------------
+<|bos|>The chemical symbol of gold is the chemical symbol of gold which is the chemical symbol of gold.
+
+The chemical symbol
+--------------------------------------------------------------------------------
+<|bos|>If yesterday was Friday, then tomorrow will be Friday.
+
+If yesterday was Friday.
+
+If yesterday was Friday, then tomorrow will be
+--------------------------------------------------------------------------------
+<|bos|>The opposite of hot is opposite.
+
+The opposite of hot is opposite.
+
+The opposite of hot is opposite.
+
+
+--------------------------------------------------------------------------------
+<|bos|>The planets of the solar system are: The planets of the solar system are found on other planets.
+
+The planets of the
+--------------------------------------------------------------------------------
+<|bos|>My favorite color is the color of the color of the color of the color of the color of the
+--------------------------------------------------------------------------------
+<|bos|>If 5*x + 3 = 13, then x is 5*x + 3 = 13, then x is 5
+
+Unconditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>Mocabulary
+
+"Mocabulary is a sentence, word, word, word, phrase, word, spoken word, word, word, phrase, and definition. vocabulary is a sentence, word, word, word, phrase, word, word, word, word, word, word, word, word, phrase, and definition. vocabulary is a sentence, word, word, word, phrase, word, word, word, word, word, word, word, word, word, word, word, word, word, word, word, word, word, word, word, word, word, definition."
+
+Vocabulary
+--------------------------------------------------------------------------------
+<|bos|>This paper provides detailed information about the design and construction of the structure, the design and construction of the structure, the design and construction of the structure, the design and construction of the structure, the design and construction of the structure, the design and construction of the structure, the design and construction of the structure, the design and construction of the structure, the design and construction of the structure, the design and construction of the structure, the design and construction of the structure, the design and construction of the structure, the design and construction of the structure, the design and construction of the structure, the design and construction of the structure, the structure
+--------------------------------------------------------------------------------
+<|bos|>The universe is a part of the universe. Matter, light, heat, heat, heat, heat, heat, heat, heat, heat, extreme, and extreme heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat, heat
+--------------------------------------------------------------------------------
+<|bos|>Literary: Light, light, light, light, light, light, light, light,, color, light,, weight, light, light, weight, light, light, light, light, weight, light, light, light, weight, light, weight, light, weight, light, light, weight, light, weight, light, light, weight, light, weight, light, weight, light, weight, light, weight, light, weight, light, weight, weight, light, weight, light, weight, light, weight, light, weight, light, weight, light, weight, light,
+--------------------------------------------------------------------------------
+<|bos|>The book deals with the essentials of the preparation of the parts of the aircraft, the steps of the development of the aircraft, and the steps involved in the development of the aircraft.
+
+The book deals with the essentials of the preparation of the aircraft, the steps of the development of the aircraft, and the steps involved in the development of the aircraft.
+
+The book deals with the preparation of the parts of the aircraft, including the steps of the development of the aircraft, the steps of the development of the aircraft, and the steps involved in the development of the aircraft.
+
+The book deals with the preparation of the aircraft, including the preparation of the parts
+--------------------------------------------------------------------------------
+<|bos|>Objectives
+
+The role of the brain in the development of perception, the role in the development of memory, the role in the development of concentration, and the role of the brain in the development of concentration, the role of the brain in the development of memory, the role of the brain in the development of concentration, the role of the brain in the development of concentration, the role of the brain in the development of concentration, the role of the brain in the development of concentration, the role of the brain in the development of concentration, the role of the brain in the development of concentration, the role of the brain in the development of
+--------------------------------------------------------------------------------
+<|bos|>Size matters: The size of the dog varies depending on the size of the dog, the age of the dog and the type of the dog.
+Size matters: The size of the dog varies depending on the size of the dog, the age of the dog and the type of the dog.
+Size matters: The size of the dog varies depending on the size of the dog, the age of the dog and the type of the dog.
+Size matters: The size of the dog varies depending on the size of the dog, the age of the dog and the type of the dog.
+Size matters: The size of the dog varies depending on the
+--------------------------------------------------------------------------------
+<|bos|> shovels
+
+A shovel is a type of equipment that can be used to shovel a street. It is available in the form of metal, wood, and plastic. The shovels are also made of metal and wood. The shovels are also made of metal and plastic. The shovels are also made of metal and plastic.
+
+The shovels are made of metal and plastic. The shovels are also made of metal, wood, and plastic. The shovels are also made of metal and plastic. The shovels are also made of metal and plastic. The shovels are made of metal and plastic. The shovels are also made
+
+================================================================================
+BPB Evaluation
+================================================================================
+train bpb (ELBO, upper bound): 1.023509 | bpb (L2R): 0.998648
+val bpb (ELBO, upper bound): 1.023553 | bpb (L2R): 1.005609
+
+================================================================================
+CORE Evaluation
+================================================================================
+Evaluating: hellaswag_zeroshot (0-shot, type: multiple_choice)... accuracy: 0.3040 | centered: 0.0720 | time: 286.06s
+Evaluating: jeopardy (10-shot, type: language_modeling)... accuracy: 0.0038 | centered: 0.0038 | time: 38.45s
+Evaluating: bigbench_qa_wikidata (10-shot, type: language_modeling)... accuracy: 0.1642 | centered: 0.1642 | time: 377.56s
+Evaluating: arc_easy (10-shot, type: multiple_choice)... accuracy: 0.4992 | centered: 0.3322 | time: 50.23s
+Evaluating: arc_challenge (10-shot, type: multiple_choice)... accuracy: 0.2449 | centered: -0.0068 | time: 27.36s
+Evaluating: copa (0-shot, type: multiple_choice)... accuracy: 0.4800 | centered: -0.0400 | time: 1.98s
+Evaluating: commonsense_qa (10-shot, type: multiple_choice)... accuracy: 0.2916 | centered: 0.1145 | time: 22.96s
+Evaluating: piqa (10-shot, type: multiple_choice)... accuracy: 0.6235 | centered: 0.2470 | time: 50.74s
+Evaluating: openbook_qa (0-shot, type: multiple_choice)... accuracy: 0.2840 | centered: 0.0453 | time: 9.18s
+Evaluating: lambada_openai (0-shot, type: language_modeling)... accuracy: 0.4009 | centered: 0.4009 | time: 89.26s
+Evaluating: hellaswag (10-shot, type: multiple_choice)... accuracy: 0.3011 | centered: 0.0682 | time: 1635.89s
+Evaluating: winograd (0-shot, type: schema)... accuracy: 0.5311 | centered: 0.0623 | time: 5.68s
+Evaluating: winogrande (0-shot, type: schema)... accuracy: 0.5312 | centered: 0.0624 | time: 22.91s
+Evaluating: bigbench_dyck_languages (10-shot, type: language_modeling)... accuracy: 0.1190 | centered: 0.1190 | time: 20.15s
+Evaluating: agi_eval_lsat_ar (3-shot, type: multiple_choice)... accuracy: 0.2565 | centered: 0.0707 | time: 4.97s
+Evaluating: bigbench_cs_algorithms (10-shot, type: language_modeling)... accuracy: 0.5167 | centered: 0.5167 | time: 25.24s
+Evaluating: bigbench_operators (10-shot, type: language_modeling)... accuracy: 0.0905 | centered: 0.0905 | time: 3.79s
+Evaluating: bigbench_repeat_copy_logic (10-shot, type: language_modeling)... accuracy: 0.0312 | centered: 0.0312 | time: 0.68s
+Evaluating: squad (10-shot, type: language_modeling)... accuracy: 0.2759 | centered: 0.2759 | time: 281.08s
+Evaluating: coqa (0-shot, type: language_modeling)... accuracy: 0.1373 | centered: 0.1373 | time: 148.50s
+Evaluating: boolq (10-shot, type: multiple_choice)... accuracy: 0.5985 | centered: -0.0567 | time: 68.36s
+Evaluating: bigbench_language_identification (10-shot, type: multiple_choice)... accuracy: 0.2556 | centered: 0.1811 | time: 230.73s
+
+Results written to: /home/ubuntu/.cache/nanochat/base_eval/d12_mdm_2x_005040.csv
+CORE metric: 0.1314
