@@ -39,8 +39,19 @@ norms are unchanged, so the hidden state is what aligned with the shared "letter
 explanation: in packed bidirectional training the model sees where the next conversation starts, so it is
 certain the slot is one token; that gives a consistent gradient direction which Muon's orthogonalized updates
 turn into steady drift until the cap saturates and the question-specific gradient (scaled by tanh') dies.
-The AR model cannot see ahead, hedges, and never saturates. Fix candidates under test: lower unembedding LR
-(`diag_mdm_sft_unemb0.0004`), softcap removed / raised to 50 (`diag_mdm_sft_cap0`, `cap50`).
+The AR model cannot see ahead, hedges, and never saturates. Diagnostics (200 SFT steps each, categorical ChatCORE on 400 problems/task; the AR reaches 0.067 at step 200):
+
+| variant | ChatCORE_cat @200 | reading |
+|---|---|---|
+| packed, min mask rate 0.1 / 0.3 / 1.0 | 0.006 / 0.001 / -0.009 | 1/p weight variance is not the cause |
+| packed, softcap off / 50 | -0.002 / -0.004 | saturation is a symptom, not the cause |
+| packed, unembedding LR / 10 | 0.004 | output-layer drift is not the cause |
+| MMLU-only (MDM, MDM eps=1, **AR control**) | 0.011 / 0.020 / **0.001** | degenerate: all collapse to uniform letters, val bpb 7-9; uninformative |
+| padded (LLaDA-style, one conv/row, maskable end padding) | pending | tests the response-length shortcut |
+
+Local probe on 200 MMLU test questions in the training format: diffusion SFT model CE on the masked letter = 1.385
+(uniform over A-D, chance = 1.386) in every context variant; AR SFT model CE 1.445 with 31.5% accuracy; the
+pre-SFT diffusion model is uncalibrated (CE 1.5-1.9) and also non-discriminative.
 
 ## Phase 2: d24 (speedrun config, 8xH100 on Lightning)
 
