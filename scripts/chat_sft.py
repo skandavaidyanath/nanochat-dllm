@@ -65,6 +65,7 @@ parser.add_argument("--chatcore-every", type=int, default=200, help="evaluate Ch
 parser.add_argument("--chatcore-max-cat", type=int, default=-1, help="max problems per categorical task for ChatCORE")
 parser.add_argument("--chatcore-max-sample", type=int, default=24, help="max problems per generative task for ChatCORE")
 # Data mixture
+parser.add_argument("--smoltalk-epochs", type=int, default=1, help="number of epochs of SmolTalk in training mixture (0 = diagnostics on MMLU/GSM8K only)")
 parser.add_argument("--mmlu-epochs", type=int, default=3, help="number of epochs of MMLU in training mixture (teaches Multiple Choice)")
 parser.add_argument("--gsm8k-epochs", type=int, default=4, help="number of epochs of GSM8K in training mixture (teaches Math and Tool Use)")
 args = parser.parse_args()
@@ -168,7 +169,7 @@ for group in optimizer.param_groups:
 
 # SFT data mixture and DataLoader
 train_tasks = [
-    SmolTalk(split="train"), # 460K rows of general conversations
+    *[SmolTalk(split="train") for _ in range(args.smoltalk_epochs)], # 460K rows of general conversations
     *[MMLU(subset="all", split="auxiliary_train") for _ in range(args.mmlu_epochs)], # 100K rows per epoch
     *[GSM8K(subset="main", split="train") for _ in range(args.gsm8k_epochs)], # 8K rows per epoch
 ]
