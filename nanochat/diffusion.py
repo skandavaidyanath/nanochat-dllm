@@ -70,16 +70,18 @@ def apply_mask(ids, maskable, p_mask, mask_id, generator=None):
     return noisy, masked
 
 
-def mdm_loss(model, ids, maskable, mask_id, p_mask=None, generator=None, reduction="mean"):
+def mdm_loss(model, ids, maskable, mask_id, p_mask=None, generator=None, reduction="mean", eps=EPS):
     """
     Masked diffusion loss (negative ELBO estimate), see module docstring.
+    eps is the minimum mask rate: p ~ U(eps, 1). The LLaDA default 1e-3 gives importance weights 1/p up to 1000x;
+    raising it (e.g. 0.1) bounds the weights at the cost of a biased ELBO. See docs/EXPERIMENT.md on SFT saturation.
     reduction="mean": scalar = sum_{masked} CE/p / (#maskable tokens in the batch). Comparable to the AR
                       mean cross-entropy (nats per supervised token), as an upper bound.
     reduction="none": (loss_tok, masked) where loss_tok is (B, T) with CE/p at masked positions and 0 elsewhere.
     """
     B, T = ids.shape
     if p_mask is None:
-        p_mask = sample_mask_rates(B, ids.device, generator)
+        p_mask = sample_mask_rates(B, ids.device, generator, eps=eps)
     noisy, masked = apply_mask(ids, maskable, p_mask, mask_id, generator)
     targets = torch.where(masked, ids, torch.full_like(ids, -1))  # -1 = ignore_index
     loss_tok = model(noisy, targets, loss_reduction="none").view(B, T)  # 0 at ignored positions
