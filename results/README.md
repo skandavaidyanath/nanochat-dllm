@@ -18,8 +18,8 @@ Latest numbers and plots: [d12/summary.md](d12/summary.md)
 | run | what | status | val bpb | L2R bpb | CORE | notes |
 |---|---|---|---|---|---|---|
 | d12_ar | AR baseline | done | 0.847 | n/a (exact) | 0.142 | 63 min, 349K tok/s |
-| d12_mdm | MDM, matched tokens | running | | | | 331K tok/s (5% slower than AR with FA3) |
-| d12_ar SFT + chat eval | post-training | queued | | | | |
+| d12_mdm | MDM, matched tokens | done | 1.068 (ELBO) | 1.053 | 0.109 | 66 min, 332K tok/s (5% slower than AR with FA3); gap to AR shrank from 0.35 bpb at step 250 to 0.21 at the end |
+| d12_ar SFT + chat eval | post-training | running | | | | |
 | d12_mdm SFT + chat eval | post-training | queued | | | | |
 | d12_mdm_2x | MDM, 2.64B tokens | queued | | | | crossover search |
 | d12_ar_lr0.01 / lr0.04 | AR LR sweep | queued | | | | |

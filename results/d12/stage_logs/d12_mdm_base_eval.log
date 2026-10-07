@@ -1,0 +1,89 @@
+2026-10-07 01:09:10,111 - httpx - [32m[1mINFO[0m - HTTP Request: GET https://huggingface.co/api/models/varunneal/flash-attention-3/revision/main "HTTP/1.1 200 OK"
+Autodetected device type: cuda
+2026-10-07 01:09:10,691 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+2026-10-07 01:09:10,691 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/base_checkpoints/d12_mdm with step 2520
+2026-10-07 01:09:11,237 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 2048, 'vocab_size': 32768, 'n_layer': 12, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 768, 'window_pattern': 'SSSL', 'model_type': 'mdm'}
+Model type: mdm
+Evaluating model: base_model (step 2520)
+Eval modes: bpb, core, sample
+
+================================================================================
+Model Samples
+================================================================================
+
+Conditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>The capital of France is a capital of France. The capital of France is a capital of France. The
+--------------------------------------------------------------------------------
+<|bos|>The chemical symbol of gold is a symbol of purity and purity. It is a symbol of purity and purity.
+--------------------------------------------------------------------------------
+<|bos|>If yesterday was Friday, then tomorrow will be tomorrow. tomorrow will be tomorrow. tomorrow will be tomorrow. tomorrow will be tomorrow
+--------------------------------------------------------------------------------
+<|bos|>The opposite of hot is the opposite of cold. It is the opposite of hot. It is the opposite
+--------------------------------------------------------------------------------
+<|bos|>The planets of the solar system are: sun, moon, earth, sun, moon, earth, sun, moon,
+--------------------------------------------------------------------------------
+<|bos|>My favorite color is the blue color. I love the blue color, and I love the blue color
+--------------------------------------------------------------------------------
+<|bos|>If 5*x + 3 = 13, then x is 13. If x is 13, then x is 13. 
+
+Unconditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>Surface water, land, water, soil, water, agricultural land, water, land, land, water, agricultural land, land, water, land, land, water, land, land, water, land, land, water, soil, land, water, land, land, water, agricultural land, water, land, land, water, land, water, land, land, water, land, land, water, land, water, land, water, land, water, land, land, water, land, land, water, land, water, land, water, land, land, water, land, water,
+--------------------------------------------------------------------------------
+<|bos|>Oxygen, water, food, minerals, water, food, water, nutrients, and water, hydrocarbons, food, and water, and air, water, air, water, air, food, water, and water, air, food, water, food, water, nutrients, and water, air, water, and water, air, water, and water, air, water, water, air, water, and water, and in the biological material, collection and, storage products, products, products, products, services, products, and services, and goods, services, products, products, products, products, services, and
+--------------------------------------------------------------------------------
+<|bos|>Cocked Dictionary
+
+Abstract
+
+Question: Which of the following is the result of a definition of one sentence in a sentence? A) Definition A B) Definition B C) Definition C D) Definition D D) Definition D Answer: D) Definition B
+--------------------------------------------------------------------------------
+<|bos|>Which of the following: water, air, air, water, ice, and water, water, air, air, water, air, air, water, air, water, air, water, air, air, water, air, air, water, air, air, water, air, ice, water, air, air, water, air, water, air, air, water, air, water, air, air, air, and moisture.
+
+-
+
+Which of the following is NOT aWhich of the following: water, air, air, water, air, water, air, air, water, and air temperatures:
+--------------------------------------------------------------------------------
+<|bos|>Finally, to add the ratio of the weight of the amount in the ratio of 1, to the ratio of the weight of the amount used in the ratio of 1, to the ratio of the weight of the amount used in the ratio of 1, to the ratio of the weight of the amount used in the ratio of 1, to the ratio of the weight of the amount used in the ratio of 1, to the ratio of the weight of the amount used in the ratio of 1, to the ratio of the weight of the amount used in the ratio of 1, to the ratio of the weight of
+--------------------------------------------------------------------------------
+<|bos|>This article discusses the role of genetic factors in the development of genetic diseases and factors in the development of genetic diseases. The importance of genetic factors play in the development of genetic diseases and factors in the development of genetic diseases. This article discusses the role of genetic factors in the development of genetic diseases and factors in the development of genetic diseases. The role of genetic factors in the development of genetic diseases and factors in the development of genetic diseases. The role of genetic factors in the development of genetic diseases and factors in the development of genetic diseases. The role of genetic factors in the development of genetic diseases and factors in the development of genetic diseases and factors
+--------------------------------------------------------------------------------
+<|bos|>A new book is an adventure in the field of plants, animals, plants, and animals, and pictures of plants and animals. It provides a variety of resources, information, and educational resources to help you get pictures of plants, animals, plants, animals, and pictures of plants, animals, plants, and animals. It is a great way to get pictures of plants, animals, plants, animals, and people. It is a way to get pictures of plants, animals, plants, and animals. It is a great way to get pictures. It is a way to get pictures of plants, animals, plants, and animals.
+--------------------------------------------------------------------------------
+<|bos|>The Tri5lon logo is designed to reduce the use of glass, water, plastics, and other chemicals, and the use of glass, plastics, and other chemicals. It is designed to reduce the use, disposal, and recycling of glass, plastics, and other chemicals, and reduce the use of glass, plastics, and other chemicals.
+
+================================================================================
+BPB Evaluation
+================================================================================
+train bpb (ELBO, upper bound): 1.067334 | bpb (L2R): 1.047009
+val bpb (ELBO, upper bound): 1.067612 | bpb (L2R): 1.053311
+
+================================================================================
+CORE Evaluation
+================================================================================
+Evaluating: hellaswag_zeroshot (0-shot, type: multiple_choice)... accuracy: 0.2904 | centered: 0.0538 | time: 279.83s
+Evaluating: jeopardy (10-shot, type: language_modeling)... accuracy: 0.0047 | centered: 0.0047 | time: 37.42s
+Evaluating: bigbench_qa_wikidata (10-shot, type: language_modeling)... accuracy: 0.0364 | centered: 0.0364 | time: 363.18s
+Evaluating: arc_easy (10-shot, type: multiple_choice)... accuracy: 0.4529 | centered: 0.2705 | time: 48.96s
+Evaluating: arc_challenge (10-shot, type: multiple_choice)... accuracy: 0.2466 | centered: -0.0046 | time: 26.57s
+Evaluating: copa (0-shot, type: multiple_choice)... accuracy: 0.4400 | centered: -0.1200 | time: 1.83s
+Evaluating: commonsense_qa (10-shot, type: multiple_choice)... accuracy: 0.2883 | centered: 0.1104 | time: 22.23s
+Evaluating: piqa (10-shot, type: multiple_choice)... accuracy: 0.6148 | centered: 0.2296 | time: 50.24s
+Evaluating: openbook_qa (0-shot, type: multiple_choice)... accuracy: 0.2660 | centered: 0.0213 | time: 8.90s
+Evaluating: lambada_openai (0-shot, type: language_modeling)... accuracy: 0.2975 | centered: 0.2975 | time: 85.42s
+Evaluating: hellaswag (10-shot, type: multiple_choice)... accuracy: 0.2883 | centered: 0.0511 | time: 1628.77s
+Evaluating: winograd (0-shot, type: schema)... accuracy: 0.5458 | centered: 0.0916 | time: 4.23s
+Evaluating: winogrande (0-shot, type: schema)... accuracy: 0.5075 | centered: 0.0150 | time: 19.68s
+Evaluating: bigbench_dyck_languages (10-shot, type: language_modeling)... accuracy: 0.0970 | centered: 0.0970 | time: 19.41s
+Evaluating: agi_eval_lsat_ar (3-shot, type: multiple_choice)... accuracy: 0.2522 | centered: 0.0652 | time: 4.63s
+Evaluating: bigbench_cs_algorithms (10-shot, type: language_modeling)... accuracy: 0.6720 | centered: 0.6720 | time: 21.58s
+Evaluating: bigbench_operators (10-shot, type: language_modeling)... accuracy: 0.1048 | centered: 0.1048 | time: 3.64s
+Evaluating: bigbench_repeat_copy_logic (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.66s
+Evaluating: squad (10-shot, type: language_modeling)... accuracy: 0.2294 | centered: 0.2294 | time: 264.05s
+Evaluating: coqa (0-shot, type: language_modeling)... accuracy: 0.1091 | centered: 0.1091 | time: 140.78s
+Evaluating: boolq (10-shot, type: multiple_choice)... accuracy: 0.5752 | centered: -0.1178 | time: 60.95s
+Evaluating: bigbench_language_identification (10-shot, type: multiple_choice)... accuracy: 0.2557 | centered: 0.1812 | time: 206.36s
+
+Results written to: /home/ubuntu/.cache/nanochat/base_eval/d12_mdm_002520.csv
+CORE metric: 0.1090
