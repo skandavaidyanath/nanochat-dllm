@@ -1,0 +1,7 @@
+===== DIAG diag_mdm_sft_padded START 20:01:03 =====
+Total batch size 524,288 => gradient accumulation steps: 32
+Training mixture: 789,759 rows (MMLU x3, GSM8K x4)
+Step 00000 | Validation bpb: 0.8792
+Step 00200 | Validation bpb: 0.7441
+Step 00200 | ChatCORE: 0.0047 | ChatCORE_cat: 0.0078
+===== DIAG diag_mdm_sft_padded DONE 20:14:29 =====

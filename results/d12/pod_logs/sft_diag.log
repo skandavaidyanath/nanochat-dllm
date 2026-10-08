@@ -1,0 +1,34 @@
+===== DIAG diag_mdm_sft_eps0.1 START 06:24:04 =====
+Training mixture: 789,759 rows (MMLU x3, GSM8K x4)
+Step 00000 | Validation bpb: 0.8717
+Step 00200 | Validation bpb: 0.6882
+  ARC-Easy: 25.25%
+  ARC-Challenge: 26.50%
+  MMLU: 24.50%
+  GSM8K: 0.00%
+  HumanEval: 0.00%
+Step 00200 | ChatCORE: 0.0033 | ChatCORE_cat: 0.0056
+===== DIAG diag_mdm_sft_eps0.1 DONE 06:33:28 =====
+===== DIAG diag_mdm_sft_eps0.3 START 06:33:28 =====
+Training mixture: 789,759 rows (MMLU x3, GSM8K x4)
+Step 00000 | Validation bpb: 0.8717
+Step 00200 | Validation bpb: 0.6805
+  ARC-Easy: 25.00%
+  ARC-Challenge: 26.75%
+  MMLU: 23.50%
+  GSM8K: 0.00%
+  HumanEval: 0.00%
+Step 00200 | ChatCORE: 0.0007 | ChatCORE_cat: 0.0011
+===== DIAG diag_mdm_sft_eps0.3 DONE 06:42:52 =====
+===== DIAG diag_mdm_sft_eps1.0 START 06:42:52 =====
+Training mixture: 789,759 rows (MMLU x3, GSM8K x4)
+Step 00000 | Validation bpb: 0.8717
+Step 00200 | Validation bpb: 1.5110
+  ARC-Easy: 24.50%
+  ARC-Challenge: 22.50%
+  MMLU: 26.00%
+  GSM8K: 0.00%
+  HumanEval: 0.00%
+Step 00200 | ChatCORE: -0.0053 | ChatCORE_cat: -0.0089
+===== DIAG diag_mdm_sft_eps1.0 DONE 06:52:17 =====
+===== DIAG ALL DONE =====

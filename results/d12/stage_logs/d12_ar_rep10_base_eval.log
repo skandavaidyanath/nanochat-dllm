@@ -1,0 +1,119 @@
+2026-10-08 05:21:39,913 - httpx - [32m[1mINFO[0m - HTTP Request: GET https://huggingface.co/api/models/varunneal/flash-attention-3/revision/main "HTTP/1.1 200 OK"
+Autodetected device type: cuda
+2026-10-08 05:21:40,516 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+2026-10-08 05:21:40,516 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/base_checkpoints/d12_ar_rep10 with step 2520
+2026-10-08 05:21:41,063 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 2048, 'vocab_size': 32768, 'n_layer': 12, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 768, 'window_pattern': 'SSSL', 'model_type': 'ar', 'softcap': 15.0}
+Model type: ar
+Evaluating model: base_model (step 2520)
+Eval modes: bpb, core, sample
+
+================================================================================
+Model Samples
+================================================================================
+
+Conditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>The capital of France is Paris. It is the capital of the French nation and the capital of the French
+--------------------------------------------------------------------------------
+<|bos|>The chemical symbol of gold is Au. It is a crystalline solid that is soluble in water and is used as
+--------------------------------------------------------------------------------
+<|bos|>If yesterday was Friday, then tomorrow will be the next day. If today was Saturday, then tomorrow will be the next day
+--------------------------------------------------------------------------------
+<|bos|>The opposite of hot is cold. The opposite of hot is warm. The opposite of hot is hot.
+--------------------------------------------------------------------------------
+<|bos|>The planets of the solar system are: 1) Earth, 2) Mars, 3) Venus, 
+--------------------------------------------------------------------------------
+<|bos|>My favorite color is the dark blue. I love the way that it makes me feel. I love
+--------------------------------------------------------------------------------
+<|bos|>If 5*x + 3 = 13, then x is the distance from the center of the circle to the center of the square. If
+
+Unconditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>Panasonic Lumix MC585 MCU Exam Papers (TEL 2023 2023)
+
+On Summaries of Panasonic Lumix MC585 MCU
+
+In conclusion, Panasonic Lumix MC585 MCU is a highly regarded MCU manufacturer that primarily focuses on producing high-quality MCU products. The company has a presence in various industries, including the manufacturing of paper and plastic products, energy and material, electronics, chemical, food and medicine, construction, healthcare, and many more. The MCU industry plays a crucial role in the production and distribution of high-performance products, including MCU
+--------------------------------------------------------------------------------
+<|bos|>Add In Water, Subscribe to InkScape and Recap
+
+Add in water, majjure or style
+
+different colors resonate with consumers
+
+In the tail end of 2013, consumers are using pigmented fabrics like sable, fake silk, and bio-dyed fabrics like Nile tulle, while industries such as aviation and manufacturing are taking notice. Add-medjj® is one of the worlds most enveloping research innovations for this type of fabric, and research from KESI is highlighting the thinking behind how consumers might be able to maximize their personal savings.
+
+This webinar will present the latest developments and trends in printer
+--------------------------------------------------------------------------------
+<|bos|>They say learning about the year 1983 and excluding this tax from the Constitutional Basics is tricky practice.
+
+Main Menu Set
+
+Pode discretion:
+
+dont allow porting to the port or broadcast to the public domain on port whenever possible. To Do This in Residential Settings Appropriately you must register port utility companies that do not tend to the same message on the same port to ensure the utmost security with your data and that the message aligns correctly.
+
+​Forms
+
+Marilyn Grosz
+
+Marilyn Grosz is from San Antonio, TX and has several titles he has written for the San Antonio metro
+--------------------------------------------------------------------------------
+<|bos|>Testosterone may retain some of what can stem from my heart's muscular irregularity, Harvard Medical School researchers have found. Is it a healthy response fueled by a protein they might badger? Could other, unhealthy compounds, we become mostly awakened by our natural inclination to be fat? One may be so tempted to fall in love: one of life's most effective mechanisms is by tempted to tempt fate: a substance that can create this urge. In 1967, Edmund W. Schmidt, a professor of clinical medicine at the University of California, San Francisco, experimented with beta-lactam (beta-lact
+--------------------------------------------------------------------------------
+<|bos|>Operational yoga is safe and chancy, as so many people value the idea of such activities as yogic practice and spiritual practice. But when it comes to helping students learn, there is still an outsized amount of underexpensiveness in the program. This is the same for the majority of programs. But for girls, the problems can be even worse—until when the program starts singing chats again! Let's call the music regimen that may be yielding trouble in class – your child's concerts, as it may be called. Prenatal Yoga is great to help your child develop their mind through about three
+--------------------------------------------------------------------------------
+<|bos|>What is PRIME?
+
+You are searching about PRIME along high elevation and low latitude features between Yellowstone National Park location and context free and how does a feature is automatically considered PRIME under the PRIME Act.NO PRIME feature
+
+A feature is any distinct feature of an elevation profile; major difference in definition between features and PRIME is the capability to show features against inter alia.
+
+In the following, Tabular Report 21 of the HDRSS found the following information about some of the features used in Yellowstone feature definition and examples:—
+
+In addition to the shown additional information related to features,
+--------------------------------------------------------------------------------
+<|bos|>How To Protect Your Air Duct From Growing Mold
+
+Today, up to 50% of damp wreaks havoc in the healthcare and public spaces. Mold can quickly grow and spread fast, especially when it's introduced to homes and businesses. While this particular type of mold has a particularly harmful impact on the health and well-being of individuals, proper indoor air quality cannot be stressed enough. If you're a homeowner or landlord planning to build a new home or business, make sure you learn how to overcome air pollution and related complications.
+
+Thethigold is a fungus that is common in different areas of the in the United States. It's
+--------------------------------------------------------------------------------
+<|bos|>Packaging takes up a lot of space in store, so that’s around a quarter of what you’ll pay for if you package your food in a glass carton. Plus, the typical boxed shopping carton contains about 30% drywall, which makes almost everything fit together the most space.
+The stuccoedrods and carbs come in the carton and can vary in the appearance of the carton, too. The Gower plan has 18% of the carton, and the ancient long-chained Messianic catalogue contains 27% long-chained stucco.
+You don’t need a commercial
+
+================================================================================
+BPB Evaluation
+================================================================================
+train bpb: 0.619894
+val bpb: 1.099764
+
+================================================================================
+CORE Evaluation
+================================================================================
+Evaluating: hellaswag_zeroshot (0-shot, type: multiple_choice)... accuracy: 0.3475 | centered: 0.1301 | time: 165.97s
+Evaluating: jeopardy (10-shot, type: language_modeling)... accuracy: 0.0052 | centered: 0.0052 | time: 35.62s
+Evaluating: bigbench_qa_wikidata (10-shot, type: language_modeling)... accuracy: 0.1085 | centered: 0.1085 | time: 346.58s
+Evaluating: arc_easy (10-shot, type: multiple_choice)... accuracy: 0.4844 | centered: 0.3126 | time: 43.83s
+Evaluating: arc_challenge (10-shot, type: multiple_choice)... accuracy: 0.2875 | centered: 0.0501 | time: 21.57s
+Evaluating: copa (0-shot, type: multiple_choice)... accuracy: 0.5900 | centered: 0.1800 | time: 1.67s
+Evaluating: commonsense_qa (10-shot, type: multiple_choice)... accuracy: 0.2883 | centered: 0.1104 | time: 22.97s
+Evaluating: piqa (10-shot, type: multiple_choice)... accuracy: 0.6436 | centered: 0.2873 | time: 32.95s
+Evaluating: openbook_qa (0-shot, type: multiple_choice)... accuracy: 0.3000 | centered: 0.0667 | time: 8.22s
+Evaluating: lambada_openai (0-shot, type: language_modeling)... accuracy: 0.2181 | centered: 0.2181 | time: 84.24s
+Evaluating: hellaswag (10-shot, type: multiple_choice)... accuracy: 0.3432 | centered: 0.1242 | time: 227.30s
+Evaluating: winograd (0-shot, type: schema)... accuracy: 0.5788 | centered: 0.1575 | time: 4.58s
+Evaluating: winogrande (0-shot, type: schema)... accuracy: 0.4720 | centered: -0.0560 | time: 20.89s
+Evaluating: bigbench_dyck_languages (10-shot, type: language_modeling)... accuracy: 0.0490 | centered: 0.0490 | time: 19.08s
+Evaluating: agi_eval_lsat_ar (3-shot, type: multiple_choice)... accuracy: 0.2609 | centered: 0.0761 | time: 5.28s
+Evaluating: bigbench_cs_algorithms (10-shot, type: language_modeling)... accuracy: 0.4197 | centered: 0.4197 | time: 24.14s
+Evaluating: bigbench_operators (10-shot, type: language_modeling)... accuracy: 0.0905 | centered: 0.0905 | time: 3.85s
+Evaluating: bigbench_repeat_copy_logic (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.57s
+Evaluating: squad (10-shot, type: language_modeling)... accuracy: 0.0919 | centered: 0.0919 | time: 216.58s
+Evaluating: coqa (0-shot, type: language_modeling)... accuracy: 0.1244 | centered: 0.1244 | time: 140.20s
+Evaluating: boolq (10-shot, type: multiple_choice)... accuracy: 0.5890 | centered: -0.0816 | time: 73.39s
+Evaluating: bigbench_language_identification (10-shot, type: multiple_choice)... accuracy: 0.2551 | centered: 0.1805 | time: 282.03s
+
+Results written to: /home/ubuntu/.cache/nanochat/base_eval/d12_ar_rep10_002520.csv
+CORE metric: 0.1202

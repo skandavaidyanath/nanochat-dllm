@@ -1,0 +1,23 @@
+===== DECODE BENCH START 08:24:56 =====
+Autodetected device type: cuda
+
+model            steps      batch     tok/s   s/gen   (256 tokens after a 7-token prompt)
+AR (KV cache)    -              1        97    2.64
+AR (KV cache)    -              8       768    2.67
+AR (KV cache)    -             32      3013    2.72
+MDM block 32     32/block       1        62    0.69
+MDM block 32     32/block       8       398    2.81
+MDM block 32     32/block      32      1537    3.38
+MDM block 32     16/block       1       159    0.90
+MDM block 32     16/block       8       766    1.42
+MDM block 32     16/block      32      2788    1.74
+MDM block 32     8/block        1       303    0.84
+MDM block 32     8/block        8      2211    0.83
+MDM block 32     8/block       32      7898    0.91
+MDM block 32     4/block        1       610    0.42
+MDM block 32     4/block        8      4690    0.41
+MDM block 32     4/block       32     17140    0.46
+MDM block 32     1/block        1      2351    0.11
+MDM block 32     1/block        8     17945    0.11
+MDM block 32     1/block       32     54357    0.13
+===== DECODE BENCH DONE =====

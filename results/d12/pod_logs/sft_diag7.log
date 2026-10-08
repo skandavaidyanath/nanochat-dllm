@@ -1,0 +1,11 @@
+===== DIAG diag_ar_sft_mmluonly_lowlr START 20:18:19 =====
+Step 00000 | Validation bpb: 0.6017
+Step 00200 | Validation bpb: 2.8532
+Step 00200 | ChatCORE: 0.0600 | ChatCORE_cat: 0.1000
+===== DIAG diag_ar_sft_mmluonly_lowlr DONE 20:30:06 =====
+===== DIAG diag_mdm_sft_mmluonly_lowlr START 20:30:06 =====
+Step 00000 | Validation bpb: 0.8717
+Step 00200 | Validation bpb: 4.0384
+Step 00200 | ChatCORE: 0.0293 | ChatCORE_cat: 0.0489
+===== DIAG diag_mdm_sft_mmluonly_lowlr DONE 20:41:53 =====
+===== DIAG7 ALL DONE =====

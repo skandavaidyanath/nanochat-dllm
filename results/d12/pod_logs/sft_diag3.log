@@ -1,0 +1,17 @@
+===== DIAG diag_mdm_sft_cap0 START 07:04:26 =====
+2026-10-07 07:04:30,234 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 2048, 'vocab_size': 32768, 'n_layer': 12, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 768, 'window_pattern': 'SSSL', 'model_type': 'mdm', 'softcap': 15.0}
+Overriding logit softcap: 15.0 -> 0.0
+Model type: mdm | softcap: 0.0
+Step 00000 | Validation bpb: 1.0644
+Step 00200 | Validation bpb: 0.7189
+Step 00200 | ChatCORE: -0.0013 | ChatCORE_cat: -0.0022
+===== DIAG diag_mdm_sft_cap0 DONE 07:14:14 =====
+===== DIAG diag_mdm_sft_cap50 START 07:14:14 =====
+2026-10-07 07:14:18,645 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 2048, 'vocab_size': 32768, 'n_layer': 12, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 768, 'window_pattern': 'SSSL', 'model_type': 'mdm', 'softcap': 15.0}
+Overriding logit softcap: 15.0 -> 50.0
+Model type: mdm | softcap: 50.0
+Step 00000 | Validation bpb: 1.0194
+Step 00200 | Validation bpb: 0.7121
+Step 00200 | ChatCORE: -0.0027 | ChatCORE_cat: -0.0044
+===== DIAG diag_mdm_sft_cap50 DONE 07:23:59 =====
+===== DIAG3 ALL DONE =====

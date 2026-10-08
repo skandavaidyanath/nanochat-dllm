@@ -1,0 +1,9 @@
+===== DIAG diag_mdm_sft_mmlu9_lr0.3 START 21:59:46 =====
+Training mixture: 1,388,811 rows (MMLU x9, GSM8K x4)
+Step 00000 | Validation bpb: 0.8717
+Step 00200 | Validation bpb: 0.7243
+Step 00200 | ChatCORE: 0.0000 | ChatCORE_cat: 0.0000
+Step 00400 | Validation bpb: 0.6897
+Step 00400 | ChatCORE: 0.0167 | ChatCORE_cat: 0.0278
+===== DIAG diag_mdm_sft_mmlu9_lr0.3 DONE 22:27:32 =====
+===== DIAG9 ALL DONE =====

@@ -1,0 +1,16 @@
+===== DIAG diag_mdm_sft_lr0.1 START 21:14:31 =====
+Step 00000 | Validation bpb: 0.8717
+Step 00200 | Validation bpb: 0.7486
+Step 00200 | ChatCORE: 0.0007 | ChatCORE_cat: 0.0011
+===== DIAG diag_mdm_sft_lr0.1 DONE 21:29:10 =====
+===== DIAG diag_mdm_sft_lr0.3 START 21:29:10 =====
+Step 00000 | Validation bpb: 0.8717
+Step 00200 | Validation bpb: 0.7100
+Step 00200 | ChatCORE: 0.0087 | ChatCORE_cat: 0.0144
+===== DIAG diag_mdm_sft_lr0.3 DONE 21:43:50 =====
+===== DIAG diag_ar_sft_lr0.1 START 21:43:50 =====
+Step 00000 | Validation bpb: 0.6017
+Step 00200 | Validation bpb: 0.4589
+Step 00200 | ChatCORE: 0.0213 | ChatCORE_cat: 0.0356
+===== DIAG diag_ar_sft_lr0.1 DONE 21:58:12 =====
+===== DIAG8 ALL DONE =====

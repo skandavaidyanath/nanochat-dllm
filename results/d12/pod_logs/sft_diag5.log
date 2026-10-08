@@ -1,0 +1,7 @@
+===== DIAG diag_ar_sft_mmluonly START 19:44:00 =====
+Training mixture: 299,526 rows (MMLU x3, GSM8K x0)
+Step 00000 | Validation bpb: 0.6017
+Step 00200 | Validation bpb: 7.2924
+Step 00200 | ChatCORE: 0.0007 | ChatCORE_cat: 0.0011
+===== DIAG diag_ar_sft_mmluonly DONE 19:52:35 =====
+===== DIAG5 ALL DONE =====

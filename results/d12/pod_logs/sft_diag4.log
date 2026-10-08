@@ -1,0 +1,13 @@
+===== DIAG diag_mdm_sft_mmluonly START 19:20:07 =====
+Training mixture: 299,526 rows (MMLU x3, GSM8K x0)
+Step 00000 | Validation bpb: 0.8717
+Step 00200 | Validation bpb: 9.0892
+Step 00200 | ChatCORE: 0.0067 | ChatCORE_cat: 0.0111
+===== DIAG diag_mdm_sft_mmluonly DONE 19:34:01 =====
+===== DIAG diag_mdm_sft_mmluonly_eps1 START 19:34:01 =====
+Training mixture: 299,526 rows (MMLU x3, GSM8K x0)
+Step 00000 | Validation bpb: 0.8717
+Step 00200 | Validation bpb: 8.2645
+Step 00200 | ChatCORE: 0.0120 | ChatCORE_cat: 0.0200
+===== DIAG diag_mdm_sft_mmluonly_eps1 DONE 19:43:54 =====
+===== DIAG4 ALL DONE =====

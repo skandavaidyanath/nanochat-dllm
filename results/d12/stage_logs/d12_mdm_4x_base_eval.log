@@ -1,0 +1,148 @@
+2026-10-08 02:59:28,985 - httpx - [32m[1mINFO[0m - HTTP Request: GET https://huggingface.co/api/models/varunneal/flash-attention-3/revision/main "HTTP/1.1 200 OK"
+Autodetected device type: cuda
+2026-10-08 02:59:29,635 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+2026-10-08 02:59:29,636 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/base_checkpoints/d12_mdm_4x with step 10080
+2026-10-08 02:59:30,059 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 2048, 'vocab_size': 32768, 'n_layer': 12, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 768, 'window_pattern': 'SSSL', 'model_type': 'mdm', 'softcap': 15.0}
+Model type: mdm
+Evaluating model: base_model (step 10080)
+Eval modes: bpb, core, sample
+
+================================================================================
+Model Samples
+================================================================================
+
+Conditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>The capital of France is the city of Paris, which is followed by the city of Paris, which is
+--------------------------------------------------------------------------------
+<|bos|>The chemical symbol of gold is the symbol of the chemical symbol of gold is the symbol of the chemical symbol of
+--------------------------------------------------------------------------------
+<|bos|>If yesterday was Friday, then tomorrow will be tomorrow. If yesterday was tomorrow, then tomorrow will be tomorrow. If yesterday was
+--------------------------------------------------------------------------------
+<|bos|>The opposite of hot is hot is cold is cold is cold is cold is hot is hot is cold is
+--------------------------------------------------------------------------------
+<|bos|>The planets of the solar system are: The planets of the solar system are: The planets of the solar system are:
+--------------------------------------------------------------------------------
+<|bos|>My favorite color is the sky blue. I love the sky blue. I love the sky blue.
+--------------------------------------------------------------------------------
+<|bos|>If 5*x + 3 = 13, then x is 13. If 5*x + 3 = 13, then
+
+Unconditioned samples:
+--------------------------------------------------------------------------------
+<|bos|>Description of operation is:, and, and, and, and, and, and, and, and,, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and, and
+--------------------------------------------------------------------------------
+<|bos|>Description
+Description
+To use, or, value, use, or, or, or other, use, or, or other, use, or, or, value, or, or other, use, or, value, or, or other, use, or, value, value, or, or other, use, or, value, or, value, value, value, value, value, value, value, value, value, value, value, value, value, value, value, value, value, value, value, value, value, value, value, value, value, value, value, value,
+--------------------------------------------------------------------------------
+<|bos|>Monday, Wednesday, Friday, and Saturday.
+
+Monday, Friday, and Saturday.
+
+Monday, Wednesday, Friday, and Saturday.
+
+Monday, Friday, and Saturday.
+
+Monday, Friday, and Saturday.
+
+Monday, Friday, and Saturday.
+
+Monday, Friday, and Saturday.
+
+Monday, Friday, and Saturday.
+
+Monday, Wednesday, and Saturday.
+
+Monday, Friday, and Saturday.
+
+Monday, Friday, and Saturday.
+
+Monday, Friday, and Saturday.
+
+Monday, Friday, and Saturday.
+
+Monday, Friday, and Saturday.
+
+Monday, Friday, and Saturday.
+
+Monday, Friday, and Saturday.
+
+Monday, Friday, and Saturday.
+
+Monday, Friday, and
+--------------------------------------------------------------------------------
+<|bos|>Community, community is a community where people, places, people, places, and
+the people, places, places, people, places, people, places, people, places, people, places, people, places, places, people, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places, places,
+--------------------------------------------------------------------------------
+<|bos|>A person speaking and listening
+
+A person is polite, reliable, able to understand, remember, and communicate in a variety of ways, including speaking, listening, reading, writing, writing, speaking, listening, reading, speaking, reading, writing, speaking, reading, writing, speaking, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing, writing,
+--------------------------------------------------------------------------------
+<|bos|>The value of the resistor lies not only in the structure of the circuit, but in the composition of the components, and in the principles of the working principle, in the principle of the principle of the principle of the principle of the principle of the principle of the principle of productivity, in the principle of the principle of the principle of the principle of the principle of the principle of the principle of profit, in the principle of the principle of the principle of the principle of the principle of profit principle, in the principle of the principle of the principle of the principle of the principle of the principle of the principle of the principle of the principle of profit
+--------------------------------------------------------------------------------
+<|bos|>November 2013
+
+November 19, 2013
+
+November 19, 2013
+
+| November 19, 2013
+
+| November 19, 2013
+
+| November 19, 2013
+
+| November 19, 2013
+
+| November 19, 2013
+
+| November 19, 2013
+
+| November 19, 2013
+
+| November 19, 2013
+
+| November 19, 2013
+
+| November 19, 2013
+
+| November 19, 2013
+
+| November 19, 2013
+--------------------------------------------------------------------------------
+<|bos|>The air conditioner of the house is the most important part of the house. It is necessary to remove the air from the air conditioner in the house, and to remove the air from the air conditioner in the house. Removing the air from the air conditioner in the house is to replace the air conditioner in the house. The air conditioner of the house is the most important part of the house. It is necessary to remove the air from the air conditioner in the house, to remove the air from the air conditioner in the house, to remove the air from the air conditioner in the house. The air conditioner of the house is the most important part
+
+================================================================================
+BPB Evaluation
+================================================================================
+train bpb (ELBO, upper bound): 0.993689 | bpb (L2R): 0.968337
+val bpb (ELBO, upper bound): 0.993635 | bpb (L2R): 0.974094
+
+================================================================================
+CORE Evaluation
+================================================================================
+Evaluating: hellaswag_zeroshot (0-shot, type: multiple_choice)... accuracy: 0.3188 | centered: 0.0917 | time: 271.67s
+Evaluating: jeopardy (10-shot, type: language_modeling)... accuracy: 0.0094 | centered: 0.0094 | time: 34.37s
+Evaluating: bigbench_qa_wikidata (10-shot, type: language_modeling)... accuracy: 0.2388 | centered: 0.2388 | time: 334.04s
+Evaluating: arc_easy (10-shot, type: multiple_choice)... accuracy: 0.5109 | centered: 0.3479 | time: 44.85s
+Evaluating: arc_challenge (10-shot, type: multiple_choice)... accuracy: 0.2551 | centered: 0.0068 | time: 25.35s
+Evaluating: copa (0-shot, type: multiple_choice)... accuracy: 0.4900 | centered: -0.0200 | time: 1.81s
+Evaluating: commonsense_qa (10-shot, type: multiple_choice)... accuracy: 0.2760 | centered: 0.0950 | time: 20.79s
+Evaluating: piqa (10-shot, type: multiple_choice)... accuracy: 0.6311 | centered: 0.2622 | time: 46.92s
+Evaluating: openbook_qa (0-shot, type: multiple_choice)... accuracy: 0.3040 | centered: 0.0720 | time: 8.36s
+Evaluating: lambada_openai (0-shot, type: language_modeling)... accuracy: 0.3868 | centered: 0.3868 | time: 81.35s
+Evaluating: hellaswag (10-shot, type: multiple_choice)... accuracy: 0.3177 | centered: 0.0902 | time: 1612.97s
+Evaluating: winograd (0-shot, type: schema)... accuracy: 0.5092 | centered: 0.0183 | time: 4.44s
+Evaluating: winogrande (0-shot, type: schema)... accuracy: 0.5004 | centered: 0.0008 | time: 20.47s
+Evaluating: bigbench_dyck_languages (10-shot, type: language_modeling)... accuracy: 0.0980 | centered: 0.0980 | time: 17.66s
+Evaluating: agi_eval_lsat_ar (3-shot, type: multiple_choice)... accuracy: 0.2478 | centered: 0.0598 | time: 4.21s
+Evaluating: bigbench_cs_algorithms (10-shot, type: language_modeling)... accuracy: 0.5273 | centered: 0.5273 | time: 21.24s
+Evaluating: bigbench_operators (10-shot, type: language_modeling)... accuracy: 0.1381 | centered: 0.1381 | time: 3.38s
+Evaluating: bigbench_repeat_copy_logic (10-shot, type: language_modeling)... accuracy: 0.0000 | centered: 0.0000 | time: 0.62s
+Evaluating: squad (10-shot, type: language_modeling)... accuracy: 0.3283 | centered: 0.3283 | time: 252.90s
+Evaluating: coqa (0-shot, type: language_modeling)... accuracy: 0.1952 | centered: 0.1952 | time: 132.29s
+Evaluating: boolq (10-shot, type: multiple_choice)... accuracy: 0.5557 | centered: -0.1693 | time: 59.77s
+Evaluating: bigbench_language_identification (10-shot, type: multiple_choice)... accuracy: 0.2528 | centered: 0.1780 | time: 198.23s
+
+Results written to: /home/ubuntu/.cache/nanochat/base_eval/d12_mdm_4x_010080.csv
+CORE metric: 0.1343
