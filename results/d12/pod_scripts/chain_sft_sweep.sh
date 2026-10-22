@@ -12,7 +12,13 @@ NGPU=$(nvidia-smi -L 2>/dev/null | wc -l | tr -d ' ')
 status() { echo "$(date -u +%FT%TZ) $*" | tee -a ~/chain.status; }
 status "CHAIN START"
 bash ~/scripts/remote_setup_sft.sh > ~/setup.log 2>&1
+have_ckpt() { ls "$NANOCHAT_BASE_DIR/base_checkpoints/$1"/model_*.pt >/dev/null 2>&1; }
 if grep -q "SETUP DONE" ~/setup.log; then
+  # the launcher uploads the base checkpoints in parallel with setup and touches ~/UPLOAD_DONE when finished
+  status "WAITING FOR CHECKPOINT UPLOAD"
+  for _ in $(seq 1 180); do [ -f ~/UPLOAD_DONE ] && break; sleep 10; done
+fi
+if grep -q "SETUP DONE" ~/setup.log && have_ckpt d12_ar && have_ckpt d12_mdm; then
   source .venv/bin/activate
   status "PROBES START"
   CUDA_VISIBLE_DEVICES=0 python -m scripts.probe_answer_slot --tag d12_ar --tag d12_mdm > ~/probe_answer_slot.log 2>&1
@@ -24,7 +30,7 @@ if grep -q "SETUP DONE" ~/setup.log; then
   wait
   status "SWEEP DONE"
 else
-  status "SETUP FAILED"
+  status "SETUP FAILED OR CHECKPOINTS MISSING (see setup.log)"
 fi
 tar czf ~/results_bundle.tgz --exclude='*.pt' -C ~ setup.log chain.status probe_answer_slot.log probe_grad_share.log \
     $(cd ~ && ls lane*.log 2>/dev/null) .cache/nanochat/logs .cache/nanochat/probes 2>/dev/null
