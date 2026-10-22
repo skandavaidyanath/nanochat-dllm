@@ -5,13 +5,15 @@
 # x3 = 44,832; --num-iterations counts micro-batches). Every run: chat_sft with val bpb and ChatCORE every 400
 # steps (categorical tasks on 400 problems each, 8 generative samples each), then the full categorical chat_eval
 # and GSM8K on 100 problems. Runs whose SFT checkpoint exists are skipped, so the script can be re-run after an
-# interruption. One GPU per lane; LANE picks the subset (the lanes are balanced by expected wall time).
+# interruption. One GPU per lane: NLANES is the number of GPUs and LANE this GPU's lane; runs are spread over the
+# lanes longest-first by their expected wall time so the lanes finish together.
 # Note: the base checkpoints carry no optimizer state here, so every run (including the AR control) starts from a
 # fresh optimizer; the phase-1 SFT runs warm-started momentum from pretraining.
-# Usage: CUDA_VISIBLE_DEVICES=0 LANE=0 bash runs/exp_d12_sft_sweep.sh     (LANE=all runs everything sequentially)
+# Usage: CUDA_VISIBLE_DEVICES=0 NLANES=4 LANE=0 bash runs/exp_d12_sft_sweep.sh   (LANE=all runs everything on one GPU)
 set -u
 export NANOCHAT_BASE_DIR="${NANOCHAT_BASE_DIR:-$HOME/.cache/nanochat}" OMP_NUM_THREADS=1 PYTHONUNBUFFERED=1
 LANE="${LANE:-all}"
+NLANES="${NLANES:-1}"
 DBS="${DBS:-16}"
 source .venv/bin/activate
 mkdir -p "$NANOCHAT_BASE_DIR/logs"
@@ -24,12 +26,22 @@ RUNS=(
   "sft2_ar_m9_lr0.3_x2|d12_ar|--mmlu-epochs=9 --init-lr-frac=0.3 --num-iterations=$X2"
   "sft2_mdm_m9_lr0.1_x2|d12_mdm|--mmlu-epochs=9 --init-lr-frac=0.1 --num-iterations=$X2"
 )
-case "$LANE" in
-  0) IDX=(0 1);;
-  1) IDX=(2 3 4);;
-  all) IDX=(0 1 2 3 4);;
-  *) echo "LANE must be 0, 1 or all"; exit 1;;
-esac
+EST=(28 20 20 17 20)  # expected wall time per run, tenths of an hour on an H100 PCIe (phase-1 timings), same order as RUNS
+if [ "$LANE" = "all" ]; then NLANES=1; LANE=0; fi
+assign() {  # longest-processing-time-first: prints the run indices for this lane
+  python3 - "$NLANES" "$LANE" "${EST[@]}" <<'EOF'
+import sys
+n, lane, est = int(sys.argv[1]), int(sys.argv[2]), [int(x) for x in sys.argv[3:]]
+load, lanes = [0] * n, [[] for _ in range(n)]
+for i in sorted(range(len(est)), key=lambda i: -est[i]):
+    j = min(range(n), key=lambda j: load[j])
+    load[j] += est[i]
+    lanes[j].append(i)
+print(" ".join(str(i) for i in sorted(lanes[lane])))
+EOF
+}
+IDX=($(assign))
+echo "lane $LANE of $NLANES runs: ${IDX[*]}"
 have_sft() { ls "$NANOCHAT_BASE_DIR/chatsft_checkpoints/$1"/model_*.pt >/dev/null 2>&1; }
 for i in "${IDX[@]}"; do
   IFS='|' read -r NAME BASE EXTRA <<< "${RUNS[$i]}"
