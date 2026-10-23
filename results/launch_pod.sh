@@ -22,7 +22,7 @@ RES_ARGS=()
 [ -n "${DISK_SIZE:-}" ] && RES_ARGS+=(--disk-size "$DISK_SIZE")
 [ -n "${VCPUS:-}" ] && RES_ARGS+=(--vcpus "$VCPUS")
 [ -n "${MEMORY:-}" ] && RES_ARGS+=(--memory "$MEMORY")
-OUT=$(prime --plain pods create --cloud-id "$CLOUD_ID" --name "$NAME" --image ubuntu_22_cuda_12 "${RES_ARGS[@]}" -y </dev/null 2>&1 | tail -8 || true)
+OUT=$(prime --plain pods create --cloud-id "$CLOUD_ID" --name "$NAME" --image ubuntu_22_cuda_12 ${RES_ARGS[@]+"${RES_ARGS[@]}"} -y </dev/null 2>&1 | tail -8 || true)
 echo "$OUT"
 POD=$(echo "$OUT" | grep -o "created pod [0-9a-f]*" | awk '{print $3}')
 [ -n "$POD" ] || { echo "pod creation failed"; exit 1; }
@@ -39,7 +39,10 @@ for _ in $(seq 1 90); do
   case "$ST" in TERMINATED|ERROR|FAILED) echo "pod ended during provisioning"; exit 1;; esac
   sleep 20
 done
-USER_HOST="${SSHT%% *}"; SSH_USER="${USER_HOST%@*}"; IP="${USER_HOST#*@}"; PORT=$(echo "$SSHT" | grep -o -- "-p [0-9]*" | awk '{print $2}'); PORT="${PORT:-22}"
+# ssh field looks like "ubuntu@1.2.3.4 -p 22" (Lambda) or just "ubuntu@1.2.3.4" (Nebius); never let a missing port abort under set -e
+USER_HOST="${SSHT%% *}"; SSH_USER="${USER_HOST%@*}"; IP="${USER_HOST#*@}"
+PORT=$(echo "$SSHT" | grep -o -- "-p [0-9]*" | awk '{print $2}' || true); PORT="${PORT:-22}"
+log "ssh target user=$SSH_USER ip=$IP port=$PORT"
 
 # 3) ssh alias (IPQoS none: without it macOS ssh uploads at ~0.1 MB/s on some routes)
 python3 - "$HOST" "$IP" "$SSH_USER" "$PORT" <<'EOF'
