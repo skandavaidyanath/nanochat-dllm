@@ -19,7 +19,10 @@ OFFERS=(
   "4H200.141S.176V_SPOT|4|DISK_SIZE=200"                                  # DataCrunch 4xH200 spot, $11.8/h, ~2 h expected
   "1H200.141S.44V_SPOT|10|DISK_SIZE=200"                                  # DataCrunch 1xH200 spot, $2.9/h, ~6 h expected
 )
+COOLDOWN=""   # "cloud_id:poll_until" entries for offers whose launch just failed (e.g. provider HTTP 500), skipped for 5 polls
+poll=0
 for _ in $(seq 1 "$MAX_POLLS"); do
+  poll=$((poll + 1))
   AVAIL=$("$PY" - <<'EOF' 2>/dev/null
 from prime_cli.api.client import APIClient
 from prime_cli.api.availability import AvailabilityClient
@@ -33,13 +36,16 @@ EOF
 )
   for o in "${OFFERS[@]}"; do
     IFS='|' read -r CID HRS ENVS <<< "$o"
+    until_poll=$(echo "$COOLDOWN" | tr ' ' '\n' | grep "^$CID:" | tail -1 | cut -d: -f2)
+    if [ -n "$until_poll" ] && [ "$poll" -le "$until_poll" ]; then continue; fi
     if echo "$AVAIL" | grep -qx "$CID"; then
       echo "$(date -u +%H:%M:%S) launching on $CID (hard cap $HRS h)"
       env $ENVS CLOUD_ID="$CID" MAX_HOURS="$HRS" SCRATCH="$SCRATCH" bash results/launch_pod.sh 2>&1 | grep -v -i "userwarning\|warnings.warn"
       rc=${PIPESTATUS[0]}
       echo "$(date -u +%H:%M:%S) launcher exit $rc"
       [ "$rc" -eq 0 ] && exit 0
-      echo "launch on $CID failed; continuing to poll"
+      COOLDOWN="$COOLDOWN $CID:$((poll + 5))"
+      echo "launch on $CID failed; skipping it for 5 polls, trying the next offer"
       break
     fi
   done
