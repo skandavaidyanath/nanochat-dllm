@@ -51,21 +51,21 @@ ssh-keygen -R "$IP" >/dev/null 2>&1 || true
 for i in $(seq 1 30); do ssh -o BatchMode=yes "$HOST" true 2>/dev/null && break; log "waiting for sshd ($i)"; sleep 10; done
 ssh -o BatchMode=yes "$HOST" true
 
-# 4) FIRST: credentials + deadline watchdog on the box, verified
+# 4) FIRST: credentials, the pod scripts and the deadline watchdog on the box, verified by its PID
+sync_retry() { for t in 1 2 3 4 5 6 7 8; do rsync -az --partial --inplace "$@" && return 0; log "rsync retry $t"; sleep 5; done; return 1; }
 umask 077; printf 'PRIME_API_KEY=%s\nPOD_ID=%s\n' "$PRIME_API_KEY" "$POD" > "$SCRATCH/pod.env"
 scp -q "$SCRATCH/pod.env" "$HOST:pod.env"
-ssh "$HOST" "chmod 600 ~/pod.env; nohup bash -c 'sleep $((MAX_HOURS * 3600)); source ~/pod.env; echo \"\$(date -u) WATCHDOG TERMINATING\" >> ~/watchdog.log; curl -s -X DELETE -H \"Authorization: Bearer \$PRIME_API_KEY\" $API/\$POD_ID >> ~/watchdog.log 2>&1' </dev/null >~/watchdog.log 2>&1 & disown; sleep 1; pgrep -f 'sleep $((MAX_HOURS * 3600))' >/dev/null && echo 'WATCHDOG ARMED' || echo 'WATCHDOG NOT RUNNING'" | tee "$SCRATCH/watchdog.txt"
+ssh "$HOST" 'chmod 600 ~/pod.env; mkdir -p ~/scripts'
+sync_retry results/d12/pod_scripts/ "$HOST:scripts/"
+ssh "$HOST" "chmod +x ~/scripts/*.sh; nohup bash ~/scripts/watchdog.sh $MAX_HOURS </dev/null >/dev/null 2>&1 & disown; sleep 2; kill -0 \$(cat ~/watchdog.pid) && echo WATCHDOG ARMED pid \$(cat ~/watchdog.pid); cat ~/watchdog.log" | tee "$SCRATCH/watchdog.txt"
 grep -q "WATCHDOG ARMED" "$SCRATCH/watchdog.txt" || { echo "watchdog did not start"; exit 1; }
 log "deadline watchdog armed: pod $POD terminates after $MAX_HOURS h"
 
-# 5) sync code, tokenizer, scripts, checkpoints (resumable, retried)
-sync_retry() { for t in 1 2 3 4 5 6 7 8; do rsync -az --partial --inplace "$@" && return 0; log "rsync retry $t"; sleep 5; done; return 1; }
-ssh "$HOST" 'mkdir -p ~/nanochat-dllm ~/.cache/nanochat/tokenizer ~/.cache/nanochat/base_checkpoints/d12_ar ~/.cache/nanochat/base_checkpoints/d12_mdm ~/scripts'
+# 5) sync code, tokenizer, checkpoints (resumable, retried)
+ssh "$HOST" 'mkdir -p ~/nanochat-dllm ~/.cache/nanochat/tokenizer ~/.cache/nanochat/base_checkpoints/d12_ar ~/.cache/nanochat/base_checkpoints/d12_mdm'
 sync_retry --exclude .git --exclude .venv --exclude results/checkpoints --exclude results/logs --exclude 'results/d12/pod_logs' \
     --exclude 'results/d12/base_eval' --exclude 'results/d12/plots' --exclude '__pycache__' --exclude '.env' --exclude '*.png' ./ "$HOST:nanochat-dllm/"
 sync_retry ~/.cache/nanochat/tokenizer/ "$HOST:.cache/nanochat/tokenizer/"
-sync_retry results/d12/pod_scripts/ "$HOST:scripts/"
-ssh "$HOST" 'chmod +x ~/scripts/*.sh'
 
 # 6) start the chain detached, verify by its status file (never by pgrep on the script name)
 ssh "$HOST" 'nohup bash ~/scripts/chain_sft_sweep.sh > ~/chain.log 2>&1 < /dev/null & disown; sleep 3; cat ~/chain.status'

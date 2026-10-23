@@ -6,7 +6,7 @@
 # Needs ~/pod.env (mode 600) with PRIME_API_KEY and POD_ID, placed by the launcher. Progress: ~/chain.status.
 cd ~/nanochat-dllm
 export NANOCHAT_BASE_DIR=$HOME/.cache/nanochat OMP_NUM_THREADS=1 PYTHONUNBUFFERED=1
-ACK_WAIT_MIN="${ACK_WAIT_MIN:-45}"
+ACK_WAIT_MIN="${ACK_WAIT_MIN:-20}"
 NGPU=$(nvidia-smi -L 2>/dev/null | wc -l | tr -d ' ')
 [ "$NGPU" -ge 1 ] || NGPU=1
 status() { echo "$(date -u +%FT%TZ) $*" | tee -a ~/chain.status; }
