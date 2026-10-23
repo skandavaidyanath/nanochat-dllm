@@ -27,11 +27,16 @@ RUNS=(
   "sft2_mdm_m9_lr0.1_x2|d12_mdm|--mmlu-epochs=9 --init-lr-frac=0.1 --num-iterations=$X2"
 )
 EST=(28 20 20 17 20)  # expected wall time per run, tenths of an hour on an H100 PCIe (phase-1 timings), same order as RUNS
+PRIORITY=(2 3 0 4 1)  # single-GPU order: the main MDM recipe, its AR control, the 3x-steps arm, the lower LR, the share ablation
 if [ "$LANE" = "all" ]; then NLANES=1; LANE=0; fi
-assign() {  # longest-processing-time-first: prints the run indices for this lane
-  python3 - "$NLANES" "$LANE" "${EST[@]}" <<'EOF'
+assign() {  # one lane: priority order; several lanes: longest-processing-time-first. Prints the run indices for this lane.
+  python3 - "$NLANES" "$LANE" "${EST[@]}" -- "${PRIORITY[@]}" <<'EOF'
 import sys
-n, lane, est = int(sys.argv[1]), int(sys.argv[2]), [int(x) for x in sys.argv[3:]]
+sep = sys.argv.index("--")
+n, lane, est, prio = int(sys.argv[1]), int(sys.argv[2]), [int(x) for x in sys.argv[3:sep]], [int(x) for x in sys.argv[sep + 1:]]
+if n == 1:
+    print(" ".join(map(str, prio)))
+    sys.exit()
 load, lanes = [0] * n, [[] for _ in range(n)]
 for i in sorted(range(len(est)), key=lambda i: -est[i]):
     j = min(range(n), key=lambda j: load[j])
