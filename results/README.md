@@ -148,6 +148,8 @@ Open: accuracy vs decoding steps (needs a diffusion model with task accuracy, i.
 |---|---|---|
 | 2026-10-06 | A100 smoke/benchmark pod (Massed Compute via Prime Intellect, 25 min) | ~$0.50 |
 | 2026-10-06 to 10-08 | H100 PCIe pod for the whole d12 phase (Massed Compute via Prime Intellect, $2.35/hr, 44.5 h; terminated 2026-10-08 18:20 UTC) | ~$105 by the hourly rate, of which ~$23 was ~10 h idle after the last job finished at 08:26 UTC on 10-08 |
+| 2026-10-22 | 4xH200 spot pod (DataCrunch via Prime Intellect, $11.66/hr) for the phase-2a SFT sweep; the ssh uploads from the Mac stalled and reset (macOS `IPQoS` issue, fixed with `IPQoS none`) and the chain never started | $15.20, nothing produced |
+| 2026-10-23 | 1xH100 PCIe pod (Lambda via Prime Intellect, $3.29/hr) for the same sweep; the chain launch failed silently, a false 'already running' check hid it, and the laptop went offline, so the box idled 19.4 h before being terminated | $63.68, nothing produced. Fix: `results/launch_pod.sh` arms a pod-side deadline watchdog before anything else |
 
 ## Validation runs
 
