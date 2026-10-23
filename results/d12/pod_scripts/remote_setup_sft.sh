@@ -7,6 +7,10 @@ set -euo pipefail
 export PATH="$HOME/.local/bin:$PATH" NANOCHAT_BASE_DIR="$HOME/.cache/nanochat" OMP_NUM_THREADS=1
 echo "=== host ==="; hostname; nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv; nproc; free -g | head -2; df -h ~ | tail -1
 command -v uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh
+# torch.compile (inductor) builds small C extensions and needs Python.h; the Nebius ubuntu_22_cuda_12 image ships without it
+PYINC=$(python3 -c 'import sysconfig; print(sysconfig.get_paths()["include"])')
+[ -f "$PYINC/Python.h" ] || sudo apt-get install -y -qq "python3.$(python3 -c 'import sys; print(sys.version_info[1])')-dev" >/dev/null
+ls "$PYINC/Python.h"
 cd ~/nanochat-dllm
 [ -d .venv ] || uv venv
 uv sync --extra gpu --group dev
