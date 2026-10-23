@@ -17,8 +17,12 @@ SCRATCH="${SCRATCH:-$(mktemp -d)}"
 API="https://api.primeintellect.ai/api/v1/pods"
 log() { echo "$(date -u +%H:%M:%S) $*"; }
 
-# 1) create the pod
-OUT=$(prime --plain pods create --cloud-id "$CLOUD_ID" --name "$NAME" --image ubuntu_22_cuda_12 -y 2>&1 | tail -6)
+# 1) create the pod (DISK_SIZE in GB is required by offers that would otherwise prompt for it, e.g. Nebius min 1500)
+RES_ARGS=()
+[ -n "${DISK_SIZE:-}" ] && RES_ARGS+=(--disk-size "$DISK_SIZE")
+[ -n "${VCPUS:-}" ] && RES_ARGS+=(--vcpus "$VCPUS")
+[ -n "${MEMORY:-}" ] && RES_ARGS+=(--memory "$MEMORY")
+OUT=$(prime --plain pods create --cloud-id "$CLOUD_ID" --name "$NAME" --image ubuntu_22_cuda_12 "${RES_ARGS[@]}" -y </dev/null 2>&1 | tail -8 || true)
 echo "$OUT"
 POD=$(echo "$OUT" | grep -o "created pod [0-9a-f]*" | awk '{print $3}')
 [ -n "$POD" ] || { echo "pod creation failed"; exit 1; }
