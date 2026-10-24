@@ -20,7 +20,8 @@ Latest numbers and plots: [d12/summary.md](d12/summary.md)
 | d12_ar | AR baseline | done | 0.847 | n/a (exact) | 0.142 | 63 min, 349K tok/s |
 | d12_mdm | MDM, matched tokens | done | 1.068 (ELBO) | 1.053 | 0.109 | 66 min, 332K tok/s (5% slower than AR with FA3); gap to AR shrank from 0.35 bpb at step 250 to 0.21 at the end |
 | d12_ar SFT + chat eval | post-training | done | SFT val bpb 0.356 | | ChatCORE 0.084 | ARC-E 36.1 / ARC-C 32.5 / MMLU 31.2 / GSM8K 0.8 / HumanEval 7.9 | | | | |
-| d12_mdm SFT + chat eval | post-training | done (fix pending) | SFT val bpb 0.624 | | ChatCORE -0.001 | ARC-E 25.6 / ARC-C 25.4 / MMLU 23.6 = chance, GSM8K 0.0 / HumanEval 0.0; see finding 1 | | | | |
+| d12_mdm SFT + chat eval | post-training | done | SFT val bpb 0.624 | | ChatCORE -0.001 | ARC-E 25.6 / ARC-C 25.4 / MMLU 23.6 = chance, GSM8K 0.0 / HumanEval 0.0; see findings 1 and 5 | | | | |
+| d12 SFT recipe sweep, 5 arms, + 2 probes | post-training, phase 2a | done 2026-10-24 | | | | best MDM recipe (3x MMLU share, 0.3x LR): ARC-E 30.1 / ARC-C 29.7 / MMLU 27.4; AR on the same recipe 35.0 / 31.3 / 29.9; see findings 5-6, `d12/sft_sweep/summary.md`, `d12/plots/sft_sweep_*.png` | | | | |
 | d12_mdm_2x | MDM, 2.64B tokens | done | 1.022 (ELBO) | 1.009 | 0.131 | 132 min; gap to AR-1x shrank to 0.16 bpb | | | | crossover search |
 | d12_ar_lr0.01 / lr0.04 | AR LR sweep | done | 0.850 / 0.850 | | 0.147 / 0.140 | AR insensitive to Muon LR; default 0.02 is fine |
 | d12_mdm_lr0.01 / lr0.04 | MDM LR sweep | done | 1.062 / 1.075 (ELBO) | 1.045 / 1.062 | 0.118 / 0.102 | MDM slightly prefers the lower LR (0.01); see plots/lr_sweep.png |
@@ -124,18 +125,80 @@ The accuracy side of this trade-off (how much quality is lost at 4-8 tokens per 
 d12 because the d12 diffusion SFT model has no measurable GSM8K / HumanEval accuracy; it is deferred to d24.
 Plot: plots/decode_bench.png.
 
-## Phase 2: d24 (speedrun config, 8xH100 on Lightning)
+**5. Phase 2a: an MDM-specific SFT recipe gets the diffusion model off chance, and the lever is the share of
+multiple-choice data, not the learning rate or the training time (d12, one H200, 2026-10-23).** Both d12 base
+checkpoints, fresh optimizer (no pretraining momentum, unlike the phase-1 SFT runs). `scripts/chat_sft.py` stops
+after one pass over its mixture, so the 3x-MMLU mixture (1.39M conversations) gives 1375 optimizer steps and the
+`--num-iterations=29888` arms end at LR-schedule progress 0.74 (warmdown cut short, identically for the MDM and its
+AR control); the two-pass arm doubles every dataset's epochs and gets the full warmdown; the default-share arm uses
+`--num-iterations=20304` so it ends at the same schedule progress as the x2 arms. Full test sets after SFT:
 
-Not started. `runs/exp_d24_pair.sh` (depth 24, ratio 8, fp8, device batch 16, 8 GPUs) trains the AR and MDM
-models at matched tokens, then runs SFT + chat evals for both. Needs the 8xH100 VM
-(`lightning vm create nanochat-d24 --machine h100_x_8 --volume-size 800`) and a Lightning credit top-up
-(roughly $250-300 at $16/hr: two ~6 h pretrains, evals, SFT). Before launching, based on the d12 findings:
+| run | model | recipe | steps | final SFT val bpb | ARC-E | ARC-C | MMLU | GSM8K |
+|---|---|---|---|---|---|---|---|---|
+| d12_ar_sft (phase 1) | AR | default | 934 | 0.356 | 36.1 | 32.5 | 31.2 | 0.8 |
+| d12_mdm_sft (phase 1) | MDM | default | 934 | 0.624 (ELBO) | 25.6 | 25.4 | 23.6 | 0.0 |
+| sft2_ar_m9_lr0.3_x2 | AR | 3x MMLU share, 0.3x LR | 1375 | 0.363 | 35.0 | 31.3 | 29.9 | 2.0 |
+| sft2_mdm_m9_lr0.3_x2 | MDM | 3x MMLU share, 0.3x LR | 1375 | 0.632 | **30.1** | **29.7** | **27.4** | 0.0 |
+| sft2_mdm_m9_lr0.3_ep2 | MDM | same, two passes, full warmdown | 2749 | 0.590 | 29.8 | 28.1 | 26.7 | 0.0 |
+| sft2_mdm_m9_lr0.1_x2 | MDM | 3x MMLU share, 0.1x LR | 1375 | 0.654 | 27.4 | 25.7 | 25.0 | 0.0 |
+| sft2_mdm_m3_lr0.3 | MDM | default share, 0.3x LR | 934 | 0.632 | 25.6 | 26.2 | 25.7 | 0.0 |
 
-- Give the MDM its own SFT recipe (`runs/exp_posttrain.sh` currently uses the AR recipe for both): 3x MMLU
-  share, Muon LR 0.3x, 2-3x the steps; keep the AR run on the default recipe and also run the AR on the MDM
-  recipe as a control.
-- Measure accuracy vs tokens-per-pass on GSM8K / HumanEval with the d24 MDM SFT model (finding 4).
-- Make the job chain terminate the VM itself when it finishes (the d12 pod idled ~10 h after its last job).
+- The recipe takes the MDM from chance to 30 / 30 / 27 on ARC-E / ARC-C / MMLU; the AR model on the same recipe
+  gets 35 / 31 / 30 (slightly below its default 36 / 33 / 31). The gap shrinks from about 11 / 8 / 6 points to
+  5 / 2 / 3, mostly by lifting the MDM.
+- Two passes with a full warmdown lower the MDM's SFT ELBO from 0.632 to 0.590 but leave the accuracies unchanged:
+  more training time is not the missing ingredient at this size.
+- 0.1x LR is worse on every task, and the default MMLU share at 0.3x LR stays at chance (so the 0.3x LR alone does
+  nothing, confirming the phase-1 diagnostic). The multiple-choice share of the mixture is the lever.
+- The likelihood gap from pretraining survives SFT unchanged (AR 0.36 vs MDM 0.63 bpb on the SFT validation
+  mixture), and the MDM still scores 0 on GSM8K and HumanEval under every recipe.
+- Consequence for d24: the MDM gets the 3x-MMLU / 0.3x-LR / one-pass recipe; the AR model runs on its default
+  recipe and on the MDM recipe as the control. Plots: `d12/plots/sft_sweep_curves.png`, `d12/plots/sft_sweep_final.png`.
+
+**6. Phase 2a probes (post-training question 2): the base models carry no exam skill at the answer slot, the MDM's
+features there are no worse than the AR model's, and the letter's share of an SFT gradient is half the AR model's.**
+`scripts/probe_answer_slot.py` fits a multinomial logistic regression on the frozen vector fed to `lm_head` at the
+answer position (MMLU auxiliary_train, 20k questions; MMLU test, 2k; weight decay picked on a held-out tenth):
+
+| checkpoint | feature position | zero-shot letter acc | probe @500 | @2000 | @20000 |
+|---|---|---|---|---|---|
+| d12_ar | token before the letter (`<\|assistant_start\|>`) | 22.1% | 23.3% | 25.2% | 26.0% |
+| d12_mdm | the `<\|mask\|>` at the letter | 25.2% | 24.2% | 24.4% | 26.1% |
+| d12_mdm | token before the mask | 25.2% | 23.2% | 26.5% | 27.6% |
+
+Chance is 25%: neither base model has a linearly readable answer at the slot, so SFT has to build the skill from
+nothing in both, and the slow MDM learning is not a representation gap. `scripts/probe_grad_share.py` rebuilds the
+real SFT micro-batches (same mixture, packing and loss normaliser) with per-token source labels and splits the
+gradient by source (16 micro-batches, one optimizer step):
+
+| checkpoint | letter tokens carrying loss / micro-batch | letter share of ‖g‖ | `<\|assistant_end\|>` share | SmolTalk share | GSM8K share |
+|---|---|---|---|---|---|
+| d12_ar | 19.5 | 9.3% | 3.8% | 97.4% | 4.1% |
+| d12_mdm | 10.2 (of 19.5 maskable) | 4.7% | 2.9% | 98.9% | 4.6% |
+
+The letter is masked on about half the draws (p ~ U(0, 1)), so the MDM gets the letter's gradient half as often,
+and its SmolTalk gradient is larger (norm 1.00 vs 0.80), so the letter's share of each update is half the AR
+model's. The same half-rate supervision is consistent with the phase-1 observation that on multiple-choice-only
+data the MDM learned at about half the AR rate (0.049 vs 0.100), which was the part of question 2 left
+unexplained: in expectation the 1/p weighting restores the gradient, but half the examples contribute nothing to a
+given step and Muon normalises whatever is there.
+
+## Phase 2: d24 pair
+
+Not started. Lightning AI has been offline since 2026-10-16 (credential-compromise incident, no ETA), so the pair
+will run through Prime Intellect: DataCrunch 8xH100 SXM spot ~$18/hr or on-demand ~$36/hr, Lambda 8xH100 SXM
+$31.92/hr (stock changes by the minute; `results/wait_and_launch.sh` polls and launches). Estimate: the two
+pretrains plus evals and default SFT in about 4 node-hours, the MDM-recipe SFT confirmation with its AR control in
+about 1.5 h, so $100-200 depending on spot. `runs/exp_d24_pair.sh` (depth 24, ratio 8, fp8, device batch 16) still
+needs the recipe split below. Pre-launch list:
+
+- Done (phase 2a): the MDM SFT recipe is 3x MMLU share, 0.3x LR, one pass (finding 5); run the AR on its default
+  recipe and on the MDM recipe as the control. Still to do: wire this into `runs/exp_d24_pair.sh`.
+- Done: launcher with a pod-side deadline watchdog armed before any sync (`results/launch_pod.sh`), stock poller
+  (`results/wait_and_launch.sh`), self-terminating chain with local ACK (`results/d12/pod_scripts/chain_sft_sweep.sh`,
+  `results/poll_pod.sh`). Needs a d24 chain variant (pretrain both, evals, SFT both recipes).
+- Measure accuracy vs tokens-per-pass on GSM8K / HumanEval with the d24 MDM SFT model (finding 4), if it has
+  non-zero accuracy there.
 
 ## Phase 3: trade-offs
 
@@ -150,6 +213,7 @@ Open: accuracy vs decoding steps (needs a diffusion model with task accuracy, i.
 | 2026-10-06 to 10-08 | H100 PCIe pod for the whole d12 phase (Massed Compute via Prime Intellect, $2.35/hr, 44.5 h; terminated 2026-10-08 18:20 UTC) | ~$105 by the hourly rate, of which ~$23 was ~10 h idle after the last job finished at 08:26 UTC on 10-08 |
 | 2026-10-22 | 4xH200 spot pod (DataCrunch via Prime Intellect, $11.66/hr) for the phase-2a SFT sweep; the ssh uploads from the Mac stalled and reset (macOS `IPQoS` issue, fixed with `IPQoS none`) and the chain never started | $15.20, nothing produced |
 | 2026-10-23 | 1xH100 PCIe pod (Lambda via Prime Intellect, $3.29/hr) for the same sweep; the chain launch failed silently, a false 'already running' check hid it, and the laptop went offline, so the box idled 19.4 h before being terminated | $63.68, nothing produced. Fix: `results/launch_pod.sh` arms a pod-side deadline watchdog before anything else |
+| 2026-10-23 to 10-24 | 1xH200 (Nebius via Prime Intellect, $5.40/hr) for phase 2a: both probes and the 5-arm SFT sweep, 20:45 to 00:17 UTC; the chain terminated the pod itself after the local ACK, the 8 h watchdog was never needed (one earlier Nebius pod failed at ssh setup and was terminated by the launcher within a second, $0.00) | $23.29 |
 
 ## Validation runs
 
