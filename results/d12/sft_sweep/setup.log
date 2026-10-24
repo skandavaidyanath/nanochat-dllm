@@ -1,0 +1,41 @@
+=== host ===
+computeinstance-u00kkem1vvdynbkt7e
+name, memory.total [MiB], driver_version
+NVIDIA H200, 143771 MiB, 550.163.01
+1
+               total        used        free      shared  buff/cache   available
+Mem:             196           0         183           0          12         194
+/dev/vda1       1.5T   27G  1.4T   2% /
+Resolved 129 packages in 1ms
+Checked 109 packages in 0.82ms
+torch 2.9.1+cu128 cuda 12.8 True 1 NVIDIA H200
+=== checkpoints ===
+/home/ubuntu/.cache/nanochat/base_checkpoints/d12_ar/:
+total 774200
+drwxrwxr-x 2 ubuntu ubuntu      4096 Oct 23 20:48 .
+drwxrwxr-x 4 ubuntu ubuntu      4096 Oct 23 20:47 ..
+-rw-rw-r-- 1 ubuntu ubuntu      1460 Oct  6 23:09 meta_002520.json
+-rw-rw-r-- 1 ubuntu ubuntu 792761399 Oct  6 23:09 model_002520.pt
+
+/home/ubuntu/.cache/nanochat/base_checkpoints/d12_mdm/:
+total 774200
+drwxrwxr-x 2 ubuntu ubuntu      4096 Oct 23 20:57 .
+drwxrwxr-x 4 ubuntu ubuntu      4096 Oct 23 20:47 ..
+-rw-rw-r-- 1 ubuntu ubuntu      1466 Oct  7 01:09 meta_002520.json
+-rw-rw-r-- 1 ubuntu ubuntu 792761399 Oct  7 01:09 model_002520.pt
+=== tokenizer ===
+vocab 32768 mask id 32767
+=== task data (downloaded once, before the lanes start) ===
+SmolTalk 460341
+SmolTalk 24229
+MMLU 99842
+MMLU 14042
+GSM8K 7473
+GSM8K 1319
+ARC 2376
+ARC 1172
+HumanEval 164
+=== fa3 ===
+HAS_FA3 True USE_FA3 True
+SETUP DONE
+SETUP DONE (resumed)

@@ -1,0 +1,17 @@
+2026-10-23 21:09:19,720 - httpx - [32m[1mINFO[0m - HTTP Request: GET https://huggingface.co/api/models/varunneal/flash-attention-3/revision/main "HTTP/1.1 200 OK"
+Autodetected device type: cuda
+2026-10-23 21:09:19,776 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+2026-10-23 21:09:20,069 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/base_checkpoints/d12_ar with step 2520
+2026-10-23 21:09:20,633 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 2048, 'vocab_size': 32768, 'n_layer': 12, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 768, 'window_pattern': 'SSSL', 'model_type': 'ar', 'softcap': 15.0}
+d12_ar: done in 21s
+2026-10-23 21:09:41,028 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /home/ubuntu/.cache/nanochat/base_checkpoints/d12_mdm with step 2520
+2026-10-23 21:09:41,455 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 2048, 'vocab_size': 32768, 'n_layer': 12, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 768, 'window_pattern': 'SSSL', 'model_type': 'mdm', 'softcap': 15.0}
+d12_mdm: done in 25s
+
+| checkpoint | feature | zero-shot letter acc | probe acc @500 | probe acc @2000 | probe acc @20000 |
+|---|---|---|---|---|---|
+| d12_ar | slot | 22.1% | 23.3% | 25.2% | 26.0% |
+| d12_mdm | slot | 25.2% | 24.2% | 24.4% | 26.1% |
+| d12_mdm | prev | 25.2% | 23.2% | 26.5% | 27.6% |
+
+feature: slot = the position the model predicts the letter from (AR: <|assistant_start|>; MDM: the <|mask|> after it); prev = the <|assistant_start|> position of the masked MDM input. Chance is 25%.

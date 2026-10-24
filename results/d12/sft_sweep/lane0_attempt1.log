@@ -1,0 +1,37 @@
+lane 0 of 1 runs: 2 3 0 4 1
+===== SFT sft2_mdm_m9_lr0.3_x2 (d12_mdm --mmlu-epochs=9 --init-lr-frac=0.3 --num-iterations=29888) START 21:05:28 =====
+Training mixture: 1,388,811 rows (MMLU x9, GSM8K x4)
+Traceback (most recent call last):
+    raise InductorError(e, currentframe()).with_traceback(
+    raise CalledProcessError(retcode, cmd)
+torch._inductor.exc.InductorError: CalledProcessError: Command '['/usr/bin/gcc', '/tmp/tmpbc9f5rn_/cuda_utils.c', '-O3', '-shared', '-fPIC', '-Wno-psabi', '-o', '/tmp/tmpbc9f5rn_/cuda_utils.cpython-310-x86_64-linux-gnu.so', '-lcuda', '-L/home/ubuntu/nanochat-dllm/.venv/lib/python3.10/site-packages/triton/backends/nvidia/lib', '-L/lib/x86_64-linux-gnu', '-I/home/ubuntu/nanochat-dllm/.venv/lib/python3.10/site-packages/triton/backends/nvidia/include', '-I/tmp/tmpbc9f5rn_', '-I/usr/include/python3.10']' returned non-zero exit status 1.
+===== SFT sft2_mdm_m9_lr0.3_x2 FAILED (no checkpoint) 21:05:48 =====
+===== SFT sft2_ar_m9_lr0.3_x2 (d12_ar --mmlu-epochs=9 --init-lr-frac=0.3 --num-iterations=29888) START 21:05:48 =====
+Training mixture: 1,388,811 rows (MMLU x9, GSM8K x4)
+Traceback (most recent call last):
+    raise InductorError(e, currentframe()).with_traceback(
+    raise CalledProcessError(retcode, cmd)
+torch._inductor.exc.InductorError: CalledProcessError: Command '['/usr/bin/gcc', '/tmp/tmpuj2h208h/cuda_utils.c', '-O3', '-shared', '-fPIC', '-Wno-psabi', '-o', '/tmp/tmpuj2h208h/cuda_utils.cpython-310-x86_64-linux-gnu.so', '-lcuda', '-L/home/ubuntu/nanochat-dllm/.venv/lib/python3.10/site-packages/triton/backends/nvidia/lib', '-L/lib/x86_64-linux-gnu', '-I/home/ubuntu/nanochat-dllm/.venv/lib/python3.10/site-packages/triton/backends/nvidia/include', '-I/tmp/tmpuj2h208h', '-I/usr/include/python3.10']' returned non-zero exit status 1.
+===== SFT sft2_ar_m9_lr0.3_x2 FAILED (no checkpoint) 21:06:07 =====
+===== SFT sft2_mdm_m9_lr0.3_x3 (d12_mdm --mmlu-epochs=9 --init-lr-frac=0.3 --num-iterations=44832) START 21:06:07 =====
+Training mixture: 1,388,811 rows (MMLU x9, GSM8K x4)
+Traceback (most recent call last):
+    raise InductorError(e, currentframe()).with_traceback(
+    raise CalledProcessError(retcode, cmd)
+torch._inductor.exc.InductorError: CalledProcessError: Command '['/usr/bin/gcc', '/tmp/tmp6fxfucxe/cuda_utils.c', '-O3', '-shared', '-fPIC', '-Wno-psabi', '-o', '/tmp/tmp6fxfucxe/cuda_utils.cpython-310-x86_64-linux-gnu.so', '-lcuda', '-L/home/ubuntu/nanochat-dllm/.venv/lib/python3.10/site-packages/triton/backends/nvidia/lib', '-L/lib/x86_64-linux-gnu', '-I/home/ubuntu/nanochat-dllm/.venv/lib/python3.10/site-packages/triton/backends/nvidia/include', '-I/tmp/tmp6fxfucxe', '-I/usr/include/python3.10']' returned non-zero exit status 1.
+===== SFT sft2_mdm_m9_lr0.3_x3 FAILED (no checkpoint) 21:06:27 =====
+===== SFT sft2_mdm_m9_lr0.1_x2 (d12_mdm --mmlu-epochs=9 --init-lr-frac=0.1 --num-iterations=29888) START 21:06:27 =====
+Training mixture: 1,388,811 rows (MMLU x9, GSM8K x4)
+Traceback (most recent call last):
+    raise InductorError(e, currentframe()).with_traceback(
+    raise CalledProcessError(retcode, cmd)
+torch._inductor.exc.InductorError: CalledProcessError: Command '['/usr/bin/gcc', '/tmp/tmpxdoik_qt/cuda_utils.c', '-O3', '-shared', '-fPIC', '-Wno-psabi', '-o', '/tmp/tmpxdoik_qt/cuda_utils.cpython-310-x86_64-linux-gnu.so', '-lcuda', '-L/home/ubuntu/nanochat-dllm/.venv/lib/python3.10/site-packages/triton/backends/nvidia/lib', '-L/lib/x86_64-linux-gnu', '-I/home/ubuntu/nanochat-dllm/.venv/lib/python3.10/site-packages/triton/backends/nvidia/include', '-I/tmp/tmpxdoik_qt', '-I/usr/include/python3.10']' returned non-zero exit status 1.
+===== SFT sft2_mdm_m9_lr0.1_x2 FAILED (no checkpoint) 21:06:46 =====
+===== SFT sft2_mdm_m3_lr0.3_x2 (d12_mdm --mmlu-epochs=3 --init-lr-frac=0.3 --num-iterations=29888) START 21:06:46 =====
+Training mixture: 789,759 rows (MMLU x3, GSM8K x4)
+Traceback (most recent call last):
+    raise InductorError(e, currentframe()).with_traceback(
+    raise CalledProcessError(retcode, cmd)
+torch._inductor.exc.InductorError: CalledProcessError: Command '['/usr/bin/gcc', '/tmp/tmpvmsbyji0/cuda_utils.c', '-O3', '-shared', '-fPIC', '-Wno-psabi', '-o', '/tmp/tmpvmsbyji0/cuda_utils.cpython-310-x86_64-linux-gnu.so', '-lcuda', '-L/home/ubuntu/nanochat-dllm/.venv/lib/python3.10/site-packages/triton/backends/nvidia/lib', '-L/lib/x86_64-linux-gnu', '-I/home/ubuntu/nanochat-dllm/.venv/lib/python3.10/site-packages/triton/backends/nvidia/include', '-I/tmp/tmpvmsbyji0', '-I/usr/include/python3.10']' returned non-zero exit status 1.
+===== SFT sft2_mdm_m3_lr0.3_x2 FAILED (no checkpoint) 21:07:03 =====
+===== LANE 0 DONE 21:07:03 =====
