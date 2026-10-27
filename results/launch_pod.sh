@@ -12,6 +12,7 @@ export PRIME_API_KEY="${PRIME_API_KEY:-$PRIME_INTELLECT_KEY}"
 CLOUD_ID="${CLOUD_ID:?set CLOUD_ID (e.g. gpu_1x_h100_pcie, 4H200.141S.176V_SPOT)}"
 MAX_HOURS="${MAX_HOURS:?set MAX_HOURS: the pod is terminated after this many hours no matter what}"
 NAME="${NAME:-d12-sft-sweep}"
+CHAIN="${CHAIN:-chain_sft_sweep.sh}"   # which ~/scripts/*.sh chain to start on the box
 HOST="${HOST:-prime-sft}"
 SCRATCH="${SCRATCH:-$(mktemp -d)}"
 API="https://api.primeintellect.ai/api/v1/pods"
@@ -75,7 +76,7 @@ sync_retry --exclude .git --exclude .venv --exclude results/checkpoints --exclud
 sync_retry ~/.cache/nanochat/tokenizer/ "$HOST:.cache/nanochat/tokenizer/"
 
 # 6) start the chain detached, verify by its status file (never by pgrep on the script name)
-ssh "$HOST" 'nohup bash ~/scripts/chain_sft_sweep.sh > ~/chain.log 2>&1 < /dev/null & disown; sleep 3; cat ~/chain.status'
+ssh "$HOST" "nohup bash ~/scripts/$CHAIN > ~/chain.log 2>&1 < /dev/null & disown; sleep 3; cat ~/chain.status"
 ssh "$HOST" 'grep -q "CHAIN START" ~/chain.status' || { echo "chain did not start"; exit 1; }
 log "chain started"
 

@@ -11,14 +11,23 @@ export PRIME_API_KEY="${PRIME_API_KEY:-$PRIME_INTELLECT_KEY}"
 PY=$(head -1 "$(command -v prime)" | sed 's/^#!//')   # the prime CLI's own python, which has prime_cli installed
 MAX_POLLS="${1:-360}"
 SCRATCH="${SCRATCH:-$(mktemp -d)}"
-# cloud_id | MAX_HOURS | extra env for launch_pod.sh
-OFFERS=(
-  "gpu-h200-sxm_1gpu-16vcpu-200gb|8|DISK_SIZE=1500 VCPUS=16 MEMORY=200"   # Nebius 1xH200 on-demand, $5.40/h, ~6 h expected
-  "gpu_1x_h100_pcie|11|"                                                  # Lambda 1xH100 PCIe on-demand, $3.29/h, ~8-9 h expected
-  "2H100.80S.80V_SPOT|7|DISK_SIZE=200"                                    # DataCrunch 2xH100 spot, $4.5/h, ~4.5 h expected
-  "4H200.141S.176V_SPOT|4|DISK_SIZE=200"                                  # DataCrunch 4xH200 spot, $11.8/h, ~2 h expected
-  "1H200.141S.44V_SPOT|10|DISK_SIZE=200"                                  # DataCrunch 1xH200 spot, $2.9/h, ~6 h expected
-)
+# cloud_id | MAX_HOURS | extra env for launch_pod.sh. PROFILE=sweep (multi-GPU ok) or phase2b (single GPU, ~$20 budget).
+PROFILE="${PROFILE:-sweep}"
+if [ "$PROFILE" = "phase2b" ]; then
+  OFFERS=(
+    "gpu-h200-sxm_1gpu-16vcpu-200gb|3.5|DISK_SIZE=1500 VCPUS=16 MEMORY=200"   # Nebius 1xH200 on-demand $5.40/h, ~2 h expected, cap $19
+    "gpu_1x_h100_pcie|5|"                                                    # Lambda 1xH100 PCIe $3.29/h, ~3 h expected, cap $16.5
+    "1H200.141S.44V_SPOT|6|DISK_SIZE=200"                                    # DataCrunch 1xH200 spot $2.9/h, cap $17.5
+  )
+else
+  OFFERS=(
+    "gpu-h200-sxm_1gpu-16vcpu-200gb|8|DISK_SIZE=1500 VCPUS=16 MEMORY=200"   # Nebius 1xH200 on-demand, $5.40/h, ~6 h expected
+    "gpu_1x_h100_pcie|11|"                                                  # Lambda 1xH100 PCIe on-demand, $3.29/h, ~8-9 h expected
+    "2H100.80S.80V_SPOT|7|DISK_SIZE=200"                                    # DataCrunch 2xH100 spot, $4.5/h, ~4.5 h expected
+    "4H200.141S.176V_SPOT|4|DISK_SIZE=200"                                  # DataCrunch 4xH200 spot, $11.8/h, ~2 h expected
+    "1H200.141S.44V_SPOT|10|DISK_SIZE=200"                                  # DataCrunch 1xH200 spot, $2.9/h, ~6 h expected
+  )
+fi
 COOLDOWN=""   # "cloud_id:poll_until" entries for offers whose launch just failed (e.g. provider HTTP 500), skipped for 5 polls
 poll=0
 for _ in $(seq 1 "$MAX_POLLS"); do
@@ -40,7 +49,7 @@ EOF
     if [ -n "$until_poll" ] && [ "$poll" -le "$until_poll" ]; then continue; fi
     if echo "$AVAIL" | grep -qx "$CID"; then
       echo "$(date -u +%H:%M:%S) launching on $CID (hard cap $HRS h)"
-      env $ENVS CLOUD_ID="$CID" MAX_HOURS="$HRS" SCRATCH="$SCRATCH" bash results/launch_pod.sh 2>&1 | grep -v -i "userwarning\|warnings.warn"
+      env $ENVS CLOUD_ID="$CID" MAX_HOURS="$HRS" SCRATCH="$SCRATCH" CHAIN="${CHAIN:-chain_sft_sweep.sh}" NAME="${NAME:-d12-sft-sweep}" bash results/launch_pod.sh 2>&1 | grep -v -i "userwarning\|warnings.warn"
       rc=${PIPESTATUS[0]}
       echo "$(date -u +%H:%M:%S) launcher exit $rc"
       [ "$rc" -eq 0 ] && exit 0
