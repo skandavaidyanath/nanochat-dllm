@@ -70,11 +70,14 @@ def apply_mask(ids, maskable, p_mask, mask_id, generator=None):
     return noisy, masked
 
 
-def mdm_loss(model, ids, maskable, mask_id, p_mask=None, generator=None, reduction="mean", eps=EPS):
+def mdm_loss(model, ids, maskable, mask_id, p_mask=None, generator=None, reduction="mean", eps=EPS, forced=None):
     """
     Masked diffusion loss (negative ELBO estimate), see module docstring.
     eps is the minimum mask rate: p ~ U(eps, 1). The LLaDA default 1e-3 gives importance weights 1/p up to 1000x;
     raising it (e.g. 0.1) bounds the weights at the cost of a biased ELBO. See docs/EXPERIMENT.md on SFT saturation.
+    forced: optional (B, T) bool of maskable positions that are always masked and weighted 1 instead of 1/p
+            (SFT option for short answers such as a multiple-choice letter: deterministic supervision, like the AR
+            next-token loss at that slot, while the rest of the batch keeps the random-rate objective).
     reduction="mean": scalar = sum_{masked} CE/p / (#maskable tokens in the batch). Comparable to the AR
                       mean cross-entropy (nats per supervised token), as an upper bound.
     reduction="none": (loss_tok, masked) where loss_tok is (B, T) with CE/p at masked positions and 0 elsewhere.
@@ -83,9 +86,16 @@ def mdm_loss(model, ids, maskable, mask_id, p_mask=None, generator=None, reducti
     if p_mask is None:
         p_mask = sample_mask_rates(B, ids.device, generator, eps=eps)
     noisy, masked = apply_mask(ids, maskable, p_mask, mask_id, generator)
+    if forced is not None:
+        forced = forced & maskable
+        masked = masked | forced
+        noisy = torch.where(masked, torch.full_like(ids, mask_id), ids)
     targets = torch.where(masked, ids, torch.full_like(ids, -1))  # -1 = ignore_index
     loss_tok = model(noisy, targets, loss_reduction="none").view(B, T)  # 0 at ignored positions
-    loss_tok = loss_tok / p_mask[:, None]
+    weight = (1.0 / p_mask)[:, None].expand(B, T)
+    if forced is not None:
+        weight = torch.where(forced, torch.ones_like(weight), weight)
+    loss_tok = loss_tok * weight
     if reduction == "none":
         return loss_tok, masked
     n = maskable.sum().clamp(min=1)
@@ -121,6 +131,8 @@ def evaluate_bpb_mdm(model, batches, steps, token_bytes, mask_id, mode="elbo", s
     batch_iter = iter(batches)
     for _ in range(steps):
         ids, maskable = next(batch_iter)
+        if maskable.dtype != torch.bool:
+            maskable = maskable > 0  # the SFT loader may send 0/1/2 (2 = forced-mask position); the metric ignores the distinction
         B, T = ids.shape
         counted = maskable & (token_bytes[ids] > 0)  # tokens that contribute to the metric
         total_bytes += token_bytes[ids][counted].sum()

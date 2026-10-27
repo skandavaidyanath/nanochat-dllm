@@ -43,6 +43,7 @@ parser.add_argument("--output-tag", type=str, default=None, help="checkpoint dir
 # MDM only
 parser.add_argument("--mdm-min-mask-rate", type=float, default=1e-3, help="MDM: minimum mask rate eps, p ~ U(eps, 1); 1e-3 = LLaDA default, larger values bound the 1/p loss weights")
 parser.add_argument("--softcap", type=float, default=None, help="override the logit softcap for SFT and the saved model (<= 0 disables; default: inherit from the base model)")
+parser.add_argument("--mdm-force-mask-short", type=int, default=0, help="MDM: assistant responses of at most this many tokens (2 = a multiple-choice letter plus <|assistant_end|>) are always masked with loss weight 1 instead of masked at the random rate with weight 1/p; 0 = off")
 parser.add_argument("--mdm-sft-format", type=str, default="packed", choices=["packed", "padded"], help="MDM: 'packed' = nanochat packing (next conversation visible after the response); 'padded' = LLaDA-style, one conversation per row, response followed by maskable <|assistant_end|> padding so the response length is not observable")
 parser.add_argument("--load-optimizer", type=int, default=1, help="warm-start optimizer from pretrained checkpoint (0=no, 1=yes)")
 # Training horizon
@@ -211,11 +212,30 @@ def sft_data_generator_bos_bestfit(split, buffer_size=100):
     epoch = 1
     it = 0  # iteration counter
 
+    def mark_short_responses(mask, max_len):
+        """mask values 1 -> 2 for every contiguous assistant span of at most max_len tokens (forced-mask positions)."""
+        mask = list(mask)
+        i = 0
+        while i < len(mask):
+            if mask[i] == 1:
+                j = i
+                while j < len(mask) and mask[j] == 1:
+                    j += 1
+                if j - i <= max_len:
+                    for k in range(i, j):
+                        mask[k] = 2
+                i = j
+            else:
+                i += 1
+        return mask
+
     def refill_buffer():
         nonlocal cursor, epoch
         while len(conv_buffer) < buffer_size:
             conversation = dataset[cursor]
             ids, mask = tokenizer.render_conversation(conversation)
+            if is_mdm and args.mdm_force_mask_short > 0 and split == "train":
+                mask = mark_short_responses(mask, args.mdm_force_mask_short)
             conv_buffer.append((ids, mask))
             cursor += ddp_world_size
             if cursor >= dataset_size:
@@ -252,7 +272,7 @@ def sft_data_generator_bos_bestfit(split, buffer_size=100):
             use_cuda = device_type == "cuda"
             batch_tensor = torch.tensor(rows, dtype=torch.long, pin_memory=use_cuda)
             ids = batch_tensor[:, :-1].to(device=device, non_blocking=use_cuda).contiguous()
-            maskable = (torch.tensor(mask_rows, dtype=torch.int8)[:, :-1] == 1).to(device=device, non_blocking=use_cuda).contiguous()
+            maskable = torch.tensor(mask_rows, dtype=torch.int8)[:, :-1].to(device=device, non_blocking=use_cuda).contiguous()  # 0/1/2
             yield ids, maskable
             continue
         for _ in range(args.device_batch_size):
@@ -321,7 +341,7 @@ def sft_data_generator_bos_bestfit(split, buffer_size=100):
             # MDM: the model sees the clean row with assistant tokens randomly masked and predicts them in place.
             # No shift. Only assistant tokens (mask=1; this excludes prompts, tool outputs and padding) are maskable.
             ids = batch_tensor[:, :-1].to(device=device, non_blocking=use_cuda).contiguous()
-            maskable = (torch.tensor(mask_rows, dtype=torch.int8)[:, :-1] == 1).to(device=device, non_blocking=use_cuda).contiguous()
+            maskable = torch.tensor(mask_rows, dtype=torch.int8)[:, :-1].to(device=device, non_blocking=use_cuda).contiguous()  # 0 = not supervised, 1 = maskable, 2 = forced mask
             yield ids, maskable
             continue
         inputs = batch_tensor[:, :-1].to(device=device, dtype=torch.int32, non_blocking=use_cuda).contiguous()
@@ -473,7 +493,10 @@ while True:
     synchronize()
     t0 = time.time()
     for micro_step in range(grad_accum_steps):
-        loss = mdm_loss(model, x, y, mask_id, eps=args.mdm_min_mask_rate) if is_mdm else model(x, y) # for MDM, (x, y) = (clean ids, maskable)
+        if is_mdm:  # (x, y) = (clean ids, 0/1/2 mask); 2 marks forced-mask positions (--mdm-force-mask-short)
+            loss = mdm_loss(model, x, y > 0, mask_id, eps=args.mdm_min_mask_rate, forced=(y == 2) if args.mdm_force_mask_short > 0 else None)
+        else:
+            loss = model(x, y)
         train_loss = loss.detach() # for logging
         loss = loss / grad_accum_steps # each .backward() is a grad sum => normalize loss here
         if scaler is not None:

@@ -12,6 +12,7 @@ python -m scripts.base_train --depth=4 --max-seq-len=512 --device-batch-size=1 -
 """
 
 import os
+import glob
 os.environ["PYTORCH_ALLOC_CONF"] = "expandable_segments:True"
 import gc
 import json
@@ -72,6 +73,8 @@ parser.add_argument("--warmup-steps", type=int, default=40, help="number of step
 parser.add_argument("--warmdown-ratio", type=float, default=0.65, help="ratio of iterations for LR warmdown")
 parser.add_argument("--final-lr-frac", type=float, default=0.05, help="final LR as fraction of initial LR")
 parser.add_argument("--resume-from-step", type=int, default=-1, help="resume training from this step (-1 = disable)")
+parser.add_argument("--init-from-tag", type=str, default=None, help="initialise the weights from another base checkpoint tag (e.g. an AR model continued as MDM); fresh optimizer and schedule")
+parser.add_argument("--init-from-step", type=int, default=-1, help="step of --init-from-tag to load (-1 = its last checkpoint)")
 # Evaluation
 parser.add_argument("--eval-every", type=int, default=250, help="evaluate val bpb every N steps (-1 = disable)")
 parser.add_argument("--eval-tokens", type=int, default=80*524288, help="number of tokens to evaluate val loss on")
@@ -161,6 +164,16 @@ base_dir = get_base_dir()
 output_dirname = args.model_tag if args.model_tag else f"d{args.depth}" # e.g. d12
 checkpoint_dir = os.path.join(base_dir, "base_checkpoints", output_dirname)
 resuming = args.resume_from_step != -1
+if args.init_from_tag and not resuming:
+    init_dir = os.path.join(base_dir, "base_checkpoints", args.init_from_tag)
+    init_step = args.init_from_step
+    if init_step < 0:
+        init_step = max(int(os.path.basename(f)[6:12]) for f in glob.glob(os.path.join(init_dir, "model_*.pt")))
+    init_data, _, init_meta = load_checkpoint(init_dir, init_step, device, load_optimizer=False, rank=ddp_rank)
+    model.load_state_dict(init_data, strict=True, assign=True)
+    del init_data
+    src_type = (init_meta.get("model_config") or {}).get("model_type", "?")
+    print0(f"Initialised weights from base_checkpoints/{args.init_from_tag} step {init_step} (trained as {src_type}); continuing as {args.model_type} with a fresh optimizer")
 if resuming:
     print0(f"Resuming optimization from step {args.resume_from_step}")
     model_data, optimizer_data, meta_data = load_checkpoint(checkpoint_dir, args.resume_from_step, device, load_optimizer=True, rank=ddp_rank)

@@ -19,6 +19,7 @@ python -c "import torch; print('torch', torch.__version__, 'cuda', torch.version
 echo "=== checkpoints ==="; ls -la "$NANOCHAT_BASE_DIR"/base_checkpoints/*/
 echo "=== tokenizer ==="; python -c "
 from nanochat.tokenizer import get_tokenizer; t=get_tokenizer(); print('vocab', t.get_vocab_size(), 'mask id', t.encode_special('<|mask|>'))"
+if [ -n "${SHARDS:-}" ]; then echo "=== pretraining shards ($SHARDS) ==="; python -m nanochat.dataset -n "$SHARDS"; fi
 echo "=== task data (downloaded once, before the lanes start) ==="
 python - <<'EOF'
 from tasks.smoltalk import SmolTalk
