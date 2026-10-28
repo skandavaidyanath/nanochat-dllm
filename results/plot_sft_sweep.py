@@ -28,6 +28,7 @@ RUNS = {
     "sft2_mdm_m9_lr0.3_ep2": ("Diffusion, same recipe, two passes",     PALETTE["mdm"],    "--"),
     "sft2_mdm_m9_lr0.1_x2": ("Diffusion, 3x MMLU share, 0.1x LR",       PALETTE["mdm_2x"], "-"),
     "sft2_mdm_m3_lr0.3":    ("Diffusion, default share, 0.3x LR",       PALETTE["mdm_4x"], "-"),
+    "sft3_mdm_m9_lr0.3_force2": ("Diffusion, 3x MMLU share, 0.3x LR, answer always masked", PALETTE["mdm"], "-."),
 }
 EVAL_LOGS = {
     "d12_ar_sft": "results/d12/stage_logs/d12_ar_chat_eval_sft.log",

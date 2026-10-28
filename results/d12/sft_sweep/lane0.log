@@ -1,207 +1,42 @@
-lane 0 of 1 runs: 2 3 0 4 1
-===== SFT sft2_mdm_m9_lr0.3_x2 (d12_mdm --mmlu-epochs=9 --init-lr-frac=0.3 --num-iterations=29888) START 21:10:26 =====
+===== SFT sft3_mdm_m9_lr0.3_force2 START 21:49:23 =====
 Training mixture: 1,388,811 rows (MMLU x9, GSM8K x4)
-Step 00000 | Validation bpb: 0.8717
-Step 00400 | Validation bpb: 0.7007
-  ARC-Easy: 24.50%
-  ARC-Challenge: 25.25%
-  MMLU: 29.25%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
-Step 00400 | ChatCORE: 0.0107 | ChatCORE_cat: 0.0178
-Step 00800 | Validation bpb: 0.6705
-  ARC-Easy: 26.50%
-  ARC-Challenge: 24.25%
-  MMLU: 28.25%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
-Step 00800 | ChatCORE: 0.0107 | ChatCORE_cat: 0.0178
-Step 01200 | Validation bpb: 0.6440
-  ARC-Easy: 25.25%
-  ARC-Challenge: 26.25%
-  MMLU: 27.75%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
-Step 01200 | ChatCORE: 0.0113 | ChatCORE_cat: 0.0189
-Step 01375 | Validation bpb: 0.6321
-  ARC-Easy: 32.50%
-  ARC-Challenge: 25.50%
-  MMLU: 26.25%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
-Step 01375 | ChatCORE: 0.0247 | ChatCORE_cat: 0.0411
-Total training time: 22.60m
-===== CHAT_EVAL sft2_mdm_m9_lr0.3_x2 START 21:39:21 =====
-ARC-Easy accuracy: 30.13%
-ARC-Challenge accuracy: 29.69%
-MMLU accuracy: 27.37%
-GSM8K accuracy: 0.00%
-lane 0 of 1 runs: 2 3 0 4 1
-=== skip sft2_mdm_m9_lr0.3_x2 (checkpoint and chat_eval exist)
-===== SFT sft2_ar_m9_lr0.3_x2 (d12_ar --mmlu-epochs=9 --init-lr-frac=0.3 --num-iterations=29888) START 21:45:47 =====
-Training mixture: 1,388,811 rows (MMLU x9, GSM8K x4)
-Step 00000 | Validation bpb: 0.6017
-Step 00400 | Validation bpb: 0.4137
-  ARC-Easy: 38.25%
-  ARC-Challenge: 29.50%
-  MMLU: 30.00%
-  GSM8K: 0.00%
-  HumanEval: 12.50%
-Step 00400 | ChatCORE: 0.0857 | ChatCORE_cat: 0.1011
-Step 00800 | Validation bpb: 0.3900
-  ARC-Easy: 40.25%
-  ARC-Challenge: 30.75%
-  MMLU: 28.50%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
-Step 00800 | ChatCORE: 0.0653 | ChatCORE_cat: 0.1089
-Step 01200 | Validation bpb: 0.3716
-  ARC-Easy: 36.75%
-  ARC-Challenge: 30.00%
-  MMLU: 31.50%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
-Step 01200 | ChatCORE: 0.0620 | ChatCORE_cat: 0.1033
-Step 01375 | Validation bpb: 0.3631
-  ARC-Easy: 37.50%
-  ARC-Challenge: 29.50%
-  MMLU: 33.50%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
-Step 01375 | ChatCORE: 0.0680 | ChatCORE_cat: 0.1133
-Total training time: 21.44m
-===== CHAT_EVAL sft2_ar_m9_lr0.3_x2 START 22:11:59 =====
-ARC-Easy accuracy: 35.02%
-ARC-Challenge accuracy: 31.31%
-MMLU accuracy: 29.90%
-GSM8K accuracy: 2.00%
-===== SFT sft2_ar_m9_lr0.3_x2 DONE 22:14:26 =====
-===== SFT sft2_mdm_m9_lr0.3_ep2 (d12_mdm --smoltalk-epochs=2 --mmlu-epochs=18 --gsm8k-epochs=8 --init-lr-frac=0.3 --num-iterations=-1) START 22:14:26 =====
-Training mixture: 2,777,622 rows (MMLU x18, GSM8K x8)
 Step 00000 | Validation bpb: 0.8717
 Step 00400 | Validation bpb: 0.7006
-  ARC-Easy: 25.00%
-  ARC-Challenge: 28.25%
-  MMLU: 25.25%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
-Step 00400 | ChatCORE: 0.0093 | ChatCORE_cat: 0.0156
-Step 00800 | Validation bpb: 0.6705
-  ARC-Easy: 26.25%
-  ARC-Challenge: 28.25%
-  MMLU: 28.25%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
-Step 00800 | ChatCORE: 0.0207 | ChatCORE_cat: 0.0344
-Step 01200 | Validation bpb: 0.6532
-  ARC-Easy: 26.75%
-  ARC-Challenge: 25.50%
-  MMLU: 28.50%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
-Step 01200 | ChatCORE: 0.0153 | ChatCORE_cat: 0.0256
-Step 01600 | Validation bpb: 0.6358
-  ARC-Easy: 27.50%
-  ARC-Challenge: 28.25%
-  MMLU: 27.75%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
-Step 01600 | ChatCORE: 0.0227 | ChatCORE_cat: 0.0378
-Step 02000 | Validation bpb: 0.6156
-  ARC-Easy: 28.75%
-  ARC-Challenge: 25.50%
-  MMLU: 29.75%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
-Step 02000 | ChatCORE: 0.0240 | ChatCORE_cat: 0.0400
-Step 02400 | Validation bpb: 0.5983
-  ARC-Easy: 28.25%
+  ARC-Easy: 26.00%
   ARC-Challenge: 26.00%
-  MMLU: 26.25%
+  MMLU: 27.50%
   GSM8K: 0.00%
   HumanEval: 0.00%
-Step 02400 | ChatCORE: 0.0147 | ChatCORE_cat: 0.0244
-Step 02749 | Validation bpb: 0.5898
-  ARC-Easy: 28.00%
+Step 00400 | ChatCORE: 0.0120 | ChatCORE_cat: 0.0200
+Step 00800 | Validation bpb: 0.6706
+  ARC-Easy: 27.00%
+  ARC-Challenge: 23.75%
+  MMLU: 27.25%
+  GSM8K: 0.00%
+  HumanEval: 0.00%
+Step 00800 | ChatCORE: 0.0080 | ChatCORE_cat: 0.0133
+Step 01200 | Validation bpb: 0.6441
+  ARC-Easy: 24.50%
   ARC-Challenge: 25.00%
   MMLU: 28.00%
   GSM8K: 0.00%
   HumanEval: 0.00%
-Step 02749 | ChatCORE: 0.0160 | ChatCORE_cat: 0.0267
-Total training time: 45.20m
-===== CHAT_EVAL sft2_mdm_m9_lr0.3_ep2 START 23:08:59 =====
-ARC-Easy accuracy: 29.84%
-ARC-Challenge accuracy: 28.07%
-MMLU accuracy: 26.73%
-GSM8K accuracy: 0.00%
-===== SFT sft2_mdm_m9_lr0.3_ep2 DONE 23:15:14 =====
-===== SFT sft2_mdm_m9_lr0.1_x2 (d12_mdm --mmlu-epochs=9 --init-lr-frac=0.1 --num-iterations=29888) START 23:15:14 =====
-Training mixture: 1,388,811 rows (MMLU x9, GSM8K x4)
-Step 00000 | Validation bpb: 0.8717
-Step 00400 | Validation bpb: 0.7187
-  ARC-Easy: 25.25%
-  ARC-Challenge: 26.50%
-  MMLU: 24.00%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
-Step 00400 | ChatCORE: 0.0020 | ChatCORE_cat: 0.0033
-Step 00800 | Validation bpb: 0.6838
-  ARC-Easy: 26.00%
-  ARC-Challenge: 25.50%
-  MMLU: 27.25%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
-Step 00800 | ChatCORE: 0.0100 | ChatCORE_cat: 0.0167
-Step 01200 | Validation bpb: 0.6615
-  ARC-Easy: 25.00%
-  ARC-Challenge: 25.75%
-  MMLU: 26.75%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
 Step 01200 | ChatCORE: 0.0067 | ChatCORE_cat: 0.0111
-Step 01375 | Validation bpb: 0.6544
-  ARC-Easy: 28.00%
-  ARC-Challenge: 25.25%
-  MMLU: 26.25%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
-Step 01375 | ChatCORE: 0.0120 | ChatCORE_cat: 0.0200
-Total training time: 22.52m
-===== CHAT_EVAL sft2_mdm_m9_lr0.1_x2 START 23:43:22 =====
-ARC-Easy accuracy: 27.36%
-ARC-Challenge accuracy: 25.68%
-MMLU accuracy: 24.98%
-GSM8K accuracy: 0.00%
-===== SFT sft2_mdm_m9_lr0.1_x2 DONE 23:49:35 =====
-===== SFT sft2_mdm_m3_lr0.3 (d12_mdm --mmlu-epochs=3 --init-lr-frac=0.3 --num-iterations=20304) START 23:49:35 =====
-Training mixture: 789,759 rows (MMLU x3, GSM8K x4)
-Step 00000 | Validation bpb: 0.8717
-Step 00400 | Validation bpb: 0.6823
-  ARC-Easy: 24.75%
-  ARC-Challenge: 24.50%
-  MMLU: 24.25%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
-Step 00400 | ChatCORE: -0.0040 | ChatCORE_cat: -0.0067
-Step 00800 | Validation bpb: 0.6448
-  ARC-Easy: 24.25%
+Step 01375 | Validation bpb: 0.6321
+  ARC-Easy: 27.00%
   ARC-Challenge: 24.75%
-  MMLU: 25.75%
+  MMLU: 29.25%
   GSM8K: 0.00%
   HumanEval: 0.00%
-Step 00800 | ChatCORE: -0.0007 | ChatCORE_cat: -0.0011
-Step 00934 | Validation bpb: 0.6322
-  ARC-Easy: 23.75%
-  ARC-Challenge: 24.75%
-  MMLU: 29.00%
-  GSM8K: 0.00%
-  HumanEval: 0.00%
-Step 00934 | ChatCORE: 0.0067 | ChatCORE_cat: 0.0111
-Total training time: 15.33m
-===== CHAT_EVAL sft2_mdm_m3_lr0.3 START 00:09:17 =====
-ARC-Easy accuracy: 25.55%
-ARC-Challenge accuracy: 26.19%
-MMLU accuracy: 25.68%
+Step 01375 | ChatCORE: 0.0160 | ChatCORE_cat: 0.0267
+Total training time: 22.39m
+===== CHAT_EVAL sft3_mdm_m9_lr0.3_force2 START 22:18:01 =====
+ARC-Easy accuracy: 30.35%
+ARC-Challenge accuracy: 26.11%
+MMLU accuracy: 25.84%
 GSM8K accuracy: 0.00%
-===== SFT sft2_mdm_m3_lr0.3 DONE 00:15:27 =====
-===== LANE 0 DONE 00:15:27 =====
+===== SFT sft3_mdm_m9_lr0.3_force2 DONE 22:24:08 =====
+===== PRETRAIN d12_mdm_from_ar START 22:24:08 =====
+Initialised weights from base_checkpoints/d12_ar step 2520 (trained as ar); continuing as mdm with a fresh optimizer
+Step 00000 | Validation bpb (ELBO): 2.277386 | bpb (L2R): 2.334790
+Step 00250 | Validation bpb (ELBO): 1.216512 | bpb (L2R): 1.122282

@@ -183,6 +183,36 @@ data the MDM learned at about half the AR rate (0.049 vs 0.100), which was the p
 unexplained: in expectation the 1/p weighting restores the gradient, but half the examples contribute nothing to a
 given step and Muon normalises whatever is there.
 
+**7. Phase 2b: forcing the answer to be masked does not help the diffusion model (d12, 2026-10-27).** `--mdm-force-mask-short=2`
+always masks assistant responses of at most two tokens (the MMLU letter plus `<|assistant_end|>`) with loss weight 1,
+so the letter gets the same deterministic supervision as the AR next-token loss, while long responses keep the
+random-rate objective. On the 3x-MMLU / 0.3x-LR recipe (run `sft3_mdm_m9_lr0.3_force2`, same steps and schedule as
+`sft2_mdm_m9_lr0.3_x2`): ARC-E 30.4 / ARC-C 26.1 / MMLU 25.8 against 30.1 / 29.7 / 27.4 with random masking, SFT ELBO
+identical (0.632). So the half-rate supervision found by the gradient probe is not what holds the diffusion model
+back; if anything the bursty 1/p-weighted updates of random masking are better than steady weight-1 updates. The
+remaining SFT gap to the AR control (35.0 / 31.3 / 29.9) looks like a base-model gap, which only d24 can test.
+
+**8. Phase 2b: AR-initialised diffusion, partial result (d12, 2026-10-27).** `scripts/base_train.py --init-from-tag=d12_ar
+--model-type=mdm` loads the trained AR weights into the bidirectional model and continues with the diffusion loss
+(fresh optimizer, 100-step warmup, 1260 steps planned = half the d12 budget, same data order; the mask token's
+embedding starts untrained). Validation bpb (ELBO / left-to-right) against the from-scratch diffusion run at the same
+step:
+
+| step | AR-initialised MDM | from-scratch MDM | note |
+|---|---|---|---|
+| 0 | 2.277 / 2.335 | 3.170 / 3.171 | the AR weights already carry 0.9 bpb under the new objective, no training |
+| 250 | 1.217 / 1.122 | 1.444 / 1.447 | L2R already below the scratch run's value at step 1250 (1.177) |
+| 500 | 1.202 / 1.155 | 1.302 / 1.297 | L2R rose while ELBO fell: the model is giving up its next-token bias for the masked objective |
+| 1250 / 1260 | lost | 1.185 / 1.177 | |
+| 2520 | | 1.066 / 1.055 | the scratch run's full budget |
+
+The step-500 numbers come from the live log; the metrics after step 300, the final checkpoint and the CORE eval were
+lost when the pod terminated itself (see the cost log), so the question of where the adapted model lands at 1260 steps,
+and whether it beats the scratch model's full-budget 1.055, is open. What is already clear: starting from AR weights
+is worth most of the scratch run's first 1000 steps, and the adapted model is more "left-to-right" than a scratch
+diffusion model (L2R below ELBO by 0.05 to 0.09, where the scratch run has them within 0.015). Re-running the 1260
+steps plus CORE costs about $7 on a single H200; the plan is to fold it into the d24 pod.
+
 ## Phase 2: d24 pair
 
 Not started. Lightning AI has been offline since 2026-10-16 (credential-compromise incident, no ETA), so the pair
@@ -199,6 +229,9 @@ needs the recipe split below. Pre-launch list:
   `results/poll_pod.sh`). Needs a d24 chain variant (pretrain both, evals, SFT both recipes).
 - Measure accuracy vs tokens-per-pass on GSM8K / HumanEval with the d24 MDM SFT model (finding 4), if it has
   non-zero accuracy there.
+- Fold the AR-initialised diffusion re-run (finding 8, 1260 steps + CORE at d12, ~45 min on one GPU) into the d24 pod.
+- Results must not depend on the laptop: attach a Prime persistent disk (`prime disks create`, `pods create --disks`) and
+  have the chain copy logs and evals there before it terminates the pod.
 
 ## Phase 3: trade-offs
 
@@ -214,6 +247,7 @@ Open: accuracy vs decoding steps (needs a diffusion model with task accuracy, i.
 | 2026-10-22 | 4xH200 spot pod (DataCrunch via Prime Intellect, $11.66/hr) for the phase-2a SFT sweep; the ssh uploads from the Mac stalled and reset (macOS `IPQoS` issue, fixed with `IPQoS none`) and the chain never started | $15.20, nothing produced |
 | 2026-10-23 | 1xH100 PCIe pod (Lambda via Prime Intellect, $3.29/hr) for the same sweep; the chain launch failed silently, a false 'already running' check hid it, and the laptop went offline, so the box idled 19.4 h before being terminated | $63.68, nothing produced. Fix: `results/launch_pod.sh` arms a pod-side deadline watchdog before anything else |
 | 2026-10-23 to 10-24 | 1xH200 (Nebius via Prime Intellect, $5.40/hr) for phase 2a: both probes and the 5-arm SFT sweep, 20:45 to 00:17 UTC; the chain terminated the pod itself after the local ACK, the 8 h watchdog was never needed (one earlier Nebius pod failed at ssh setup and was terminated by the launcher within a second, $0.00) | $23.29 |
+| 2026-10-27 | 1xH200 (Nebius via Prime Intellect, $5.40/hr) for phase 2b: forced-mask SFT run and the AR-initialised diffusion run, 21:44 to 23:54 UTC; the chain terminated the pod itself 20 min after finishing (the laptop had gone to sleep at ~22:40, so the local sync stopped and the adaptation run's results after step 500 were lost with the pod; the money side worked, the data side needs a persistent disk next time) | $14.28 |
 
 ## Validation runs
 
