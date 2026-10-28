@@ -1,0 +1,416 @@
+<title>nanochat AR vs Diffusion</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: one reading column; each question is a stack of four labelled blocks (label rail left, content right). */
+  :root {
+    --bg: #f5f6f8;
+    --surface: #ffffff;
+    --ink: #141a24;
+    --ink-2: #4e5968;
+    --ink-3: #7b8696;
+    --rule: #dde2ea;
+    --ar: #2a78d6;
+    --mdm: #e8622c;
+    --accent: #1f5fc4;
+    --plate: #ffffff;
+    --display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+    --body: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f141b; --surface: #161d27; --ink: #e9edf3; --ink-2: #aab4c2; --ink-3: #7f8a9a;
+      --rule: #2a3442; --ar: #5f9ff0; --mdm: #f2875a; --accent: #86b4ff; --plate: #ffffff; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f141b; --surface: #161d27; --ink: #e9edf3; --ink-2: #aab4c2; --ink-3: #7f8a9a;
+    --rule: #2a3442; --ar: #5f9ff0; --mdm: #f2875a; --accent: #86b4ff; --plate: #ffffff; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.55; }
+  .wrap { max-width: 860px; margin: 0 auto; padding-block: 40px 80px; padding-inline: 20px; }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  header.top { border-bottom: 1px solid var(--rule); padding-bottom: 24px; margin-bottom: 28px; }
+  .eyebrow { font-family: var(--display); font-weight: 500; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
+  h1 { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 5vw, 44px); line-height: 1.05; margin: 8px 0 14px; text-wrap: balance; letter-spacing: -0.01em; }
+  .lede { font-size: 19px; color: var(--ink-2); max-width: 62ch; margin: 0 0 18px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 22px; font-family: var(--mono); font-size: 12.5px; color: var(--ink-3); }
+  .meta b { color: var(--ink-2); font-weight: 500; }
+
+  nav.toc { display: flex; flex-wrap: wrap; gap: 6px 10px; margin: 0 0 36px; }
+  nav.toc a { font-family: var(--display); font-weight: 500; font-size: 13.5px; color: var(--ink-2); text-decoration: none; border: 1px solid var(--rule); border-radius: 999px; padding: 5px 12px; background: var(--surface); }
+  nav.toc a:hover { color: var(--ink); border-color: var(--ink-3); }
+
+  section.q { margin: 0 0 56px; }
+  .q-head { margin-bottom: 18px; }
+  h2 { font-family: var(--display); font-weight: 700; font-size: clamp(22px, 3.2vw, 28px); line-height: 1.15; margin: 6px 0 0; text-wrap: balance; letter-spacing: -0.005em; }
+  .block { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 10px 28px; padding: 20px 0; border-top: 1px solid var(--rule); }
+  .block:last-child { border-bottom: 1px solid var(--rule); }
+  .label { font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin: 4px 0 0; }
+  .body { min-width: 0; }
+  .body > :first-child { margin-top: 0; }
+  .body > :last-child { margin-bottom: 0; }
+  .body p { margin: 0 0 12px; max-width: 66ch; }
+  .body ul, .body ol { margin: 0 0 12px; padding-left: 22px; max-width: 66ch; }
+  .body li { margin: 0 0 9px; }
+  .body li::marker { color: var(--ink-3); }
+  .body li b, .body p b { font-weight: 600; }
+  code { font-family: var(--mono); font-size: 0.86em; background: var(--surface); border: 1px solid var(--rule); border-radius: 4px; padding: 1px 5px; }
+  .ar { color: var(--ar); font-weight: 600; }
+  .mdm { color: var(--mdm); font-weight: 600; }
+  .verdict { font-family: var(--display); font-weight: 500; font-size: 18px; line-height: 1.35; margin: 0 0 14px; padding: 12px 16px; border-left: 3px solid var(--ink); background: var(--surface); max-width: 66ch; }
+
+  .tbl { overflow-x: auto; margin: 0 0 16px; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-family: var(--mono); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--rule); white-space: nowrap; vertical-align: top; }
+  th { font-weight: 500; color: var(--ink-3); font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; }
+  tr:last-child td { border-bottom: none; }
+  td.num, th.num { text-align: right; }
+  td.note { white-space: normal; font-family: var(--body); font-size: 14.5px; color: var(--ink-2); min-width: 220px; }
+  td.hi { font-weight: 500; color: var(--ink); }
+  .tbl-cap { font-size: 13.5px; color: var(--ink-3); margin: -8px 0 16px; }
+
+  figure { margin: 6px 0 18px; }
+  figure img { display: block; width: 100%; max-width: 100%; height: auto; background: var(--plate); border: 1px solid var(--rule); border-radius: 6px; }
+  figcaption { font-size: 13.5px; color: var(--ink-3); margin-top: 8px; max-width: 70ch; }
+
+  .setup { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin: 0 0 8px; }
+  .setup div { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 12px 14px; font-size: 14.5px; min-width: 0; }
+  .setup .k { font-family: var(--display); font-weight: 700; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 4px; }
+
+  .open ol { padding-left: 0; list-style: none; counter-reset: oq; max-width: 70ch; }
+  .open li { counter-increment: oq; position: relative; padding-left: 44px; margin: 0 0 14px; }
+  .open li::before { content: counter(oq, decimal-leading-zero); position: absolute; left: 0; top: 2px; font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+  .open h3 { font-family: var(--display); font-weight: 700; font-size: 15px; letter-spacing: 0.02em; margin: 22px 0 10px; color: var(--ink-2); }
+
+  footer { margin-top: 48px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--ink-3); }
+
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .block { grid-template-columns: 1fr; gap: 6px; padding: 16px 0; }
+    .label { margin-top: 0; }
+    .lede { font-size: 17px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+  html { scroll-behavior: smooth; }
+</style>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Experiment highlights · phases 1, 2a and 2b</div>
+  <h1>Autoregressive vs masked-diffusion language models on nanochat</h1>
+  <p class="lede">Same code, same data, same optimizer. One flag switches the model from next-token prediction to masked diffusion. These are the results from the d12 phase, organised by the question each run was meant to answer.</p>
+  <div class="meta">
+    <span><b>Model</b> nanochat d12, 12 layers, width 768</span>
+    <span><b>Hardware</b> one H100 PCIe</span>
+    <span><b>Dates</b> 6 to 8 Oct 2026</span>
+    <span><b>Spend</b> about $105</span>
+    <span><a href="https://github.com/skandavaidyanath/nanochat-dllm">repo</a> · <a href="https://github.com/skandavaidyanath/nanochat-dllm/blob/master/results/README.md">full tracker</a></span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <a href="#setup">Setup</a>
+  <a href="#q1">1 · Pretraining loss</a>
+  <a href="#q2">2 · Post-training</a>
+  <a href="#q3">3 · Repeated data</a>
+  <a href="#q4">4 · Decoding speed</a>
+  <a href="#open">Open questions</a>
+</nav>
+
+<section class="q" id="setup">
+  <div class="q-head">
+    <div class="eyebrow">Shared setup</div>
+    <h2>What was held constant</h2>
+  </div>
+  <div class="setup">
+    <div><div class="k">The two models</div><span class="ar">AR</span>: causal attention, next-token cross-entropy. <span class="mdm">MDM</span>: bidirectional attention, a <code>&lt;|mask|&gt;</code> token, masked-diffusion loss with mask rate p drawn uniformly from (0.001, 1) and each masked token weighted by 1/p. Everything else is identical, including the parameter count.</div>
+    <div><div class="k">Data and budget</div>ClimbMix pretraining shards in the same order for both. Batch 524,288 tokens. The 1x budget is 1.32B tokens (12 tokens per parameter, 2,520 steps). SFT uses SmolTalk plus MMLU auxiliary at 3x and GSM8K at 4x.</div>
+    <div><div class="k">Optimizer and kernels</div>Muon on matrices (LR 0.02) with AdamW on embeddings, FlashAttention 3 for both models, logit softcap 15·tanh(x/15).</div>
+    <div><div class="k">How loss is reported</div>Bits per byte (bpb), tokenizer independent, lower is better. The AR number is an exact negative log-likelihood. For the MDM we report two: the <b>ELBO</b>, its training objective and an upper bound, and the <b>left-to-right (L2R) NLL</b>, the exact likelihood when it decodes one token at a time, which is the like-for-like number against AR.</div>
+    <div><div class="k">Downstream metrics</div><b>CORE</b>: 22 few-shot base-model tasks, each scored as centered accuracy (0 is chance, 1 is perfect), averaged. Noise at this scale is about ±0.005, judged from the LR sweep. <b>ChatCORE</b>: the same idea on ARC-Easy, ARC-Challenge, MMLU, GSM8K and HumanEval after SFT.</div>
+    <div><div class="k">Run names</div><code>d12_ar</code>, <code>d12_mdm</code>; <code>_2x</code> and <code>_4x</code> are the MDM at 2 and 4 times the token budget; <code>_lr0.01</code> and <code>_lr0.04</code> are the LR sweep; <code>_rep10</code> is the repeated-data ablation.</div>
+  </div>
+</section>
+
+<section class="q" id="q1">
+  <div class="q-head">
+    <div class="eyebrow">Question 1 · Pretraining</div>
+    <h2>Can a diffusion LLM reach the same pretraining validation loss as an AR LLM?</h2>
+  </div>
+  <div class="block">
+    <h3 class="label">Question / Hypothesis</h3>
+    <div class="body">
+      <p>On identical data, how close does the masked-diffusion model get to the AR model's validation loss, and how much extra data does it need to match it?</p>
+      <p><b>Hypothesis.</b> At matched tokens the diffusion model will be clearly worse, because its loss is an upper bound and predicting masked tokens from partial context is a harder problem per token. The gap should shrink with more tokens. Published scaling work puts the diffusion model at roughly 16x the compute to match AR likelihood, so a crossover inside a 4x budget was not expected, but the trend was.</p>
+    </div>
+  </div>
+  <div class="block">
+    <h3 class="label">Experiment</h3>
+    <div class="body">
+      <ul>
+        <li>AR at the 1x budget of 1.32B tokens; MDM at 1x, 2x (2.64B) and 4x (5.28B), each a separate run with the same data order.</li>
+        <li>Muon LR sweep at 1x for both models: 0.01, 0.02 (default), 0.04. This also gives the noise band for CORE.</li>
+        <li>Validation bpb every 250 steps (AR exact; MDM ELBO and L2R). CORE on the final checkpoint, scored for the MDM with left-to-right conditionals.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="block">
+    <h3 class="label">Result</h3>
+    <div class="body">
+      <div class="tbl"><table>
+        <tr><th>Tokens</th><th class="num">AR exact NLL</th><th class="num">MDM L2R NLL</th><th class="num">MDM ELBO</th><th class="num">Gap (L2R − AR)</th><th class="num">CORE AR</th><th class="num">CORE MDM</th></tr>
+        <tr><td>1.32B (1x)</td><td class="num hi">0.847</td><td class="num hi">1.055</td><td class="num">1.066</td><td class="num">0.208</td><td class="num hi">0.142</td><td class="num">0.109</td></tr>
+        <tr><td>2.64B (2x)</td><td class="num">–</td><td class="num hi">1.009</td><td class="num">1.022</td><td class="num">0.162</td><td class="num">–</td><td class="num">0.131</td></tr>
+        <tr><td>5.28B (4x)</td><td class="num">–</td><td class="num hi">0.979</td><td class="num">0.992</td><td class="num">0.132</td><td class="num">–</td><td class="num hi">0.134</td></tr>
+      </table></div>
+      <div class="tbl"><table>
+        <tr><th>Muon LR at 1x</th><th class="num">0.01</th><th class="num">0.02</th><th class="num">0.04</th></tr>
+        <tr><td>AR val bpb · CORE</td><td class="num">0.850 · 0.147</td><td class="num">0.847 · 0.142</td><td class="num">0.850 · 0.140</td></tr>
+        <tr><td>MDM L2R bpb · CORE</td><td class="num">1.045 · 0.118</td><td class="num">1.055 · 0.109</td><td class="num">1.062 · 0.102</td></tr>
+      </table></div>
+      <figure><img src="plots/val_bpb_vs_tokens.png" alt="Validation bits per byte against training tokens. The AR curve ends at 0.847 after 1.32 billion tokens. The diffusion curves at 1x, 2x and 4x tokens end at 1.055, 1.009 and 0.979 left-to-right NLL, with the ELBO slightly above each."><figcaption>Validation loss against tokens. Solid warm lines are the MDM ELBO, dashed are its L2R NLL; the dotted line is the AR final value.</figcaption></figure>
+      <figure><img src="plots/core_per_task.png" alt="Horizontal bars of centered accuracy for each of the 22 CORE tasks, for AR, MDM at 1x, 2x and 4x, and the two repeated-data runs."><figcaption>CORE by task. The MDM is ahead on bigbench_cs_algorithms, lambada, squad, bigbench_operators and commonsense_qa, and behind on copa, winograd, hellaswag, piqa and arc_easy.</figcaption></figure>
+      <figure><img src="plots/lr_sweep.png" alt="Two panels of validation loss against tokens, one per model, with three learning rates each. The AR curves are nearly identical; the MDM curve at 0.01 is slightly lowest."><figcaption>Muon LR sweep. The AR model is insensitive; the MDM prefers the lower rate by about 0.01 bpb.</figcaption></figure>
+    </div>
+  </div>
+  <div class="block">
+    <h3 class="label">Findings</h3>
+    <div class="body">
+      <p class="verdict">No. At d12 the diffusion model does not reach the AR validation loss even with four times the tokens, and the trend says it will not get there by adding tokens alone. Its downstream CORE score, however, catches up.</p>
+      <ul>
+        <li><b>The gap shrinks with diminishing returns.</b> 0.208, then 0.162, then 0.132 bpb. Each doubling buys about 0.64 of the previous gain. A three-point power-law fit puts the MDM asymptote near 0.93 bpb for this model size, above the AR model's 0.847 at 1x.</li>
+        <li><b>Likelihood and task accuracy diverge.</b> By 4x the MDM's CORE (0.134) is inside the AR noise band (0.140 to 0.147 across the LR sweep) while its likelihood is still 0.13 bpb worse. Loss is not the whole story for this comparison.</li>
+        <li><b>The task profile is different, not uniformly worse.</b> The MDM leads on algorithmic and reading-comprehension style tasks and trails on commonsense sentence-completion tasks, which are the most next-token shaped.</li>
+        <li><b>The ELBO is a tight bound.</b> It sits within 0.015 bpb of the L2R NLL throughout every run, so the cheap training-time metric is enough to track progress.</li>
+        <li><b>Learning rate is not the explanation.</b> The best MDM LR moves it by 0.01 bpb against a gap of 0.2.</li>
+        <li><b>Training cost is nearly identical.</b> 332K vs 349K tokens per second, a 5% penalty from losing the causal skip in attention.</li>
+        <li><b>Caveat.</b> The AR model was not trained at 2x or 4x, so this measures how much extra data the MDM needs to match a fixed AR budget, not a compute-matched comparison.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="q" id="q2">
+  <div class="q-head">
+    <div class="eyebrow">Question 2 · Post-training</div>
+    <h2>Is a diffusion LLM as post-trainable as an AR LLM?</h2>
+  </div>
+  <div class="block">
+    <h3 class="label">Question / Hypothesis</h3>
+    <div class="body">
+      <p>Given the two 1x base models and the identical supervised fine-tuning recipe, do they gain the same task ability?</p>
+      <p><b>Hypothesis.</b> Both should learn the chat format and the multiple-choice and math tasks at similar rates. The diffusion loss is noisier per example, so a somewhat smaller gain was expected, not a different outcome. RL was deliberately deferred until the SFT picture was clear.</p>
+    </div>
+  </div>
+  <div class="block">
+    <h3 class="label">Experiment</h3>
+    <div class="body">
+      <ul>
+        <li>Identical SFT on both base models: SmolTalk conversations plus MMLU auxiliary at 3x and GSM8K at 4x, 934 steps (one epoch), same LR and schedule. For the MDM only assistant tokens are maskable, so the prompt is always visible.</li>
+        <li>Chat evaluation on ARC-Easy, ARC-Challenge, MMLU, GSM8K and HumanEval. Multiple-choice tasks score the model's distribution over the answer letter at the masked answer slot.</li>
+        <li>Ten diagnostic SFT variants of 200 steps each, scored on the multiple-choice subset (ChatCORE_cat), to isolate the cause of the failure below. Local probes of the raw logits at the answer slot on 200 MMLU questions, and a plain exam-format probe without chat tokens on 298 ARC-Easy questions.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="block">
+    <h3 class="label">Result</h3>
+    <div class="body">
+      <div class="tbl"><table>
+        <tr><th>After SFT</th><th class="num">ARC-E</th><th class="num">ARC-C</th><th class="num">MMLU</th><th class="num">GSM8K</th><th class="num">HumanEval</th><th class="num">ChatCORE</th><th class="num">SFT val bpb</th></tr>
+        <tr><td><span class="ar">AR</span></td><td class="num hi">36.1</td><td class="num hi">32.5</td><td class="num hi">31.2</td><td class="num">0.8</td><td class="num hi">7.9</td><td class="num hi">0.084</td><td class="num">0.356</td></tr>
+        <tr><td><span class="mdm">MDM</span></td><td class="num">25.6</td><td class="num">25.4</td><td class="num">23.6</td><td class="num">0.0</td><td class="num">0.0</td><td class="num">−0.001</td><td class="num">0.624 (ELBO)</td></tr>
+        <tr><td>chance</td><td class="num">25</td><td class="num">25</td><td class="num">25</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num"></td></tr>
+      </table></div>
+      <p class="tbl-cap">Diagnostics, 200 SFT steps each, multiple-choice ChatCORE. The AR model on the default recipe reaches 0.067 at step 200.</p>
+      <div class="tbl"><table>
+        <tr><th>Variant (MDM unless noted)</th><th class="num">Score @200</th><th>Reading</th></tr>
+        <tr><td>Minimum mask rate 0.1 / 0.3 / 1.0</td><td class="num">0.006 / 0.001 / −0.009</td><td class="note">Bounding the 1/p loss weights changes nothing. At 1.0 the answer-slot gradient is identical to the AR model's.</td></tr>
+        <tr><td>Softcap off / raised to 50</td><td class="num">−0.002 / −0.004</td><td class="note">Logit saturation is a symptom, not the cause.</td></tr>
+        <tr><td>Unembedding LR ÷ 10</td><td class="num">0.004</td><td class="note">Not output-layer drift.</td></tr>
+        <tr><td>Padded format, one conversation per row</td><td class="num">0.008</td><td class="note">Not a response-length shortcut from packing.</td></tr>
+        <tr><td>MMLU-only, full LR (MDM / AR control)</td><td class="num">0.011 / 0.001</td><td class="note">Both collapse to uniform letters, val bpb 7 to 9. Uninformative.</td></tr>
+        <tr><td>MMLU-only, 0.1x LR (AR / MDM)</td><td class="num hi">0.100 / 0.049</td><td class="note">The MDM can learn the letter task, at about half the AR rate.</td></tr>
+        <tr><td>Mixture, 0.1x / 0.3x LR; AR at 0.1x</td><td class="num">0.001 / 0.014; AR 0.036</td><td class="note">Lower LR alone does not rescue the MDM on the mixture.</td></tr>
+        <tr><td>Mixture, 3x MMLU share, 0.3x LR, 400 steps</td><td class="num hi">0.000 @200, 0.028 @400</td><td class="note">First real signal: more multiple-choice share and more steps.</td></tr>
+      </table></div>
+      <p>Probes: the MDM SFT model's cross-entropy on the masked answer letter is 1.385, the uniform value over four letters, in every context variant; the AR SFT model's is 1.445 with 31.5% accuracy. In plain exam format neither base model has the letter skill (AR 24%, MDM 23%); SFT gives it to the AR model (34%) but not the MDM (26%).</p>
+      <p class="tbl-cap"><b>Phase 2a (2026-10-23, one H200): the recipe sweep.</b> Same d12 base checkpoints, fresh optimizer. A run ends after one pass over its mixture, so the 3x-MMLU mixture gives 1375 steps. Full test sets after SFT.</p>
+      <div class="tbl"><table>
+        <tr><th>Run</th><th>Recipe</th><th class="num">Steps</th><th class="num">SFT val bpb</th><th class="num">ARC-E</th><th class="num">ARC-C</th><th class="num">MMLU</th><th class="num">GSM8K</th></tr>
+        <tr><td><span class="ar">AR</span> phase 1</td><td>default</td><td class="num">934</td><td class="num">0.356</td><td class="num hi">36.1</td><td class="num hi">32.5</td><td class="num hi">31.2</td><td class="num">0.8</td></tr>
+        <tr><td><span class="ar">AR</span> control</td><td>3x MMLU share, 0.3x LR</td><td class="num">1375</td><td class="num">0.363</td><td class="num">35.0</td><td class="num">31.3</td><td class="num">29.9</td><td class="num">2.0</td></tr>
+        <tr><td><span class="mdm">MDM</span> phase 1</td><td>default</td><td class="num">934</td><td class="num">0.624</td><td class="num">25.6</td><td class="num">25.4</td><td class="num">23.6</td><td class="num">0.0</td></tr>
+        <tr><td><span class="mdm">MDM</span></td><td>3x MMLU share, 0.3x LR</td><td class="num">1375</td><td class="num">0.632</td><td class="num hi">30.1</td><td class="num hi">29.7</td><td class="num hi">27.4</td><td class="num">0.0</td></tr>
+        <tr><td><span class="mdm">MDM</span></td><td>same, two passes, full warmdown</td><td class="num">2749</td><td class="num">0.590</td><td class="num">29.8</td><td class="num">28.1</td><td class="num">26.7</td><td class="num">0.0</td></tr>
+        <tr><td><span class="mdm">MDM</span></td><td>3x MMLU share, 0.1x LR</td><td class="num">1375</td><td class="num">0.654</td><td class="num">27.4</td><td class="num">25.7</td><td class="num">25.0</td><td class="num">0.0</td></tr>
+        <tr><td><span class="mdm">MDM</span></td><td>default share, 0.3x LR</td><td class="num">934</td><td class="num">0.632</td><td class="num">25.6</td><td class="num">26.2</td><td class="num">25.7</td><td class="num">0.0</td></tr>
+        <tr><td><span class="mdm">MDM</span> phase 2b</td><td>3x MMLU share, 0.3x LR, answer always masked (weight 1)</td><td class="num">1375</td><td class="num">0.632</td><td class="num">30.4</td><td class="num">26.1</td><td class="num">25.8</td><td class="num">0.0</td></tr>
+      </table></div>
+      <figure><img src="plots/sft_sweep_final.png" alt="Multiple-choice accuracy after SFT by recipe"><figcaption>Full-test accuracy after SFT. The 3x-MMLU recipe lifts the diffusion model off chance on all three tasks; two passes, a lower LR, or the default share do not.</figcaption></figure>
+      <figure><img src="plots/sft_sweep_curves.png" alt="SFT validation loss and multiple-choice score during training"><figcaption>During SFT: the diffusion model's likelihood keeps improving with more training while its multiple-choice score plateaus near 0.04; the AR control sits above 0.10 from step 400.</figcaption></figure>
+      <p class="tbl-cap"><b>Phase 2a probes on the frozen base models.</b> Linear readout of the answer letter from the vector fed to the output layer at the answer slot (MMLU auxiliary_train 20k, MMLU test 2k; chance 25%), and the gradient split by data source over 16 real SFT micro-batches.</p>
+      <div class="tbl"><table>
+        <tr><th>Base model</th><th>Feature position</th><th class="num">Zero-shot</th><th class="num">Probe @2k</th><th class="num">Probe @20k</th></tr>
+        <tr><td><span class="ar">AR</span></td><td>token before the letter</td><td class="num">22.1</td><td class="num">25.2</td><td class="num">26.0</td></tr>
+        <tr><td><span class="mdm">MDM</span></td><td>the mask at the letter</td><td class="num">25.2</td><td class="num">24.4</td><td class="num">26.1</td></tr>
+        <tr><td><span class="mdm">MDM</span></td><td>token before the mask</td><td class="num">25.2</td><td class="num">26.5</td><td class="num">27.6</td></tr>
+      </table></div>
+      <div class="tbl"><table>
+        <tr><th>Base model</th><th class="num">Letter tokens carrying loss per micro-batch</th><th class="num">Letter share of the gradient norm</th><th class="num">SmolTalk share</th></tr>
+        <tr><td><span class="ar">AR</span></td><td class="num">19.5</td><td class="num">9.3%</td><td class="num">97.4%</td></tr>
+        <tr><td><span class="mdm">MDM</span></td><td class="num">10.2 of 19.5</td><td class="num">4.7%</td><td class="num">98.9%</td></tr>
+      </table></div>
+    </div>
+  </div>
+  <div class="block">
+    <h3 class="label">Findings</h3>
+    <div class="body">
+      <p class="verdict">Not with the AR recipe, and only partly with its own. On the standard mixture the diffusion model learns the chat format but none of the measured tasks. A recipe with three times the multiple-choice share gets it off chance (30 / 30 / 27 against the AR control's 35 / 31 / 30), and neither more training nor a lower learning rate adds anything. The cause is a drowned, half-rate signal, not a representational limit: the frozen base models are equally blank at the answer slot.</p>
+      <ul>
+        <li><b>The high-logit story was a red herring.</b> The MDM's raw letter logits sit at 38 to 46 and are identical across questions, but once the model is uniform over A to D the discriminating gradient is at full strength. Removing the cap confirmed saturation blocks nothing.</li>
+        <li><b>Three plausible mechanisms were ruled out:</b> loss-weight variance from the 1/p factor, drift in the output layer, and a length leak from packed training.</li>
+        <li><b>The MDM learns the mapping about half as fast as AR</b> when given only multiple-choice data at a low LR, and essentially not at all within one epoch of the mixture.</li>
+        <li><b>Working explanation.</b> The gradient at the answer slot itself is the same for both models in expectation, and identical when the minimum mask rate is 1, so the slot is not where they differ. The rest of the batch is. The AR model already fits the long SmolTalk responses well (SFT val bpb 0.356), so their gradients are small and the answer slots are a meaningful share of each update. The diffusion model is far from fitting them (0.624 bpb, and higher per masked token), so their gradients dominate, and Muon's normalised updates follow the dominant direction. The part of the answer-slot signal that every example shares, "a letter goes here", survives because it always points the same way, which is what drives the logits to saturation; the per-question part does not. Removing the competing data, raising the multiple-choice share and lowering the LR are exactly the interventions that helped, which is the evidence for this account.</li>
+        <li><b>What helps, measured in phase 2a:</b> the multiple-choice share, and only that. Three times the MMLU share at 0.3x LR takes the MDM to 30.1 / 29.7 / 27.4 on ARC-E / ARC-C / MMLU. Two passes with a full warmdown improve its SFT likelihood (0.632 to 0.590 bpb) but not the accuracies; 0.1x LR is worse everywhere; the default share at 0.3x LR stays at chance. The AR model on the same recipe scores 35.0 / 31.3 / 29.9, a little below its default, so the gap shrinks from about 11 / 8 / 6 points to 5 / 2 / 3. GSM8K and HumanEval stay at 0 for the MDM under every recipe. This is the MDM recipe for d24.</li>
+        <li><b>Why slower, answered by the probes.</b> Neither base model carries a linearly readable answer at the slot (AR 26.0%, MDM 26.1%, chance 25%, even with 20k training questions), so the MDM's features are no worse and SFT builds the skill from nothing in both. The difference is supervision rate: the letter is masked on about half the draws, so it carries loss in 10.2 of 19.5 occurrences per micro-batch against the AR model's 19.5 of 19.5, and the MDM's SmolTalk gradient is larger, so the letter's share of an update is 4.7% against 9.3%. The same half rate matches the phase-1 observation that on multiple-choice-only data the MDM learned at about half the AR rate. In expectation the 1/p weight restores the gradient, but half the examples contribute nothing to a given step and Muon normalises whatever remains.</li>
+        <li><b>Tested in phase 2b, and it is not the fix.</b> Always masking the answer with weight 1, so the letter gets the same deterministic supervision as the AR loss, scores 30.4 / 26.1 / 25.8 against 30.1 / 29.7 / 27.4 with random masking. The supervision rate was a real difference but not the binding one. What remains between the diffusion model and the AR control on the same recipe looks like a base-model gap, which only the d24 pair can test.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="q" id="q3">
+  <div class="q-head">
+    <div class="eyebrow">Question 3 · Trade-offs, data</div>
+    <h2>When data is scarce and repeated, which model holds up?</h2>
+  </div>
+  <div class="block">
+    <h3 class="label">Question / Hypothesis</h3>
+    <div class="body">
+      <p>With the same token budget but only a tenth of the unique data, so that every sequence is seen about ten times, which model degrades less?</p>
+      <p><b>Hypothesis.</b> The diffusion model should resist overfitting, because every epoch presents a different random masking of each sequence, whereas next-token targets are identical on every pass. Recent papers report diffusion winning outright in this regime.</p>
+    </div>
+  </div>
+  <div class="block">
+    <h3 class="label">Experiment</h3>
+    <div class="body">
+      <ul>
+        <li>Same 1.32B-token budget and LR schedule for both models, data restricted to the first four training shards (136M tokens), giving about 9.7 epochs.</li>
+        <li>Validation on the fifth shard instead of the usual last one. Both models match their full-data runs within 0.0003 bpb at step 250, so the two validation shards are equivalent.</li>
+        <li>CORE on the final checkpoints.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="block">
+    <h3 class="label">Result</h3>
+    <div class="body">
+      <div class="tbl"><table>
+        <tr><th>Run</th><th class="num">Final val bpb</th><th class="num">Best val bpb</th><th class="num">Final train loss</th><th class="num">CORE</th></tr>
+        <tr><td><span class="ar">AR</span>, full data</td><td class="num">0.847</td><td class="num">0.847</td><td class="num">2.80</td><td class="num">0.142</td></tr>
+        <tr><td><span class="ar">AR</span>, 10 epochs on 136M</td><td class="num hi">1.101</td><td class="num">0.967 at 5 epochs</td><td class="num hi">2.16</td><td class="num">0.120</td></tr>
+        <tr><td><span class="mdm">MDM</span>, full data (L2R)</td><td class="num">1.055</td><td class="num">1.055</td><td class="num">3.49</td><td class="num">0.109</td></tr>
+        <tr><td><span class="mdm">MDM</span>, 10 epochs on 136M (L2R)</td><td class="num hi">1.055</td><td class="num">1.055</td><td class="num">3.44</td><td class="num">0.085</td></tr>
+      </table></div>
+      <figure><img src="plots/datarep.png" alt="Left panel: validation loss against tokens with an epoch axis on top. The AR repeated-data curve reaches a minimum of 0.967 near five epochs and rises to 1.101, while the diffusion repeated-data curve lies on top of its full-data curve. Right panel: training loss, where the AR repeated-data curve drops far below its full-data curve."><figcaption>Solid is full data, dashed is the same budget on the 136M-token subset. Left: validation loss. Right: training loss, where the AR model's drop below its full-data curve is memorisation.</figcaption></figure>
+    </div>
+  </div>
+  <div class="block">
+    <h3 class="label">Findings</h3>
+    <div class="body">
+      <p class="verdict">The diffusion model does not overfit at ten epochs; the AR model does. At the final checkpoint the diffusion model is better, but an early-stopped AR model still wins, and neither model's downstream score survives the repetition.</p>
+      <ul>
+        <li><b>The MDM lost nothing from a tenth of the data.</b> Its validation curve lies on top of the full-data curve for the whole run, and its training loss is only 0.06 lower.</li>
+        <li><b>The AR model memorises.</b> Validation bottoms out at 0.967 at five epochs and climbs to 1.101, while training loss falls from 2.80 to 2.16.</li>
+        <li><b>Who wins depends on the checkpoint.</b> Final checkpoints: MDM by 0.046 bpb. Best checkpoints: AR by 0.088.</li>
+        <li><b>The likelihood advantage did not transfer to CORE.</b> Both models lose about 0.02 on the repeated subset, the MDM to 0.085. Random masking regularises the loss but did not protect task accuracy at this scale, and the four-shard subset is also a narrower slice of the corpus.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="q" id="q4">
+  <div class="q-head">
+    <div class="eyebrow">Question 4 · Trade-offs, inference</div>
+    <h2>How much faster is diffusion decoding, and when does it beat AR?</h2>
+  </div>
+  <div class="block">
+    <h3 class="label">Question / Hypothesis</h3>
+    <div class="body">
+      <p>The promised advantage of diffusion LLMs is parallel decoding. On these models, at what number of tokens per forward pass does the diffusion decoder overtake an AR decoder with a KV cache?</p>
+      <p><b>Hypothesis.</b> At one token per pass the diffusion decoder should be slower, since it recomputes the whole block with no cache. It should overtake AR once it commits a few tokens per pass, with the gain growing linearly in tokens per pass.</p>
+    </div>
+  </div>
+  <div class="block">
+    <h3 class="label">Experiment</h3>
+    <div class="body">
+      <p><b>How the diffusion model decodes.</b> It does not write a whole answer in one shot. It starts from a block of 32 mask tokens and runs one forward pass that predicts a distribution for every masked position at once. The sampler commits the most confident predictions, leaves the rest masked, and runs another pass in which the committed tokens are now context. With N steps per block it commits about 32/N tokens per pass: N = 32 is one token per pass, N = 1 writes the whole block from a single pass. Blocks are produced left to right, each conditioned on the finished ones, the semi-autoregressive scheme LLaDA and Dream use. "Tokens per pass" is the parallelism knob. Tokens committed in the same pass are sampled independently of each other given the context, which is where coherence can break down, so the setting trades speed against quality.</p>
+      <p>A pass and a denoising step are the same thing, one forward pass of the network, so there is no step count multiplied on top of the pass count. The total number of forward passes for a response is steps per block times the number of blocks: a 100-token answer spans four 32-token blocks, so it costs 32 passes at 8 steps per block, 128 at 32 steps per block and 4 at 1 step per block, against about 100 for the AR model. Each diffusion pass runs the network over the whole canvas (prompt, committed tokens and every remaining mask) with no KV cache, while an AR pass with a cache processes one new token, which is why one token per pass comes out slower than AR and the break-even sits at two.</p>
+      <ul>
+        <li><code>scripts/infer_bench_mdm.py</code> on the d12 base models, 256 generated tokens after a 7-token prompt, batch sizes 1, 8 and 32, one H100 PCIe.</li>
+        <li>AR: nanochat's engine with a KV cache. MDM: semi-autoregressive decoding of 32-token blocks with low-confidence remasking, at 32, 16, 8, 4 and 1 steps per block, which is 1, 2, 4, 8 and 32 tokens per pass.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="block">
+    <h3 class="label">Result</h3>
+    <div class="body">
+      <div class="tbl"><table>
+        <tr><th>Decoder</th><th class="num">Tokens / pass</th><th class="num">Batch 1</th><th class="num">Batch 8</th><th class="num">Batch 32</th></tr>
+        <tr><td><span class="ar">AR</span>, KV cache</td><td class="num">1</td><td class="num">97 tok/s</td><td class="num">768 tok/s</td><td class="num">3,013 tok/s</td></tr>
+        <tr><td><span class="mdm">MDM</span>, 32 steps / block</td><td class="num">1</td><td class="num">62 (0.6x)</td><td class="num">398 (0.5x)</td><td class="num">1,537 (0.5x)</td></tr>
+        <tr><td><span class="mdm">MDM</span>, 16 steps</td><td class="num">2</td><td class="num">159 (1.6x)</td><td class="num">766 (1.0x)</td><td class="num">2,788 (0.9x)</td></tr>
+        <tr><td><span class="mdm">MDM</span>, 8 steps</td><td class="num">4</td><td class="num hi">303 (3.1x)</td><td class="num hi">2,211 (2.9x)</td><td class="num hi">7,898 (2.6x)</td></tr>
+        <tr><td><span class="mdm">MDM</span>, 4 steps</td><td class="num">8</td><td class="num">610 (6.3x)</td><td class="num">4,690 (6.1x)</td><td class="num">17,140 (5.7x)</td></tr>
+        <tr><td><span class="mdm">MDM</span>, 1 step</td><td class="num">32</td><td class="num">2,351 (24x)</td><td class="num">17,945 (23x)</td><td class="num">54,357 (18x)</td></tr>
+      </table></div>
+      <figure><img src="plots/decode_bench.png" alt="Three panels for batch sizes 1, 8 and 32. Each shows diffusion throughput rising on a log scale as tokens per forward pass go from 1 to 32, crossing a dotted horizontal line for the AR decoder at two tokens per pass."><figcaption>Throughput against tokens per forward pass. The dotted line is the AR decoder with a KV cache.</figcaption></figure>
+    </div>
+  </div>
+  <div class="block">
+    <h3 class="label">Findings</h3>
+    <div class="body">
+      <p class="verdict">Diffusion decoding is slower than AR until it commits two tokens per pass, three times faster at four, six times at eight. The quality cost of that parallelism is still unmeasured.</p>
+      <ul>
+        <li><b>Break-even is two tokens per pass</b> at every batch size. Below that the missing KV cache costs a factor of two.</li>
+        <li><b>The speed-up is close to linear in tokens per pass</b>, slightly sublinear at large batch where the AR decoder uses the GPU better.</li>
+        <li><b>Accuracy at each setting is still unknown</b>, because the d12 diffusion SFT model has no measurable GSM8K or HumanEval accuracy to trade away. This is the first measurement to make at d24.</li>
+        <li><b>Absolute numbers are not production numbers.</b> Neither engine uses CUDA graphs and the diffusion engine has no prefix cache. The relative picture is the result.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="q open" id="open">
+  <div class="q-head">
+    <div class="eyebrow">What the d12 phase leaves open</div>
+    <h2>Open questions</h2>
+  </div>
+  <h3>Pretraining</h3>
+  <ol>
+    <li><b>Does the likelihood gap close with scale?</b> The d24 pair (speedrun config, 8xH100) is the next run. At d12 the gap narrowed as training went on; whether a larger model narrows it further is the main question of phase 2.</li>
+    <li><b>Is the gap the objective or the starting point?</b> Partly answered in phase 2b: the d12 AR weights continued with the diffusion loss score 2.28 bpb before any training (a random start is 3.17), 1.22 ELBO / 1.12 left-to-right after 250 steps (scratch: 1.44 / 1.45) and 1.20 / 1.16 after 500 (scratch: 1.30 / 1.30), so the AR start is worth most of the scratch run's first thousand steps, and the adapted model stays more left-to-right than a scratch diffusion model. The run's results after step 500 and its CORE score were lost with the pod; the re-run goes on the d24 pod.</li>
+    <li><b>What does a compute-matched comparison look like?</b> The AR model should also be trained at 2x and 4x so the crossover question is posed fairly.</li>
+  </ol>
+  <h3>Post-training</h3>
+  <ol>
+    <li><b>Is the SFT gap only a speed gap?</b> Answered at d12 in phase 2a: no. The 3x-share recipe lifts the MDM to 30 / 30 / 27 but more steps do not move it further while the AR control sits at 35 / 31 / 30 on the same recipe, and the likelihood gap from pretraining (0.36 vs 0.63 bpb) survives SFT unchanged. Remaining: confirm on the d24 pair, where the base models are stronger.</li>
+    <li><b>Why is the MDM slower even on multiple-choice-only data?</b> Largely answered by the phase 2a probes: not a representation gap (both frozen bases are at chance at the slot, the MDM no worse), and the letter carries loss on only about half the draws, which matches the observed half rate. Deterministic masking of short answers was then tested in phase 2b and does not recover the rest, so the remaining gap is attributed to the base model.</li>
+    <li><b>Does RL work on the diffusion model?</b> The on-policy REINFORCE path is implemented with an ELBO log-probability surrogate, but its variance and whether it improves GSM8K are untested, and it needs an SFT model with non-zero accuracy first.</li>
+  </ol>
+  <h3>Trade-offs</h3>
+  <ol>
+    <li><b>What is the accuracy cost of parallel decoding?</b> GSM8K and HumanEval accuracy against tokens per pass, once a diffusion SFT model has accuracy to measure.</li>
+    <li><b>Does the repeated-data advantage ever reach downstream tasks?</b> More seeds, more epochs, and a less narrow subset, since CORE fell for both models while only the AR likelihood suffered.</li>
+    <li><b>Infilling.</b> The one capability where a bidirectional model should win outright has not been measured.</li>
+    <li><b>Noise.</b> CORE moved by 0.016 across the MDM LR sweep, so differences under about 0.02 need repeated seeds before they count.</li>
+  </ol>
+</section>
+
+<footer>
+  Numbers, plots and raw logs are in the public repo under <code>results/</code>. Phase 2a (SFT recipe sweep, two probes) and phase 2b (forced answer masking, AR-initialised diffusion) ran on single H200s for $23 and $14. Next step: the d24 pair with the MDM recipe and its AR control, plus the AR-initialised diffusion re-run, about 5 node-hours on 8xH100, roughly $100 to $200 depending on spot pricing.
+</footer>
+</div>
